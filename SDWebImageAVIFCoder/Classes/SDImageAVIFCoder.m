@@ -157,7 +157,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         return NO;
     }
     if (data.length >= 12) {
-        //....ftypmif1 ....ftypmsf1 ....ftypheic ....ftypheix ....ftyphevc ....ftyphevx
+        //....ftypavif ....ftypavis
         NSString *testString = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(4, 8)] encoding:NSASCIIStringEncoding];
         if ([testString isEqualToString:@"ftypavif"]
             || [testString isEqualToString:@"ftypavis"]) {
