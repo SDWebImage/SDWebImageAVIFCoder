@@ -35,6 +35,18 @@ it, simply add the following line to your Podfile:
 pod 'SDWebImageAVIFCoder'
 ```
 
+Note: Current `libaom` dependency via CocoaPods, use the pre-built static library for each architecutre.
+
+The reason of this it's that we want to use SIMD/SSE/AVX2 CPU instruction optimization for each platforms. However libaom does not using dynamic CPU detection for Apple's platforms. We need the upstream to support it.
+
+At the same time, CocoaPods does not allow you to write a framework contains so much of architecture detection (for example, iPhone Simulator is x86_x64, however, iPhone is ARM, they should use different assembly files). So we use the pre-built one instead. 
+
+If you're using `use_frameworks!` in Podfile, you can check it with static framework instead.
+
+```
+pod 'SDWebImageAVIFCoder', :modular_headers => true
+```
+
 #### Carthage
 
 SDWebImageAVIFCoder is available through [Carthage](https://github.com/Carthage/Carthage).
