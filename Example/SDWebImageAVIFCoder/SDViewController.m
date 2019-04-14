@@ -7,6 +7,8 @@
 //
 
 #import "SDViewController.h"
+#import <SDWebImage/SDWebImage.h>
+#import <SDWebImageAVIFCoder/SDImageAVIFCoder.h>
 
 @interface SDViewController ()
 
@@ -17,7 +19,32 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    SDImageAVIFCoder *AVIFCoder = [SDImageAVIFCoder sharedCoder];
+    [[SDImageCodersManager sharedManager] addCoder:AVIFCoder];
+    NSURL *AVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/AOMediaCodec/av1-avif/master/testFiles/Microsoft/kids_720p.avif"];
+    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/AOMediaCodec/av1-avif/master/testFiles/Microsoft/Chimera_10bit_cropped_to_1920x1008.avif"];
+    
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    
+    UIImageView *imageView1 = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height / 2)];
+    UIImageView *imageView2 = [[UIImageView alloc] initWithFrame:CGRectMake(0, screenSize.height / 2, screenSize.width, screenSize.height / 2)];
+    
+    [self.view addSubview:imageView1];
+    [self.view addSubview:imageView2];
+    
+    [imageView1 sd_setImageWithURL:AVIFURL placeholderImage:nil options:0 completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        if (image) {
+            NSLog(@"Single HEIC load success");
+        }
+    }];
+    [imageView2 sd_setImageWithURL:HDRAVIFURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        // 10-bit HDR
+        if (image) {
+            NSLog(@"HDR AVIF load success");
+        }
+    }];
+    // Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)didReceiveMemoryWarning

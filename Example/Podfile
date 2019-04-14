@@ -1,8 +1,7 @@
-use_frameworks!
-
-platform :ios, '8.0'
+#use_frameworks!
 
 target 'SDWebImageAVIFCoder_Example' do
+  platform :ios, '8.0'
   pod 'SDWebImageAVIFCoder', :path => '../'
 
   target 'SDWebImageAVIFCoder_Tests' do
@@ -10,4 +9,9 @@ target 'SDWebImageAVIFCoder_Example' do
 
     
   end
+end
+
+target 'SDWebImageAVIFCoder_Example macOS' do
+  platform :osx, '10.10'
+  pod 'SDWebImageAVIFCoder', :path => '../'
 end

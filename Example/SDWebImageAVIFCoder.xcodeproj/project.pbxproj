@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		21740847BC2C8DE1EBB027A4 /* Pods_SDWebImageAVIFCoder_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 665F60396B39A95CA58650E6 /* Pods_SDWebImageAVIFCoder_Tests.framework */; };
+		32D3263C226344EC001B208C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D3263B226344EC001B208C /* AppDelegate.m */; };
+		32D3263F226344EC001B208C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D3263E226344EC001B208C /* ViewController.m */; };
+		32D32641226344EC001B208C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32D32640226344EC001B208C /* Assets.xcassets */; };
+		32D32644226344EC001B208C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32D32642226344EC001B208C /* Main.storyboard */; };
+		32D32647226344EC001B208C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D32646226344EC001B208C /* main.m */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -22,8 +26,10 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
-		75AA21955E95DDF833F0211E /* Pods_SDWebImageAVIFCoder_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C2BF4FEEFFFAE7B6CCDE40AE /* Pods_SDWebImageAVIFCoder_Example.framework */; };
+		8011C06C17A1599DD88EBB28 /* libPods-SDWebImageAVIFCoder_Example macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D35147990C9781C1E45F4DE7 /* libPods-SDWebImageAVIFCoder_Example macOS.a */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		CA030C0A0B57F891DD84371D /* libPods-SDWebImageAVIFCoder_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2783F1D7B48DB3ED9ADFF864 /* libPods-SDWebImageAVIFCoder_Example.a */; };
+		EDB2D182F827BB685E80048E /* libPods-SDWebImageAVIFCoder_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4691BEB7EC16961149D74E32 /* libPods-SDWebImageAVIFCoder_Tests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,9 +44,22 @@
 
 /* Begin PBXFileReference section */
 		01396E21D67B93E6F560157A /* Pods-SDWebImageAVIFCoder_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Tests.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Tests/Pods-SDWebImageAVIFCoder_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		13CE9906000ABBFFA89F3F10 /* SDWebImageAVIFCoder.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = SDWebImageAVIFCoder.podspec; path = ../SDWebImageAVIFCoder.podspec; sourceTree = "<group>"; };
+		13CE9906000ABBFFA89F3F10 /* SDWebImageAVIFCoder.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SDWebImageAVIFCoder.podspec; path = ../SDWebImageAVIFCoder.podspec; sourceTree = "<group>"; };
 		207C633217DCC3D0312C335C /* Pods-SDWebImageAVIFCoder_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example/Pods-SDWebImageAVIFCoder_Example.release.xcconfig"; sourceTree = "<group>"; };
-		5D92F53287F9A0D657624F5A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		2783F1D7B48DB3ED9ADFF864 /* libPods-SDWebImageAVIFCoder_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImageAVIFCoder_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3260C60722634CF90046E4C8 /* SDWebImageAVIFCoder_Example macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SDWebImageAVIFCoder_Example macOS.entitlements"; sourceTree = "<group>"; };
+		32D32638226344EC001B208C /* SDWebImageAVIFCoder_Example macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SDWebImageAVIFCoder_Example macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		32D3263A226344EC001B208C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		32D3263B226344EC001B208C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		32D3263D226344EC001B208C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		32D3263E226344EC001B208C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		32D32640226344EC001B208C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		32D32643226344EC001B208C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		32D32645226344EC001B208C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		32D32646226344EC001B208C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		32D32648226344EC001B208C /* SDWebImageAVIFCoder_Example_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SDWebImageAVIFCoder_Example_macOS.entitlements; sourceTree = "<group>"; };
+		4691BEB7EC16961149D74E32 /* libPods-SDWebImageAVIFCoder_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImageAVIFCoder_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D92F53287F9A0D657624F5A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* SDWebImageAVIFCoder_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDWebImageAVIFCoder_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -60,16 +79,25 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
-		665F60396B39A95CA58650E6 /* Pods_SDWebImageAVIFCoder_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageAVIFCoder_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7FE45EC1A1A0874CE3C32260 /* Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example macOS/Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		86EFB0D9CB82C3418B27F7C3 /* Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Tests/Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		C2BF4FEEFFFAE7B6CCDE40AE /* Pods_SDWebImageAVIFCoder_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageAVIFCoder_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F6B54596AE0C8ECC6DFE1DD6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		D35147990C9781C1E45F4DE7 /* libPods-SDWebImageAVIFCoder_Example macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImageAVIFCoder_Example macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFA18806A2B2331D243CEBFE /* Pods-SDWebImageAVIFCoder_Example macOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example macOS.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example macOS/Pods-SDWebImageAVIFCoder_Example macOS.release.xcconfig"; sourceTree = "<group>"; };
+		F6B54596AE0C8ECC6DFE1DD6 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		F85182AD5D4FF8570F90A7BC /* Pods-SDWebImageAVIFCoder_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example/Pods-SDWebImageAVIFCoder_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		32D32635226344EC001B208C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8011C06C17A1599DD88EBB28 /* libPods-SDWebImageAVIFCoder_Example macOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6003F587195388D20070C39A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -77,7 +105,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				75AA21955E95DDF833F0211E /* Pods_SDWebImageAVIFCoder_Example.framework in Frameworks */,
+				CA030C0A0B57F891DD84371D /* libPods-SDWebImageAVIFCoder_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,19 +116,37 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				21740847BC2C8DE1EBB027A4 /* Pods_SDWebImageAVIFCoder_Tests.framework in Frameworks */,
+				EDB2D182F827BB685E80048E /* libPods-SDWebImageAVIFCoder_Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		32D32639226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */ = {
+			isa = PBXGroup;
+			children = (
+				3260C60722634CF90046E4C8 /* SDWebImageAVIFCoder_Example macOS.entitlements */,
+				32D3263A226344EC001B208C /* AppDelegate.h */,
+				32D3263B226344EC001B208C /* AppDelegate.m */,
+				32D3263D226344EC001B208C /* ViewController.h */,
+				32D3263E226344EC001B208C /* ViewController.m */,
+				32D32640226344EC001B208C /* Assets.xcassets */,
+				32D32642226344EC001B208C /* Main.storyboard */,
+				32D32645226344EC001B208C /* Info.plist */,
+				32D32646226344EC001B208C /* main.m */,
+				32D32648226344EC001B208C /* SDWebImageAVIFCoder_Example_macOS.entitlements */,
+			);
+			path = "SDWebImageAVIFCoder_Example macOS";
+			sourceTree = "<group>";
+		};
 		6003F581195388D10070C39A = {
 			isa = PBXGroup;
 			children = (
 				60FF7A9C1954A5C5007DD14C /* Podspec Metadata */,
 				6003F593195388D20070C39A /* Example for SDWebImageAVIFCoder */,
 				6003F5B5195388D20070C39A /* Tests */,
+				32D32639226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */,
 				6003F58C195388D20070C39A /* Frameworks */,
 				6003F58B195388D20070C39A /* Products */,
 				E40A1283864141E18825AD7D /* Pods */,
@@ -112,6 +158,7 @@
 			children = (
 				6003F58A195388D20070C39A /* SDWebImageAVIFCoder_Example.app */,
 				6003F5AE195388D20070C39A /* SDWebImageAVIFCoder_Tests.xctest */,
+				32D32638226344EC001B208C /* SDWebImageAVIFCoder_Example macOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -123,8 +170,9 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				C2BF4FEEFFFAE7B6CCDE40AE /* Pods_SDWebImageAVIFCoder_Example.framework */,
-				665F60396B39A95CA58650E6 /* Pods_SDWebImageAVIFCoder_Tests.framework */,
+				2783F1D7B48DB3ED9ADFF864 /* libPods-SDWebImageAVIFCoder_Example.a */,
+				D35147990C9781C1E45F4DE7 /* libPods-SDWebImageAVIFCoder_Example macOS.a */,
+				4691BEB7EC16961149D74E32 /* libPods-SDWebImageAVIFCoder_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -192,14 +240,33 @@
 				207C633217DCC3D0312C335C /* Pods-SDWebImageAVIFCoder_Example.release.xcconfig */,
 				86EFB0D9CB82C3418B27F7C3 /* Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig */,
 				01396E21D67B93E6F560157A /* Pods-SDWebImageAVIFCoder_Tests.release.xcconfig */,
+				7FE45EC1A1A0874CE3C32260 /* Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig */,
+				EFA18806A2B2331D243CEBFE /* Pods-SDWebImageAVIFCoder_Example macOS.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		32D32637226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32D32649226344EC001B208C /* Build configuration list for PBXNativeTarget "SDWebImageAVIFCoder_Example macOS" */;
+			buildPhases = (
+				42D839063F1E4192683BBABE /* [CP] Check Pods Manifest.lock */,
+				32D32634226344EC001B208C /* Sources */,
+				32D32635226344EC001B208C /* Frameworks */,
+				32D32636226344EC001B208C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SDWebImageAVIFCoder_Example macOS";
+			productName = "SDWebImageAVIFCoder_Example macOS";
+			productReference = 32D32638226344EC001B208C /* SDWebImageAVIFCoder_Example macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		6003F589195388D20070C39A /* SDWebImageAVIFCoder_Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "SDWebImageAVIFCoder_Example" */;
@@ -208,7 +275,6 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				58C9722333664D47B2FF1A2C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -248,6 +314,15 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "lizhuoli1126@126.com";
 				TargetAttributes = {
+					32D32637226344EC001B208C = {
+						CreatedOnToolsVersion = 10.2;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
+					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
@@ -258,6 +333,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -268,11 +344,21 @@
 			targets = (
 				6003F589195388D20070C39A /* SDWebImageAVIFCoder_Example */,
 				6003F5AD195388D20070C39A /* SDWebImageAVIFCoder_Tests */,
+				32D32637226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		32D32636226344EC001B208C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32D32641226344EC001B208C /* Assets.xcassets in Resources */,
+				32D32644226344EC001B208C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6003F588195388D20070C39A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -317,7 +403,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		58C9722333664D47B2FF1A2C /* [CP] Embed Pods Frameworks */ = {
+		42D839063F1E4192683BBABE /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -325,18 +411,18 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageAVIFCoder_Example/Pods-SDWebImageAVIFCoder_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImageAVIFCoder/SDWebImageAVIFCoder.framework",
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImageAVIFCoder.framework",
+				"$(DERIVED_FILE_DIR)/Pods-SDWebImageAVIFCoder_Example macOS-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SDWebImageAVIFCoder_Example/Pods-SDWebImageAVIFCoder_Example-frameworks.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5DF27121BF41C20E9716CCA8 /* [CP] Check Pods Manifest.lock */ = {
@@ -364,6 +450,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		32D32634226344EC001B208C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				32D3263F226344EC001B208C /* ViewController.m in Sources */,
+				32D32647226344EC001B208C /* main.m in Sources */,
+				32D3263C226344EC001B208C /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6003F586195388D20070C39A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -393,6 +489,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		32D32642226344EC001B208C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				32D32643226344EC001B208C /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		6003F596195388D20070C39A /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -420,6 +524,87 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		32D3264A226344EC001B208C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7FE45EC1A1A0874CE3C32260 /* Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "SDWebImageAVIFCoder_Example macOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.SDWebImage.SDWebImageAVIFCoder-Example-macOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		32D3264B226344EC001B208C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EFA18806A2B2331D243CEBFE /* Pods-SDWebImageAVIFCoder_Example macOS.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "SDWebImageAVIFCoder_Example macOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.SDWebImage.SDWebImageAVIFCoder-Example-macOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		6003F5BD195388D20070C39A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -570,6 +755,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		32D32649226344EC001B208C /* Build configuration list for PBXNativeTarget "SDWebImageAVIFCoder_Example macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				32D3264A226344EC001B208C /* Debug */,
+				32D3264B226344EC001B208C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6003F585195388D10070C39A /* Build configuration list for PBXProject "SDWebImageAVIFCoder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
