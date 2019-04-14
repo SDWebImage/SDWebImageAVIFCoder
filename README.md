@@ -21,9 +21,9 @@ Since AVIF is AV1-based inside HEIF image container. In the future, this repo ma
 ## Requirements
 
 + iOS 8
-+ tvOS 9.0
 + macOS 10.10
-+ watchOS 2.0
++ tvOS 9.0 (Carthage only)
++ watchOS 2.0 (Carthage only)
 
 ## Installation
 
@@ -55,6 +55,10 @@ SDWebImageAVIFCoder is available through [Carthage](https://github.com/Carthage/
 github "SDWebImage/SDWebImageAVIFCoder"
 ```
 
+Note: Carthage dependency of `libaom` using the C implementation codec, instead of original SIMD/SSE/AVX accelerated and assembly implementation, because it need extra dependency (CMake && NASM build tool).
+
+The C implementation make it possible to cross-platform in tvOS/watchOS as well. But if you're care about performance, try CocoaPods instead.
+
 ## Usage
 
 To use AVIF coder, you should firstly add the `SDImageAVIFCoder.sharedCoder` to the coders manager. Then you can call the View Category method to start load AVIF images.
@@ -79,10 +83,10 @@ imageView.sd_setImage(with: url)
 
 ## Screenshot
 
-<img src="https://raw.githubusercontent.com/SDWebImage/SDWebImageAVIFCoder/master/Example/Screenshot/AVIFDemo.png" width="300" />
+<img src="https://raw.githubusercontent.com/SDWebImage/SDWebImageAVIFCoder/master/Example/Screenshot/AVIFDemo-iOS.png" width="300" />
 <img src="https://raw.githubusercontent.com/SDWebImage/SDWebImageAVIFCoder/master/Example/Screenshot/AVIFDemo-macOS.png" width="600" />
 
-The images are from [AV1 Still Image File Format Specification](https://github.com/AOMediaCodec/av1-avif/tree/master/testFiles)
+The images are from [AV1 Still Image File Format Specification Test Files](https://github.com/AOMediaCodec/av1-avif/tree/master/testFiles).
 
 ## Author
 

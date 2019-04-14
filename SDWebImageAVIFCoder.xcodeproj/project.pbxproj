@@ -35,8 +35,8 @@
 		3237D42D22639516001D069D /* libavif.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libavif.framework; path = Carthage/Build/watchOS/libavif.framework; sourceTree = "<group>"; };
 		3237D42F22639525001D069D /* libavif.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libavif.framework; path = Carthage/Build/tvOS/libavif.framework; sourceTree = "<group>"; };
 		3237D43122639530001D069D /* libavif.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libavif.framework; path = Carthage/Build/Mac/libavif.framework; sourceTree = "<group>"; };
+		3237D43322639BA5001D069D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Module/Info.plist; sourceTree = "<group>"; };
 		32C2B18E2263879300EA889C /* SDWebImageAVIFCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageAVIFCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		32C2B1922263879300EA889C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDImageAVIFCoder.m; sourceTree = "<group>"; };
 		32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDImageAVIFCoder.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -114,7 +114,7 @@
 				32C2B19922638A7100EA889C /* Classes */,
 				3237D42122639480001D069D /* SDWebImageAVIFCoder.h */,
 				3237D42222639480001D069D /* SDWebImageAVIFCoder.modulemap */,
-				32C2B1922263879300EA889C /* Info.plist */,
+				3237D43322639BA5001D069D /* Info.plist */,
 			);
 			path = SDWebImageAVIFCoder;
 			sourceTree = "<group>";
@@ -366,7 +366,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/watchOS",
 				);
-				INFOPLIST_FILE = "SDWebImageAVIFCoder watchOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -396,7 +396,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/watchOS",
 				);
-				INFOPLIST_FILE = "SDWebImageAVIFCoder watchOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -425,7 +425,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/tvOS",
 				);
-				INFOPLIST_FILE = "SDWebImageAVIFCoder tvOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -454,7 +454,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/tvOS",
 				);
-				INFOPLIST_FILE = "SDWebImageAVIFCoder tvOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -485,7 +485,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "SDWebImageAVIFCoder macOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -515,7 +515,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/Mac",
 				);
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "SDWebImageAVIFCoder macOS/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -663,7 +663,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = SDWebImageAVIFCoder/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -691,7 +691,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = SDWebImageAVIFCoder/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder/Module/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
