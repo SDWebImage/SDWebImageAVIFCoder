@@ -1,0 +1,3 @@
+github "SDWebImage/SDWebImage" "5.0.1"
+github "SDWebImage/libaom-Xcode" "1.0.0"
+github "SDWebImage/libavif-Xcode" "0.1.0"

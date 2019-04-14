@@ -7,7 +7,11 @@
 
 #import "SDImageAVIFCoder.h"
 #import <Accelerate/Accelerate.h>
+#if __has_include(<libavif/avif.h>)
 #import <libavif/avif.h>
+#else
+#import "avif.h"
+#endif
 
 // Convert 8/10/12bit AVIF image into RGBA8888
 static void ConvertAvifImagePlanarToRGB(avifImage * avif, uint8_t * outPixels) {
