@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'SDWebImageAVIFCoder'
   s.version          = '0.1.0'
-  s.summary          = 'A short description of SDWebImageAVIFCoder.'
+  s.summary          = 'A SDWebImage coder plugin to support AVIF(AV1 Image File Format) image'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,13 +18,14 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+This is a SDWebImage coder plugin to add AV1 Image File Format (AVIF) support.
+Which is built based on the open-sourced libavif codec.
                        DESC
 
-  s.homepage         = 'https://github.com/lizhuoli1126@126.com/SDWebImageAVIFCoder'
+  s.homepage         = 'https://github.com/SDWebImage/SDWebImageAVIFCoder'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'lizhuoli1126@126.com' => 'lizhuoli1126@126.com' }
-  s.source           = { :git => 'https://github.com/lizhuoli1126@126.com/SDWebImageAVIFCoder.git', :tag => s.version.to_s }
+  s.author           = { 'DreamPiggy' => 'lizhuoli1126@126.com' }
+  s.source           = { :git => 'https://github.com/SDWebImage/SDWebImageAVIFCoder.git', :tag => s.version.to_s }
 
   s.module_map = 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.modulemap'
   s.ios.deployment_target = '8.0'
