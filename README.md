@@ -88,6 +88,14 @@ imageView.sd_setImage(with: url)
 
 The images are from [AV1 Still Image File Format Specification Test Files](https://github.com/AOMediaCodec/av1-avif/tree/master/testFiles).
 
+## AVIF Image Viewer
+
+AVIF is a new image format, which lack of related toolchains like Browser or Desktop Viewer support.
+
+You can try [AVIFQuickLook](https://github.com/dreampiggy/AVIFQuickLook) QuickLook plugin on macOS to view it in Finder.
+
+You can also try using [avif.js](https://kagami.github.io/avif.js/) to view it online by using Chrome's AV1 codec.
+
 ## Author
 
 DreamPiggy, lizhuoli1126@126.com
@@ -100,5 +108,7 @@ SDWebImageAVIFCoder is available under the MIT license. See the LICENSE file for
 
 + [libavif](https://github.com/joedrago/avif)
 + [aom](https://aomedia.googlesource.com/aom/)
++ [AVIFQuickLook](https://github.com/dreampiggy/AVIFQuickLook)
++ [avif.js](https://github.com/Kagami/avif.js)
 
 
