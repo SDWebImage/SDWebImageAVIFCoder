@@ -12,9 +12,9 @@ This is a [SDWebImage](https://github.com/rs/SDWebImage) coder plugin to add [AV
 
 This AVIF coder plugin currently support AVIF still image **decoding**. Including alpha channel, as well as 10bit/12bit HDR images.
 
-The AVIF encoding is not currently support, because the software-based encoding speed is really slow. Need to wait for better enc implementation.
+The AVIF encoding is also supported now. Which always encode as 8-bit depth images.
 
-Note: AVIF image spec is still in evolve. And the current AVIF codec is a simple implementation.
+Note: AVIF image spec is still in evolve. And the current upstream AVIF codec is a simple implementation. The encoding time may be long for large images.
 
 Since AVIF is AV1-based inside HEIF image container. In the future, this repo may moved to existing HEIF coder plugin [SDWebImageHEIFCoder](https://github.com/SDWebImage/SDWebImageHEIFCoder) instead. 
 
@@ -35,17 +35,7 @@ it, simply add the following line to your Podfile:
 pod 'SDWebImageAVIFCoder'
 ```
 
-Note: Current `libaom` dependency via CocoaPods, use the pre-built static library for each architecutre.
-
-The reason of this it's that we want to use SIMD/SSE/AVX2 CPU instruction optimization for each platforms. However libaom does not using dynamic CPU detection for Apple's platforms. We need the upstream to support it.
-
-At the same time, CocoaPods does not allow you to write a framework contains so much of architecture detection (for example, iPhone Simulator is x86_x64, however, iPhone is ARM, they should use different assembly files). So we use the pre-built one instead. 
-
-If you're using `use_frameworks!` in Podfile, you can check it with static framework instead.
-
-```
-pod 'SDWebImageAVIFCoder', :modular_headers => true
-```
+Note: From version 0.2.0, the dependency libavif and libaom use the portable C implementation to works on Apple platforms. If you need the pre-built library with SIMD/AVX and assembly optimization, try the 0.1.0 version. 
 
 #### Carthage
 
@@ -54,10 +44,6 @@ SDWebImageAVIFCoder is available through [Carthage](https://github.com/Carthage/
 ```
 github "SDWebImage/SDWebImageAVIFCoder"
 ```
-
-Note: Carthage dependency of `libaom` using the C implementation codec, instead of original SIMD/SSE/AVX accelerated and assembly implementation, because it need extra dependency (CMake && NASM build tool).
-
-The C implementation make it possible to cross-platform in tvOS/watchOS as well. But if you're care about performance, try CocoaPods instead.
 
 ## Usage
 

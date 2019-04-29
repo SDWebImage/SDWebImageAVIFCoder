@@ -164,7 +164,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     return imageRef;
 }
 
-// The AVIF encoding seems too slow at the current time
+// The AVIF encoding seems slow at the current time, but at least works
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
     return format == SDImageFormatAVIF;
 }
