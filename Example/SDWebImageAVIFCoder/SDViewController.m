@@ -35,7 +35,13 @@
     
     [imageView1 sd_setImageWithURL:AVIFURL placeholderImage:nil options:0 completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
-            NSLog(@"Single HEIC load success");
+            NSLog(@"Static AVIF load success");
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSData *avifData = [SDImageAVIFCoder.sharedCoder encodedDataWithImage:image format:SDImageFormatAVIF options:nil];
+                if (avifData) {
+                    NSLog(@"Static AVIF encode success");
+                }
+            });
         }
     }];
     [imageView2 sd_setImageWithURL:HDRAVIFURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
