@@ -30,9 +30,11 @@ Which is built based on the open-sourced libavif codec.
   s.module_map = 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.modulemap'
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.10'
+  s.tvos.deployment_target = '9.0'
+  s.watchos.deployment_target = '2.0'
 
   s.source_files = 'SDWebImageAVIFCoder/Classes/**/*', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
   
   s.dependency 'SDWebImage', '~> 5.0'
-  s.dependency 'libavif'
+  s.dependency 'libavif', '>= 0.1.3'
 end

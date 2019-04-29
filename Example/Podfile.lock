@@ -1,12 +1,12 @@
 PODS:
-  - libaom (1.0.0)
-  - libavif (0.1.0):
-    - libaom
-  - SDWebImage (5.0.1):
-    - SDWebImage/Core (= 5.0.1)
-  - SDWebImage/Core (5.0.1)
+  - libaom (1.0.1)
+  - libavif (0.1.3):
+    - libaom (>= 1.0.1)
+  - SDWebImage (5.0.2):
+    - SDWebImage/Core (= 5.0.2)
+  - SDWebImage/Core (5.0.2)
   - SDWebImageAVIFCoder (0.1.0):
-    - libavif
+    - libavif (>= 0.1.3)
     - SDWebImage (~> 5.0)
 
 DEPENDENCIES:
@@ -23,10 +23,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  libaom: d84044f314a1eac538c20965ac7df6fe6cee6ac6
-  libavif: 1513b919d6d7beb8fd8cc2e4a71538609409895b
-  SDWebImage: 27dd2c9ea07a2252f94557c9fbb6105ee94b74c9
-  SDWebImageAVIFCoder: 66893c86fbaa82c54556186fe9f62a601b27dfd0
+  libaom: 1e48c68559b8d6191c1a9f266e0bee83b2dd21fd
+  libavif: b6de15e6a91a347806b2fcc1fccd471c821f6d6a
+  SDWebImage: 6764b5fa0f73c203728052955dbefa2bf1f33282
+  SDWebImageAVIFCoder: 1e80598038f37e20a83a7a790cb192e0b362a557
 
 PODFILE CHECKSUM: cb60778bff8fb5ce4fbc8792f6079317b7a897be
 

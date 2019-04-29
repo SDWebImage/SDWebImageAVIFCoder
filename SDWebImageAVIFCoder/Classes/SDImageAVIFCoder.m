@@ -50,6 +50,30 @@ static void ConvertAvifImagePlanarToRGB(avifImage * avif, uint8_t * outPixels) {
     }
 }
 
+static void FillRGBABufferWithAVIFImage(vImage_Buffer *red, vImage_Buffer *green, vImage_Buffer *blue, vImage_Buffer *alpha, avifImage *img) {
+    red->width = img->width;
+    red->height = img->height;
+    red->data = img->rgbPlanes[AVIF_CHAN_R];
+    red->rowBytes = img->rgbRowBytes[AVIF_CHAN_R];
+    
+    green->width = img->width;
+    green->height = img->height;
+    green->data = img->rgbPlanes[AVIF_CHAN_G];
+    green->rowBytes = img->rgbRowBytes[AVIF_CHAN_G];
+    
+    blue->width = img->width;
+    blue->height = img->height;
+    blue->data = img->rgbPlanes[AVIF_CHAN_B];
+    blue->rowBytes = img->rgbRowBytes[AVIF_CHAN_B];
+    
+    if (img->alphaPlane != NULL) {
+        alpha->width = img->width;
+        alpha->height = img->height;
+        alpha->data = img->alphaPlane;
+        alpha->rowBytes = img->alphaRowBytes;
+    }
+}
+
 static void FreeImageData(void *info, const void *data, size_t size) {
     free((void *)data);
 }
@@ -140,13 +164,126 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     return imageRef;
 }
 
-// The AVIF encoding seems too slow at the current time
+// The AVIF encoding seems slow at the current time, but at least works
 - (BOOL)canEncodeToFormat:(SDImageFormat)format {
-    return NO;
+    return format == SDImageFormatAVIF;
 }
 
-- (nullable NSData *)encodedDataWithImage:(nullable UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options { 
-    return nil;
+- (nullable NSData *)encodedDataWithImage:(nullable UIImage *)image format:(SDImageFormat)format options:(nullable SDImageCoderOptions *)options {
+    CGImageRef imageRef = image.CGImage;
+    if (!imageRef) {
+        return nil;
+    }
+    
+    size_t width = CGImageGetWidth(imageRef);
+    size_t height = CGImageGetHeight(imageRef);
+    size_t bitsPerPixel = CGImageGetBitsPerPixel(imageRef);
+    size_t bitsPerComponent = CGImageGetBitsPerComponent(imageRef);
+    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(imageRef);
+    CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
+    CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
+    BOOL hasAlpha = !(alphaInfo == kCGImageAlphaNone ||
+                      alphaInfo == kCGImageAlphaNoneSkipFirst ||
+                      alphaInfo == kCGImageAlphaNoneSkipLast);
+    BOOL byteOrderNormal = NO;
+    switch (byteOrderInfo) {
+        case kCGBitmapByteOrderDefault: {
+            byteOrderNormal = YES;
+        } break;
+        case kCGBitmapByteOrder32Little: {
+        } break;
+        case kCGBitmapByteOrder32Big: {
+            byteOrderNormal = YES;
+        } break;
+        default: break;
+    }
+    
+    vImageConverterRef convertor = NULL;
+    vImage_Error v_error = kvImageNoError;
+    
+    vImage_CGImageFormat srcFormat = {
+        .bitsPerComponent = (uint32_t)bitsPerComponent,
+        .bitsPerPixel = (uint32_t)bitsPerPixel,
+        .colorSpace = CGImageGetColorSpace(imageRef),
+        .bitmapInfo = bitmapInfo
+    };
+    vImage_CGImageFormat destFormat = {
+        .bitsPerComponent = 8,
+        .bitsPerPixel = hasAlpha ? 32 : 24,
+        .colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB],
+        .bitmapInfo = hasAlpha ? kCGImageAlphaFirst | kCGBitmapByteOrderDefault : kCGImageAlphaNone | kCGBitmapByteOrderDefault // RGB888/ARGB8888 (Non-premultiplied to works for libbpg)
+    };
+    
+    convertor = vImageConverter_CreateWithCGImageFormat(&srcFormat, &destFormat, NULL, kvImageNoFlags, &v_error);
+    if (v_error != kvImageNoError) {
+        return nil;
+    }
+    
+    vImage_Buffer src;
+    v_error = vImageBuffer_InitWithCGImage(&src, &srcFormat, NULL, imageRef, kvImageNoFlags);
+    if (v_error != kvImageNoError) {
+        return nil;
+    }
+    vImage_Buffer dest;
+    vImageBuffer_Init(&dest, height, width, hasAlpha ? 32 : 24, kvImageNoFlags);
+    if (!dest.data) {
+        free(src.data);
+        return nil;
+    }
+    
+    // Convert input color mode to RGB888/ARGB8888
+    v_error = vImageConvert_AnyToAny(convertor, &src, &dest, NULL, kvImageNoFlags);
+    free(src.data);
+    vImageConverter_Release(convertor);
+    if (v_error != kvImageNoError) {
+        free(dest.data);
+        return nil;
+    }
+    
+    avifPixelFormat avifFormat = AVIF_PIXEL_FORMAT_YUV444;
+    enum avifPlanesFlags planesFlags = hasAlpha ? AVIF_PLANES_RGB | AVIF_PLANES_A : AVIF_PLANES_RGB;
+    
+    avifImage *avif = avifImageCreate((int)width, (int)height, 8, avifFormat);
+    if (!avif) {
+        free(dest.data);
+        return nil;
+    }
+    avifImageAllocatePlanes(avif, planesFlags);
+    
+    NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
+    
+    avifImageSetProfileICC(avif, (uint8_t *)iccProfile.bytes, iccProfile.length);
+    
+    vImage_Buffer red, green, blue, alpha;
+    FillRGBABufferWithAVIFImage(&red, &green, &blue, &alpha, avif);
+    
+    if (hasAlpha) {
+        v_error = vImageConvert_ARGB8888toPlanar8(&dest, &alpha, &red, &green, &blue, kvImageNoFlags);
+    } else {
+        v_error = vImageConvert_RGB888toPlanar8(&dest, &red, &green, &blue, kvImageNoFlags);
+    }
+    free(dest.data);
+    if (v_error != kvImageNoError) {
+        return nil;
+    }
+    
+    double compressionQuality = 1;
+    if (options[SDImageCoderEncodeCompressionQuality]) {
+        compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
+    }
+    int rescaledQuality = 63 - (int)((compressionQuality) * 63.0f);
+    
+    avifRawData raw = AVIF_RAW_DATA_EMPTY;
+    avifResult result = avifImageWrite(avif, &raw, 2, rescaledQuality);
+    
+    if (result != AVIF_RESULT_OK) {
+        return nil;
+    }
+    
+    NSData *imageData = [NSData dataWithBytes:raw.data length:raw.size];
+    free(raw.data);
+    
+    return imageData;
 }
 
 
