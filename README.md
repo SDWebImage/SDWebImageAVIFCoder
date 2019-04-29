@@ -22,8 +22,8 @@ Since AVIF is AV1-based inside HEIF image container. In the future, this repo ma
 
 + iOS 8
 + macOS 10.10
-+ tvOS 9.0 (Carthage only)
-+ watchOS 2.0 (Carthage only)
++ tvOS 9.0
++ watchOS 2.0
 
 ## Installation
 
