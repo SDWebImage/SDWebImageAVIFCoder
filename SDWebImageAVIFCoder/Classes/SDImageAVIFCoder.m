@@ -128,8 +128,10 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         .size = data.length
     };
     avifImage * avif = avifImageCreateEmpty();
-    avifResult result = avifImageRead(avif, &rawData);
+    avifDecoder *decoder = avifDecoderCreate();
+    avifResult result = avifDecoderRead(decoder, avif, &rawData);
     if (result != AVIF_RESULT_OK) {
+        avifDecoderDestroy(decoder);
         avifImageDestroy(avif);
         return nil;
     }
@@ -147,6 +149,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     
     uint8_t * dest = calloc(width * components * height, sizeof(uint8_t));
     if (!dest) {
+        avifDecoderDestroy(decoder);
         avifImageDestroy(avif);
         return nil;
     }
@@ -162,6 +165,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     
     // clean up
     CGDataProviderRelease(provider);
+    avifDecoderDestroy(decoder);
     avifImageDestroy(avif);
     
     return imageRef;
@@ -274,17 +278,22 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
-    int rescaledQuality = 63 - (int)((compressionQuality) * 63.0f);
+    int rescaledQuality = AVIF_WORST_QUALITY - (int)((compressionQuality) * AVIF_WORST_QUALITY);
     
     avifRawData raw = AVIF_RAW_DATA_EMPTY;
-    avifResult result = avifImageWrite(avif, &raw, 2, rescaledQuality);
+    avifEncoder *encoder = avifEncoderCreate();
+    encoder->quality = rescaledQuality;
+    encoder->maxThreads = 2;
+    avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
     if (result != AVIF_RESULT_OK) {
+        avifEncoderDestroy(encoder);
         return nil;
     }
     
     NSData *imageData = [NSData dataWithBytes:raw.data length:raw.size];
     free(raw.data);
+    avifEncoderDestroy(encoder);
     
     return imageData;
 }

@@ -36,5 +36,5 @@ Which is built based on the open-sourced libavif codec.
   s.source_files = 'SDWebImageAVIFCoder/Classes/**/*', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
   
   s.dependency 'SDWebImage', '~> 5.0'
-  s.dependency 'libavif', '~> 0.1.4'
+  s.dependency 'libavif', '~> 0.2.0'
 end
