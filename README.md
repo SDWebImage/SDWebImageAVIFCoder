@@ -14,9 +14,11 @@ This AVIF coder plugin currently support AVIF still image **decoding**. Includin
 
 The AVIF encoding is also supported now. Which always encode as 8-bit depth images.
 
-Note: AVIF image spec is still in evolve. And the current upstream AVIF codec is a simple implementation. The encoding time may be long for large images.
+## Note
 
-Since AVIF is AV1-based inside HEIF image container. In the future, this repo may moved to existing HEIF coder plugin [SDWebImageHEIFCoder](https://github.com/SDWebImage/SDWebImageHEIFCoder) instead. 
+AVIF image spec is still in evolve. And the current upstream AVIF codec is a simple implementation. The encoding time may be long for large images.
+
+Since we relay on the codec part libavif. We may periodically update the dependency and bump version. Make sure you're using the latest version as possible as you can :)
 
 ## Requirements
 
