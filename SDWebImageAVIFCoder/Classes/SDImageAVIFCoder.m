@@ -134,6 +134,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         return nil;
     }
     
+    // use RGB instead of YUV
+    avifImageYUVToRGB(avif);
+    
     int width = avif->width;
     int height = avif->height;
     BOOL hasAlpha = avif->alphaPlane != NULL;
