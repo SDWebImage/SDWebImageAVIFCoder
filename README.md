@@ -18,7 +18,7 @@ The AVIF encoding is also supported now. Which always encode as 8-bit depth imag
 
 AVIF image spec is still in evolve. And the current upstream AVIF codec is a simple implementation. The encoding time may be long for large images.
 
-Since we relay on the codec part libavif. We may periodically update the dependency and bump version. Make sure you're using the latest version as possible as you can :)
+Since we rely on the external codec libavif. We may periodically update the dependency and bump version. Make sure you're using the latest version as possible as you can :)
 
 ## Requirements
 
