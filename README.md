@@ -8,7 +8,7 @@
 
 ## What's for
 
-This is a [SDWebImage](https://github.com/rs/SDWebImage) coder plugin to add [AV1 Image File Format (AVIF)](https://aomediacodec.github.io/av1-avif/) support. Which is built based on the open-sourced [libavif](https://github.com/joedrago/avif) codec.
+This is a [SDWebImage](https://github.com/rs/SDWebImage) coder plugin to add [AV1 Image File Format (AVIF)](https://aomediacodec.github.io/av1-avif/) support. Which is built based on the open-sourced [libavif](https://github.com/AOMediaCodec/libavif) codec.
 
 This AVIF coder plugin currently support AVIF still image **decoding**. Including alpha channel, as well as 10bit/12bit HDR images.
 
@@ -92,7 +92,7 @@ SDWebImageAVIFCoder is available under the MIT license. See the LICENSE file for
 
 ## Thanks
 
-+ [libavif](https://github.com/joedrago/avif)
++ [libavif](https://github.com/AOMediaCodec/libavif)
 + [aom](https://aomedia.googlesource.com/aom/)
 + [AVIFQuickLook](https://github.com/dreampiggy/AVIFQuickLook)
 + [avif.js](https://github.com/Kagami/avif.js)
