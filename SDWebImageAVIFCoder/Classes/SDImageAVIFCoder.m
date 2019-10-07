@@ -278,11 +278,12 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
-    int rescaledQuality = AVIF_WORST_QUALITY - (int)((compressionQuality) * AVIF_WORST_QUALITY);
+    int rescaledQuality = AVIF_QUANTIZER_WORST_QUALITY - (int)((compressionQuality) * AVIF_QUANTIZER_WORST_QUALITY);
     
     avifRawData raw = AVIF_RAW_DATA_EMPTY;
     avifEncoder *encoder = avifEncoderCreate();
-    encoder->quality = rescaledQuality;
+    encoder->minQuantizer = rescaledQuality;
+    encoder->maxQuantizer = rescaledQuality;
     encoder->maxThreads = 2;
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     

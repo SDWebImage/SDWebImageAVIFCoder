@@ -3,6 +3,7 @@
 target 'SDWebImageAVIFCoder_Example' do
   platform :ios, '8.0'
   pod 'SDWebImageAVIFCoder', :path => '../'
+  pod 'libavif', :subspecs => ['libaom', 'libdav1d']
 
   target 'SDWebImageAVIFCoder_Tests' do
     inherit! :search_paths
@@ -14,4 +15,5 @@ end
 target 'SDWebImageAVIFCoder_Example macOS' do
   platform :osx, '10.10'
   pod 'SDWebImageAVIFCoder', :path => '../'
+  pod 'libavif', :subspecs => ['libaom', 'libdav1d']
 end
