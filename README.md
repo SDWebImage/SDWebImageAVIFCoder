@@ -47,7 +47,7 @@ it, simply add the following line to your Podfile:
 pod 'SDWebImageAVIFCoder'
 ```
 
-Note: From version 0.4.0, if you want to use dav1d instead aom for libavif which we dependency on, control the subspec of libavif as well:
+Note: From version 0.4.0, if you want to use dav1d instead aom for libavif which we dependent on, control the subspec of libavif instead:
 
 ```ruby
 pod 'SDWebImageAVIFCoder'
