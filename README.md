@@ -113,6 +113,7 @@ SDWebImageAVIFCoder is available under the MIT license. See the LICENSE file for
 
 + [libavif](https://github.com/AOMediaCodec/libavif)
 + [aom](https://aomedia.googlesource.com/aom/)
++ [dav1d](https://github.com/videolan/dav1d)
 + [AVIFQuickLook](https://github.com/dreampiggy/AVIFQuickLook)
 + [avif.js](https://github.com/Kagami/avif.js)
 
