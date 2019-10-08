@@ -20,6 +20,16 @@ AVIF image spec is still in evolve. And the current upstream AVIF codec is a sim
 
 Since we rely on the external codec libavif. We may periodically update the dependency and bump version. Make sure you're using the latest version as possible as you can :)
 
+## aom && dav1d
+
+libavif is a still image codec. But AVIF is based on the AV1 Video standard. So it need a AV1 codec for support. This relationship is just like HEIF(image) and HEVC(video) codec.
+
+By default, libavif is built with [aom](https://aomedia.googlesource.com/aom/) codec support. aom is the first AV1 codec during the standard draft implementation.
+
+[dav1d](https://github.com/videolan/dav1d) is the new and next generation AV1 codec, focused on speed and correctness.
+
+From v0.3.0, libavif can built with dav1d. For CocoaPods user, you can simply use the subspec for this. Carthage for optional dav1d codec is not supported currently.
+
 ## Requirements
 
 + iOS 8
@@ -35,6 +45,13 @@ it, simply add the following line to your Podfile:
 
 ```ruby
 pod 'SDWebImageAVIFCoder'
+```
+
+Note: From version 0.4.0, if you want to use dav1d instead aom for libavif which we dependency on, control the subspec of libavif as well:
+
+```ruby
+pod 'SDWebImageAVIFCoder'
+pod 'libavif/libdav1d'
 ```
 
 Note: From version 0.2.0, the dependency libavif and libaom use the portable C implementation to works on Apple platforms. If you need the pre-built library with SIMD/AVX and assembly optimization, try the 0.1.0 version. 
