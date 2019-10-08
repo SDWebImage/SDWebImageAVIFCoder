@@ -123,7 +123,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
 
 - (nullable CGImageRef)sd_createAVIFImageWithData:(nonnull NSData *)data CF_RETURNS_RETAINED {
     // Decode it
-    avifRawData rawData = {
+    avifROData rawData = {
         .data = (uint8_t *)data.bytes,
         .size = data.length
     };
@@ -280,7 +280,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     }
     int rescaledQuality = AVIF_QUANTIZER_WORST_QUALITY - (int)((compressionQuality) * AVIF_QUANTIZER_WORST_QUALITY);
     
-    avifRawData raw = AVIF_RAW_DATA_EMPTY;
+    avifRWData raw = AVIF_DATA_EMPTY;
     avifEncoder *encoder = avifEncoderCreate();
     encoder->minQuantizer = rescaledQuality;
     encoder->maxQuantizer = rescaledQuality;
