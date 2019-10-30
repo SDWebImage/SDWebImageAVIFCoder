@@ -1,17 +1,17 @@
 PODS:
   - libaom (1.0.1)
-  - libavif (0.4.0):
-    - libavif/libaom (= 0.4.0)
-  - libavif/libaom (0.4.0):
+  - libavif (0.4.2):
+    - libavif/libaom (= 0.4.2)
+  - libavif/libaom (0.4.2):
     - libaom (>= 1.0.1)
-  - libavif/libdav1d (0.4.0):
+  - libavif/libdav1d (0.4.2):
     - libavif/libaom
     - libdav1d (>= 0.4.0)
-  - libdav1d (0.4.0)
-  - SDWebImage (5.2.2):
-    - SDWebImage/Core (= 5.2.2)
-  - SDWebImage/Core (5.2.2)
-  - SDWebImageAVIFCoder (0.4.1):
+  - libdav1d (0.5.1)
+  - SDWebImage (5.2.5):
+    - SDWebImage/Core (= 5.2.5)
+  - SDWebImage/Core (5.2.5)
+  - SDWebImageAVIFCoder (0.4.2):
     - libavif (~> 0.4)
     - SDWebImage (~> 5.0)
 
@@ -21,7 +21,7 @@ DEPENDENCIES:
   - SDWebImageAVIFCoder (from `../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - libaom
     - libavif
     - libdav1d
@@ -33,11 +33,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   libaom: 1e48c68559b8d6191c1a9f266e0bee83b2dd21fd
-  libavif: 7f8a939f1773291bbafbd2a0fa08d7cacd014553
-  libdav1d: 097f791c93d050b1cb6c0788fbe6c9024ceb3d7e
-  SDWebImage: 5fcdb02cc35e05fc35791ec514b191d27189f872
-  SDWebImageAVIFCoder: 8c71bf3d9405f556aea95432c0781786e61befe0
+  libavif: 9f38a091955a8d44c8e3409c03ea8d5f100ea7f5
+  libdav1d: 790c78fc75357a771ea2bbaf49e79527c20932de
+  SDWebImage: 4eabf2fa6695c95c47724214417a9c036c965e4a
+  SDWebImageAVIFCoder: 5bcdd0969215f8ae5f8d1bcd2c79b208d63e1966
 
 PODFILE CHECKSUM: 1daaa635bd369cbbf21bf2dd090f9adae3a762dc
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.8.4
