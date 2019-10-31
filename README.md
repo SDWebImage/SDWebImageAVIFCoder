@@ -20,15 +20,31 @@ AVIF image spec is still in evolve. And the current upstream AVIF codec is a sim
 
 Since we rely on the external codec libavif. We may periodically update the dependency and bump version. Make sure you're using the latest version as possible as you can :)
 
-## aom && dav1d
+## aom && dav1d && rav1e
 
 libavif is a still image codec. But AVIF is based on the AV1 Video standard. So it need a AV1 codec for support. This relationship is just like HEIF(image) and HEVC(video) codec.
 
+### aom
+
 By default, libavif is built with [aom](https://aomedia.googlesource.com/aom/) codec support. aom is the first AV1 codec during the standard draft implementation.
+
+### dav1d (Decoding)
 
 [dav1d](https://github.com/videolan/dav1d) is the new and next generation AV1 codec, focused on speed and correctness.
 
+See more about [explanation for why starting a new project but not improving aom](https://github.com/videolan/dav1d#why-do-you-not-improve-libaom-rather-than-starting-a-new-project)
+
 From v0.3.0, libavif can built with dav1d. For CocoaPods user, you can simply use the subspec for this. Carthage for optional dav1d codec is not supported currently.
+
+### rav1e (Encoding)
+
+[rav1e](https://github.com/xiph/rav1e) is the fastest and safest AV1 encoder. Which use [Rust programming](https://www.rust-lang.org/) to provide fast and safe codec compared to aom. Its current form it is most suitable for cases where libaom (the reference encoder) is too slow.
+
+See more about [performance](https://github.com/xiph/rav1e/issues/1248)
+
+From v0.4.3, libavif can built with rav1e. For CocoaPods user, you can simply use the subspec for this. Carthage for optional rav1c codec is not supported currently.
+
+Note rav1e currently only support iOS && macOS. watchOS and tvOS supports need Rust community upstream support.
 
 ## Requirements
 
@@ -41,17 +57,20 @@ From v0.3.0, libavif can built with dav1d. For CocoaPods user, you can simply us
 
 #### CocoaPods
 SDWebImageAVIFCoder is available through [CocoaPods](https://cocoapods.org). To install
-it, simply add the following line to your Podfile:
+it with default aom AV1 codec, simply add the following line to your Podfile:
 
 ```ruby
 pod 'SDWebImageAVIFCoder'
 ```
 
-Note: From version 0.4.0, if you want to use dav1d instead aom for libavif which we dependent on, control the subspec of libavif instead:
+Note: From version 0.4.0, if you want to use rav1e or dav1e instead aom for faster AV1 codec, control the subspec of libavif instead:
 
 ```ruby
 pod 'SDWebImageAVIFCoder'
-pod 'libavif/libdav1d'
+pod 'libavif', :subpsecs => [
+  'libdav1d',
+  'librav1e'
+]
 ```
 
 Note: From version 0.2.0, the dependency libavif and libaom use the portable C implementation to works on Apple platforms. If you need the pre-built library with SIMD/AVX and assembly optimization, try the 0.1.0 version. 
