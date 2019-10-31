@@ -683,6 +683,7 @@
 			baseConfigurationReference = F85182AD5D4FF8570F90A7BC /* Pods-SDWebImageAVIFCoder_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SDWebImageAVIFCoder/SDWebImageAVIFCoder-Prefix.pch";
 				INFOPLIST_FILE = "SDWebImageAVIFCoder/SDWebImageAVIFCoder-Info.plist";
@@ -698,6 +699,7 @@
 			baseConfigurationReference = 207C633217DCC3D0312C335C /* Pods-SDWebImageAVIFCoder_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SDWebImageAVIFCoder/SDWebImageAVIFCoder-Prefix.pch";
 				INFOPLIST_FILE = "SDWebImageAVIFCoder/SDWebImageAVIFCoder-Info.plist";
