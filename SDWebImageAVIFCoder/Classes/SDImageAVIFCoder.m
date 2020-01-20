@@ -260,20 +260,20 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             }
 
             vImage_Buffer tmpY1 = {
-                .data = calloc(avif->width/2 * avif->height, sizeof(uint8_t)),
-                .width = avif->width/2,
-                .height = avif->height,
-                .rowBytes = avif->width/2,
+                .data = calloc(origY.width/2 * origY.height, sizeof(uint8_t)),
+                .width = origY.width/2,
+                .height = origY.height,
+                .rowBytes = origY.width/2 * sizeof(uint8_t),
             };
             if(!tmpY1.data) {
                 free(argbPixels);
                 return;
             }
             vImage_Buffer tmpY2 = {
-                .data = calloc(avif->width/2 * avif->height, sizeof(uint8_t)),
-                .width = avif->width/2,
-                .height = avif->height,
-                .rowBytes = avif->width/2,
+                .data = calloc(origY.width/2 * origY.height, sizeof(uint8_t)),
+                .width = origY.width/2,
+                .height = origY.height,
+                .rowBytes = origY.width/2 * sizeof(uint8_t),
             };
             if(!tmpY2.data) {
                 free(argbPixels);
@@ -283,8 +283,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             err= vImageConvert_ChunkyToPlanar8((const void*[]){origY.data, origY.data+1},
                                                (const vImage_Buffer*[]){&tmpY1, &tmpY2},
                                                2 /* channelCount */,2 /* src srcStrideBytes */,
-                                               avif->width/2, avif->height,
-                                               avif->width, kvImageNoFlags);
+                                               origY.width/2, origY.height,
+                                               origY.rowBytes, kvImageNoFlags);
             if(err != kvImageNoError) {
                 NSLog(@"Failed to separate Y channel: %ld", err);
                 free(argbPixels);
@@ -296,7 +296,7 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 .data = calloc(avif->width * avif->height * 2, sizeof(uint8_t)),
                 .width = avif->width/2,
                 .height = avif->height,
-                .rowBytes = avif->width * 2,
+                .rowBytes = avif->width / 2 * 4 * sizeof(uint8_t),
             };
             if(!tmpBuffer.data) {
                 free(argbPixels);
@@ -304,6 +304,7 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 free(tmpY2.data);
                 return;
             }
+
             err = vImageConvert_Planar8toARGB8888(&tmpY1, &origCb, &tmpY2, &origCr,
                                                   &tmpBuffer, kvImageNoFlags);
             if(err != kvImageNoError) {
@@ -398,6 +399,7 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
         .width = avif->width,
         .height = avif->height,
     };
+    
 
     vImage_Buffer origCb = {
         .data = avif->yuvPlanes[AVIF_CHAN_U],
@@ -695,15 +697,21 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         .data = (uint8_t *)data.bytes,
         .size = data.length
     };
-    avifImage * avif = avifImageCreateEmpty();
-    avifDecoder *decoder = avifDecoderCreate();
-    avifResult result = avifDecoderRead(decoder, avif, &rawData);
-    if (result != AVIF_RESULT_OK) {
+    avifDecoder * decoder = avifDecoderCreate();
+    avifResult decodeResult = avifDecoderParse(decoder, &rawData);
+    if (decodeResult != AVIF_RESULT_OK) {
+        NSLog(@"Failed to decode image: %s", avifResultToString(decodeResult));
         avifDecoderDestroy(decoder);
-        avifImageDestroy(avif);
         return nil;
     }
-    
+    avifResult nextImageResult = avifDecoderNextImage(decoder);
+    if (nextImageResult != AVIF_RESULT_OK || nextImageResult == AVIF_RESULT_NO_IMAGES_REMAINING) {
+        NSLog(@"Failed to decode image: %s", avifResultToString(nextImageResult));
+        avifDecoderDestroy(decoder);
+        return nil;
+    }
+    avifImage * avif = decoder->image;
+
     int width = avif->width;
     int height = avif->height;
     BOOL hasAlpha = avif->alphaPlane != NULL;
@@ -716,7 +724,6 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     uint8_t * dest = calloc(width * components * height, usesU16 ? sizeof(uint16_t) : sizeof(uint8_t));
     if (!dest) {
         avifDecoderDestroy(decoder);
-        avifImageDestroy(avif);
         return nil;
     }
     // convert planar to ARGB/RGB
@@ -736,7 +743,6 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     // clean up
     CGDataProviderRelease(provider);
     avifDecoderDestroy(decoder);
-    avifImageDestroy(avif);
     
     return imageRef;
 }
