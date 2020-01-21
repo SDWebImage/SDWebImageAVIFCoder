@@ -10,7 +10,7 @@
 #if __has_include(<libavif/avif.h>)
 #import <libavif/avif.h>
 #else
-#import "avif.h"
+#import "avif/avif.h"
 #endif
 
 // Convert 8/10/12bit AVIF image into RGBA8888
