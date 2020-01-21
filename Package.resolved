@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "libaom",
+        "repositoryURL": "https://github.com/SDWebImage/libaom-Xcode.git",
+        "state": {
+          "branch": null,
+          "revision": "81e75e1663855b8b53f6e26ea1ae087ea8f6ccbc",
+          "version": "1.0.2"
+        }
+      },
+      {
         "package": "libavif",
         "repositoryURL": "https://github.com/SDWebImage/libavif-Xcode.git",
         "state": {
