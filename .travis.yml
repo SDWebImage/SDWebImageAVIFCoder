@@ -16,6 +16,7 @@ before_install:
   - env
   - locale
   - brew install git-lfs
+  - git lfs install
   - gem install cocoapods --no-document --quiet
   - gem install xcpretty --no-document --quiet
   - pod --version
