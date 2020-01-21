@@ -4,6 +4,7 @@
 [![Version](https://img.shields.io/cocoapods/v/SDWebImageAVIFCoder.svg?style=flat)](https://cocoapods.org/pods/SDWebImageAVIFCoder)
 [![License](https://img.shields.io/cocoapods/l/SDWebImageAVIFCoder.svg?style=flat)](https://cocoapods.org/pods/SDWebImageAVIFCoder)
 [![Platform](https://img.shields.io/cocoapods/p/SDWebImageAVIFCoder.svg?style=flat)](https://cocoapods.org/pods/SDWebImageAVIFCoder)
+[![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-brightgreen.svg?style=flat)](https://swift.org/package-manager/)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SDWebImage/SDWebImageAVIFCoder)
 
 ## What's for
@@ -81,6 +82,22 @@ SDWebImageAVIFCoder is available through [Carthage](https://github.com/Carthage/
 
 ```
 github "SDWebImage/SDWebImageAVIFCoder"
+```
+
+Carthage does not support like CocoaPods' subspec, it only supports libaom for AVIF decoding && encoding.
+
+#### Swift Package Manager (Xcode 11+)
+
+SDWebImageAVIFCoder is available through [Swift Package Manager](https://swift.org/package-manager).
+
+The framework through SwiftPM only supports libaom for AVIF decoding && encoding.
+
+```swift
+let package = Package(
+    dependencies: [
+        .package(url: "https://github.com/SDWebImage/SDWebImageAVIF.git", from: "0.5")
+    ]
+)
 ```
 
 ## Usage
