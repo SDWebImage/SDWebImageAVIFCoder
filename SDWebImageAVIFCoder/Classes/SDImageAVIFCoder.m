@@ -275,6 +275,9 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                                                           kvImageARGB8888,
                                                           kvImageNoFlags);
             if(err != kvImageNoError) {
+                free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 NSLog(@"Failed to setup conversion: %ld", err);
                 return;
             }
