@@ -34,6 +34,7 @@ Carthage/Build
 # `pod install` in .travis.yml
 #
 Pods/
+Podfile.lock
 
 # SwiftPM
 .swiftpm

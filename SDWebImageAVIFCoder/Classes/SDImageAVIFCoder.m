@@ -188,22 +188,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     size_t bitsPerComponent = CGImageGetBitsPerComponent(imageRef);
     CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(imageRef);
     CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
-    CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
     BOOL hasAlpha = !(alphaInfo == kCGImageAlphaNone ||
                       alphaInfo == kCGImageAlphaNoneSkipFirst ||
                       alphaInfo == kCGImageAlphaNoneSkipLast);
-    BOOL byteOrderNormal = NO;
-    switch (byteOrderInfo) {
-        case kCGBitmapByteOrderDefault: {
-            byteOrderNormal = YES;
-        } break;
-        case kCGBitmapByteOrder32Little: {
-        } break;
-        case kCGBitmapByteOrder32Big: {
-            byteOrderNormal = YES;
-        } break;
-        default: break;
-    }
     
     vImageConverterRef convertor = NULL;
     vImage_Error v_error = kvImageNoError;
@@ -218,7 +205,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         .bitsPerComponent = 8,
         .bitsPerPixel = hasAlpha ? 32 : 24,
         .colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB],
-        .bitmapInfo = hasAlpha ? kCGImageAlphaFirst | kCGBitmapByteOrderDefault : kCGImageAlphaNone | kCGBitmapByteOrderDefault // RGB888/ARGB8888 (Non-premultiplied to works for libbpg)
+        .bitmapInfo = hasAlpha ? kCGImageAlphaFirst | kCGBitmapByteOrderDefault : kCGImageAlphaNone | kCGBitmapByteOrderDefault // RGB888/ARGB8888 (Non-premultiplied to works for libavif)
     };
     
     convertor = vImageConverter_CreateWithCGImageFormat(&srcFormat, &destFormat, NULL, kvImageNoFlags, &v_error);
