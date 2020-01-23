@@ -11,7 +11,7 @@
 #if __has_include(<libavif/avif.h>)
 #import <libavif/avif.h>
 #else
-#import "avif.h"
+#import "avif/avif.h"
 #endif
 
 static void SetupConversionInfo(avifImage * avif,
