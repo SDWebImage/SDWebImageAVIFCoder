@@ -408,10 +408,10 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
 
     vImage_YpCbCrToARGB convInfo = {0};
 
-    uint8_t* argbPixels = NULL;
-    uint8_t* dummyCb = NULL;
-    uint8_t* dummyCr = NULL;
-    uint8_t* dummyAlpha = NULL;
+    uint16_t* argbPixels = NULL;
+    uint16_t* dummyCb = NULL;
+    uint16_t* dummyCr = NULL;
+    uint16_t* dummyAlpha = NULL;
 
     if(!hasAlpha) {
         argbPixels = calloc(avif->width * avif->height * 4, sizeof(uint16_t));
@@ -421,7 +421,7 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     }
 
     vImage_Buffer argbBuffer = {
-        .data = hasAlpha ? outPixels : argbPixels,
+        .data = hasAlpha ? outPixels : (uint8_t*)argbPixels,
         .width = avif->width,
         .height = avif->height,
         .rowBytes = avif->width * 4 * sizeof(uint16_t),
