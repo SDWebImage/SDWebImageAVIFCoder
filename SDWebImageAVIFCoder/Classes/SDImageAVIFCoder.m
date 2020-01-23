@@ -5,7 +5,6 @@
 //  Created by lizhuoli on 2018/5/8.
 //
 
-#include <alloca.h>
 #import "SDImageAVIFCoder.h"
 #import <Accelerate/Accelerate.h>
 #if __has_include(<libavif/avif.h>)
@@ -115,6 +114,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
     vImage_YpCbCrToARGB convInfo = {0};
 
     uint8_t* argbPixels = NULL;
+    uint8_t* dummyCb = NULL;
+    uint8_t* dummyCr = NULL;
 
     if(!hasAlpha) {
         argbPixels = calloc(avif->width * avif->height * 4, sizeof(uint8_t));
@@ -145,9 +146,14 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
     };
 
     if(!origCb.data) { // allocate dummy data to convert monochrome images.
-        origCb.data = alloca(origCb.width * sizeof(uint8_t));
+        dummyCb = calloc(origCb.width, sizeof(uint8_t));
+        if(!dummyCb) {
+            free(argbPixels);
+            return;
+        }
+        origCb.data = dummyCb;
         origCb.rowBytes = 0;
-        memset(origCb.data, 128, origCb.width);
+        memset(origCb.data, pixelRange.CbCr_bias, origCb.width);
     }
 
     vImage_Buffer origCr = {
@@ -157,15 +163,23 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
         .height = avif->height >> state.formatInfo.chromaShiftY,
     };
     if(!origCr.data) { // allocate dummy data to convert monochrome images.
-        origCr.data = alloca(origCr.width * sizeof(uint8_t));
+        dummyCr = calloc(origCr.width, sizeof(uint8_t));
+        if(!dummyCr) {
+            free(argbPixels);
+            free(dummyCb);
+            return;
+        }
+        origCr.data = dummyCr;
         origCr.rowBytes = 0;
-        memset(origCr.data, 128, origCr.width);
+        memset(origCr.data, pixelRange.CbCr_bias, origCr.width);
     }
         
     uint8_t const permuteMap[4] = {0, 1, 2, 3};
     switch(avif->yuvFormat) {
         case AVIF_PIXEL_FORMAT_NONE:
             free(argbPixels);
+            free(dummyCb);
+            free(dummyCr);
             NSLog(@"Invalid pixel format.");
             return;
         case AVIF_PIXEL_FORMAT_YUV420:
@@ -180,6 +194,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                                                           kvImageNoFlags);
             if(err != kvImageNoError) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 NSLog(@"Failed to setup conversion: %ld", err);
                 return;
             }
@@ -210,6 +226,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                                                           kvImageNoFlags);
             if(err != kvImageNoError) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 NSLog(@"Failed to setup conversion: %ld", err);
                 return;
             }
@@ -222,6 +240,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             };
             if(!tmpBuffer.data) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 return;
             }
             err = vImageConvert_Planar8toRGB888(&origCr, &origY, &origCb, &tmpBuffer, kvImageNoFlags);
@@ -267,6 +287,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             };
             if(!tmpY1.data) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 return;
             }
             vImage_Buffer tmpY2 = {
@@ -277,6 +299,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             };
             if(!tmpY2.data) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 free(tmpY1.data);
                 return;
             }
@@ -288,6 +312,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             if(err != kvImageNoError) {
                 NSLog(@"Failed to separate Y channel: %ld", err);
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 free(tmpY1.data);
                 free(tmpY2.data);
                 return;
@@ -300,6 +326,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             };
             if(!tmpBuffer.data) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
                 free(tmpY1.data);
                 free(tmpY2.data);
                 return;
@@ -307,11 +335,11 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
 
             err = vImageConvert_Planar8toARGB8888(&tmpY1, &origCb, &tmpY2, &origCr,
                                                   &tmpBuffer, kvImageNoFlags);
+            free(tmpY1.data);
+            free(tmpY2.data);
             if(err != kvImageNoError) {
                 NSLog(@"Failed to composite kvImage422YpCbYpCr8: %ld", err);
                 free(argbPixels);
-                free(tmpY1.data);
-                free(tmpY2.data);
                 free(tmpBuffer.data);
                 return;
             }
@@ -323,8 +351,6 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                                                        permuteMap,
                                                        255,
                                                        kvImageNoFlags);
-            free(tmpY1.data);
-            free(tmpY2.data);
             free(tmpBuffer.data);
             if(err != kvImageNoError) {
                 free(argbPixels);
@@ -334,6 +360,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
             break;
         }
     }
+    free(dummyCb);
+    free(dummyCr);
 
     if(hasAlpha) {
         vImage_Buffer alpha = {
@@ -378,6 +406,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     vImage_YpCbCrToARGB convInfo = {0};
 
     uint8_t* argbPixels = NULL;
+    uint8_t* dummyCb = NULL;
+    uint8_t* dummyCr = NULL;
+    uint8_t* dummyAlpha = NULL;
 
     if(!hasAlpha) {
         argbPixels = calloc(avif->width * avif->height * 4, sizeof(uint16_t));
@@ -400,7 +431,6 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
         .height = avif->height,
     };
     
-
     vImage_Buffer origCb = {
         .data = avif->yuvPlanes[AVIF_CHAN_U],
         .rowBytes = avif->yuvRowBytes[AVIF_CHAN_U],
@@ -411,7 +441,12 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     if(!origCb.data) { // allocate dummy data to convert monochrome images.
         vImagePixelCount origHeight = origCb.height;
         origCb.rowBytes = origCb.width * sizeof(uint16_t);
-        origCb.data = alloca(origCb.rowBytes);
+        dummyCb = calloc(origCb.width, sizeof(uint16_t));
+        if(!dummyCb) {
+            free(argbPixels);
+            return;
+        }
+        origCb.data = dummyCb;
         origCb.height = 1;
         // fill zero values.
         err = vImageOverwriteChannelsWithScalar_Planar16U(pixelRange.CbCr_bias, &origCb, kvImageNoFlags);
@@ -434,7 +469,13 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     if(!origCr.data) { // allocate dummy data to convert monochrome images.
         vImagePixelCount origHeight = origCr.height;
         origCr.rowBytes = origCr.width * sizeof(uint16_t);
-        origCr.data = alloca(origCr.rowBytes);
+        dummyCr = calloc(origCr.width, sizeof(uint16_t));
+        if(!dummyCr) {
+            free(argbPixels);
+            free(dummyCb);
+            return;
+        }
+        origCr.data = dummyCr;
         origCr.height = 1;
         // fill zero values.
         err = vImageOverwriteChannelsWithScalar_Planar16U(pixelRange.CbCr_bias, &origCr, kvImageNoFlags);
@@ -456,12 +497,21 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     } else {
         // allocate dummy data to convert monochrome images.
         origAlpha.rowBytes = avif->width * sizeof(uint16_t);
-        origAlpha.data = alloca(origAlpha.rowBytes);
+        dummyAlpha = calloc(avif->width, sizeof(uint16_t));
+        if(!dummyAlpha) {
+            free(argbPixels);
+            free(dummyCb);
+            free(dummyCr);
+            return;
+        }
+        origAlpha.data = dummyAlpha;
         origAlpha.width = avif->width;
         origAlpha.height = 1;
         err = vImageOverwriteChannelsWithScalar_Planar16U(0xffff, &origAlpha, kvImageNoFlags);
         if (err != kvImageNoError) {
             free(argbPixels);
+            free(dummyCb);
+            free(dummyCr);
             NSLog(@"Failed to fill dummy alpha buffer: %ld", err);
             return;
         }
@@ -477,6 +527,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     };
     if (!aYpCbCrBuffer.data) {
         free(argbPixels);
+        free(dummyCb);
+        free(dummyCr);
+        free(dummyAlpha);
         return;
     }
 
@@ -484,6 +537,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     switch(avif->yuvFormat) {
         case AVIF_PIXEL_FORMAT_NONE:
             free(argbPixels);
+            free(dummyCb);
+            free(dummyCr);
+            free(dummyAlpha);
             NSLog(@"Invalid pixel format.");
             return;
         case AVIF_PIXEL_FORMAT_YUV420:
@@ -498,6 +554,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             };
             if(!scaledCb.data) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 return;
             }
@@ -509,6 +568,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             };
             if(!scaledCr.data) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 free(scaledCb.data);
                 return;
@@ -517,6 +579,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             if(scaleTempBuffSize < 0) {
                 NSLog(@"Failed to get temp buffer size: %ld", scaleTempBuffSize);
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 free(scaledCb.data);
                 free(scaledCr.data);
@@ -525,6 +590,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             void* scaleTempBuff = malloc(scaleTempBuffSize);
             if(!scaleTempBuff) {
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 free(scaledCb.data);
                 free(scaledCr.data);
@@ -535,6 +603,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             if(err != kvImageNoError) {
                 NSLog(@"Failed to scale Cb: %ld", err);
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 free(scaledCb.data);
                 free(scaledCr.data);
@@ -546,6 +617,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             if(err != kvImageNoError) {
                 NSLog(@"Failed to scale Cb: %ld", err);
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 free(scaledCb.data);
                 free(scaledCr.data);
@@ -560,6 +634,9 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             if(err != kvImageNoError) {
                 NSLog(@"Failed to composite kvImage444AYpCbCr16: %ld", err);
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 return;
             }
@@ -571,14 +648,19 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             if(err != kvImageNoError) {
                 NSLog(@"Failed to composite kvImage444AYpCbCr16: %ld", err);
                 free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(dummyAlpha);
                 free(aYpCbCrBuffer.data);
                 return;
             }
             break;
         }
     }
+    free(dummyCb);
+    free(dummyCr);
+    free(dummyAlpha);
 
-    
     err = vImageConvert_YpCbCrToARGB_GenerateConversion(&matrix,
                                                         &pixelRange,
                                                         &convInfo,
