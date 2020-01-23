@@ -484,6 +484,7 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
         err = vImageOverwriteChannelsWithScalar_Planar16U(pixelRange.CbCr_bias, &origCr, kvImageNoFlags);
         if (err != kvImageNoError) {
             free(argbPixels);
+            free(dummyCb);
             NSLog(@"Failed to fill dummy Cr buffer: %ld", err);
             return;
         }
@@ -543,6 +544,7 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
             free(dummyCb);
             free(dummyCr);
             free(dummyAlpha);
+            free(aYpCbCrBuffer.data);
             NSLog(@"Invalid pixel format.");
             return;
         case AVIF_PIXEL_FORMAT_YUV420:
