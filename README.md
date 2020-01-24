@@ -11,7 +11,7 @@
 
 This is a [SDWebImage](https://github.com/rs/SDWebImage) coder plugin to add [AV1 Image File Format (AVIF)](https://aomediacodec.github.io/av1-avif/) support. Which is built based on the open-sourced [libavif](https://github.com/AOMediaCodec/libavif) codec.
 
-This AVIF coder plugin currently support AVIF still image **decoding**. Including alpha channel, as well as 10bit/12bit HDR images.
+This AVIF coder plugin currently support AVIF still image **decoding**. Including alpha channel, as well as 10bit/12bit/16bit HDR images.
 
 The AVIF encoding is also supported now. Which always encode as 8-bit depth images.
 
@@ -46,6 +46,13 @@ See more about [performance](https://github.com/xiph/rav1e/issues/1248)
 From v0.4.3, libavif can built with rav1e. For CocoaPods user, you can simply use the subspec for this. Carthage for optional rav1c codec is not supported currently.
 
 Note rav1e currently only support iOS && macOS. watchOS and tvOS supports need Rust community upstream support.
+
+Note that for CocoaPods user, rav1e is prebuilt binary (to avoid developer to install rust toolchain) and hosted on GitHub Git LFS. Make sure you have git-lfs installed.
+
+```bash
+brew install git-lfs
+git lfs install
+```
 
 ## Requirements
 
@@ -140,6 +147,10 @@ You can also try using [avif.js](https://kagami.github.io/avif.js/) to view it o
 ## Author
 
 DreamPiggy, lizhuoli1126@126.com
+
+## Contributor
+
+ledyba-z, ryo.hirafuji@link-u.co.jp
 
 ## License
 
