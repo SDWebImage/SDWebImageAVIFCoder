@@ -141,8 +141,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
     vImage_Buffer origCb = {
         .data = avif->yuvPlanes[AVIF_CHAN_U],
         .rowBytes = avif->yuvRowBytes[AVIF_CHAN_U],
-        .width = avif->width >> state.formatInfo.chromaShiftX,
-        .height = avif->height >> state.formatInfo.chromaShiftY,
+        .width = (avif->width+state.formatInfo.chromaShiftX) >> state.formatInfo.chromaShiftX,
+        .height = (avif->height+state.formatInfo.chromaShiftY) >> state.formatInfo.chromaShiftY,
     };
 
     if(!origCb.data) { // allocate dummy data to convert monochrome images.
@@ -159,8 +159,8 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
     vImage_Buffer origCr = {
         .data = avif->yuvPlanes[AVIF_CHAN_V],
         .rowBytes = avif->yuvRowBytes[AVIF_CHAN_V],
-        .width = avif->width >> state.formatInfo.chromaShiftX,
-        .height = avif->height >> state.formatInfo.chromaShiftY,
+        .width = (avif->width+state.formatInfo.chromaShiftX) >> state.formatInfo.chromaShiftX,
+        .height = (avif->height+state.formatInfo.chromaShiftY) >> state.formatInfo.chromaShiftY,
     };
     if(!origCr.data) { // allocate dummy data to convert monochrome images.
         dummyCr = calloc(origCr.width, sizeof(uint8_t));
@@ -282,11 +282,13 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 return;
             }
 
+            ((uint8_t*)origY.data)[origY.rowBytes * (origY.height-1) + origY.width ] = 255;
+            const vImagePixelCount alignedWidth = (origY.width+1) & (~1);
             vImage_Buffer tmpY1 = {
-                .data = calloc(origY.width/2 * origY.height, sizeof(uint8_t)),
-                .width = origY.width/2,
+                .data = calloc(alignedWidth/2 * origY.height, sizeof(uint8_t)),
+                .width = alignedWidth/2,
                 .height = origY.height,
-                .rowBytes = origY.width/2 * sizeof(uint8_t),
+                .rowBytes = alignedWidth/2 * sizeof(uint8_t),
             };
             if(!tmpY1.data) {
                 free(argbPixels);
@@ -294,11 +296,24 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 free(dummyCr);
                 return;
             }
+            err = vImageConvert_ChunkyToPlanar8((const void*[]){origY.data},
+                                               (const vImage_Buffer*[]){&tmpY1},
+                                               1 /* channelCount */, 2 /* src srcStrideBytes */,
+                                               alignedWidth/2, origY.height,
+                                               origY.rowBytes, kvImageNoFlags);
+            if(err != kvImageNoError) {
+                NSLog(@"Failed to separate first Y channel: %ld", err);
+                free(argbPixels);
+                free(dummyCb);
+                free(dummyCr);
+                free(tmpY1.data);
+                return;
+            }
             vImage_Buffer tmpY2 = {
-                .data = calloc(origY.width/2 * origY.height, sizeof(uint8_t)),
-                .width = origY.width/2,
+                .data = calloc(alignedWidth/2 * origY.height, sizeof(uint8_t)),
+                .width = alignedWidth/2,
                 .height = origY.height,
-                .rowBytes = origY.width/2 * sizeof(uint8_t),
+                .rowBytes = alignedWidth/2 * sizeof(uint8_t),
             };
             if(!tmpY2.data) {
                 free(argbPixels);
@@ -307,13 +322,15 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 free(tmpY1.data);
                 return;
             }
-            err= vImageConvert_ChunkyToPlanar8((const void*[]){origY.data, origY.data+1},
-                                               (const vImage_Buffer*[]){&tmpY1, &tmpY2},
-                                               2 /* channelCount */,2 /* src srcStrideBytes */,
+            tmpY2.width = origY.width/2;
+            err = vImageConvert_ChunkyToPlanar8((const void*[]){origY.data + 1},
+                                               (const vImage_Buffer*[]){&tmpY2},
+                                               1 /* channelCount */, 2 /* src srcStrideBytes */,
                                                origY.width/2, origY.height,
                                                origY.rowBytes, kvImageNoFlags);
+            tmpY2.width = alignedWidth/2;
             if(err != kvImageNoError) {
-                NSLog(@"Failed to separate Y channel: %ld", err);
+                NSLog(@"Failed to separate second Y channel: %ld", err);
                 free(argbPixels);
                 free(dummyCb);
                 free(dummyCr);
@@ -322,10 +339,10 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 return;
             }
             vImage_Buffer tmpBuffer = {
-                .data = calloc(avif->width * avif->height * 2, sizeof(uint8_t)),
-                .width = avif->width/2,
+                .data = calloc(alignedWidth * avif->height * 2, sizeof(uint8_t)),
+                .width = alignedWidth/2,
                 .height = avif->height,
-                .rowBytes = avif->width / 2 * 4 * sizeof(uint8_t),
+                .rowBytes = alignedWidth / 2 * 4 * sizeof(uint8_t),
             };
             if(!tmpBuffer.data) {
                 free(argbPixels);
@@ -437,8 +454,8 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     vImage_Buffer origCb = {
         .data = avif->yuvPlanes[AVIF_CHAN_U],
         .rowBytes = avif->yuvRowBytes[AVIF_CHAN_U],
-        .width = avif->width >> state.formatInfo.chromaShiftX,
-        .height = avif->height >> state.formatInfo.chromaShiftY,
+        .width = (avif->width+state.formatInfo.chromaShiftX) >> state.formatInfo.chromaShiftX,
+        .height = (avif->height+state.formatInfo.chromaShiftY) >> state.formatInfo.chromaShiftY,
     };
 
     if(!origCb.data) { // allocate dummy data to convert monochrome images.
@@ -465,8 +482,8 @@ static void ConvertAvifImagePlanar16ToRGB16U(avifImage * avif, uint8_t * outPixe
     vImage_Buffer origCr = {
         .data = avif->yuvPlanes[AVIF_CHAN_V],
         .rowBytes = avif->yuvRowBytes[AVIF_CHAN_V],
-        .width = avif->width >> state.formatInfo.chromaShiftX,
-        .height = avif->height >> state.formatInfo.chromaShiftY,
+        .width = (avif->width+state.formatInfo.chromaShiftX) >> state.formatInfo.chromaShiftX,
+        .height = (avif->height+state.formatInfo.chromaShiftY) >> state.formatInfo.chromaShiftY,
     };
 
     if(!origCr.data) { // allocate dummy data to convert monochrome images.
