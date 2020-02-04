@@ -7,7 +7,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build CI Test Runner
+    - name: Build CLI tool
       shell: bash
       run: |
         set -ex
