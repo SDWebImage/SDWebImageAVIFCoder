@@ -21,11 +21,13 @@ static void SetupConversionInfo(avifImage * avif,
 
     // Setup Matrix
     matrix->Yp = 1.0f;
-    matrix->Cr_R = 2.0f * (1.0f - state->kr);
-    matrix->Cb_B = 2.0f * (1.0f - state->kb);
-    matrix->Cb_G = -2.0f * (1.0f - state->kr) * state->kr / state->kg;
-    matrix->Cr_G = -2.0f * (1.0f - state->kb) * state->kb / state->kg;
-    
+
+    matrix->Cb_B =  2.0f * (1.0f - state->kb);
+    matrix->Cb_G = -2.0f * (1.0f - state->kb) * state->kb / state->kg;
+
+    matrix->Cr_R =  2.0f * (1.0f - state->kr);
+    matrix->Cr_G = -2.0f * (1.0f - state->kr) * state->kr / state->kg;
+
     // Setup Pixel Range
     switch (avif->depth) {
         case 8:
