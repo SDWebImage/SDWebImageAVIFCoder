@@ -52,7 +52,7 @@ jobs:
             orig=$(cat Makefile | grep "^${file}" | sed "s/^${file}: \(.*\)$/\1/")
             score=$(compare -metric PSNR "${orig}" "decoded/${file}.png" NULL: 2>&1 || true)
             echo " * ${file}: ${score}"
-            if test $(echo "${score} >= 30.0" | bc -l) -eq 0; then
+            if test $(echo "${score} >= 35.0" | bc -l) -eq 0; then
               exit -1
             fi
           fi
