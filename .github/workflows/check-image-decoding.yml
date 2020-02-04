@@ -44,7 +44,7 @@ jobs:
         cd avif-sample-images
         for file in $(find . -name \*.avif); do
           file=$(basename ${file})
-          if (cat ${file} | grep "\(monochrome\|crop\|rotate\|mirror\)"); then
+          if (echo ${file} | grep "\(monochrome\|crop\|rotate\|mirror\)"); then
             # FIXME(ledyba-z): Check them.
             echo "Ignore: ${file}"
             continue
