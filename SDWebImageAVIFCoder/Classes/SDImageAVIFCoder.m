@@ -842,6 +842,10 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, dest, rowBytes * height, FreeImageData);
     CGBitmapInfo bitmapInfo = usesU16 ? kCGBitmapByteOrder16Host : kCGBitmapByteOrderDefault;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNone;
+    // FIXME: (ledyba-z): Set appropriate color space.
+    // Currently, there is no way to get MatrixCoefficients, TransferCharacteristics and ColourPrimaries values
+    //  in Sequence Header OBU.
+    // https://github.com/AOMediaCodec/libavif/blob/7d36984b2994210b/include/avif/avif.h#L149-L236
     CGColorSpaceRef colorSpaceRef = [SDImageCoderHelper colorSpaceGetDeviceRGB];
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
     CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, rowBytes, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
