@@ -1,0 +1,35 @@
+name: Check the decoded images.
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build CI Test Runner
+      shell: bash
+      run: |
+        set -ex
+        cd Example
+        pod install --repo-update
+        xcrun xcodebuild \
+          -workspace SDWebImageAVIFCoder.xcworkspace \
+          -scheme SDWebImageAVIFCoder_CITestRunner \
+          -archivePath ./CITestRunner \
+          archive
+    - name: Clone test images
+      shell: bash
+      run: |
+        set -ex
+        git clone https://github.com/link-u/avif-sample-images.git
+    - name: Decode all AVIF images
+      shell: bash
+      run: |
+        set -ex
+        cd avif-sample-images
+        mkdir recoded
+        CMD="../Example/CITestRunner.xcarchive/Products/usr/local/bin/SDWebImageAVIFCoder_CITestRunner"
+        for $file in $(find . -name \*.avif); do
+          ${CMD} ${file} "./decoded/${file}.png"
+        done
