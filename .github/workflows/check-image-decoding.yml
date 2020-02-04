@@ -31,5 +31,28 @@ jobs:
         mkdir decoded
         CMD="../Example/CLI.xcarchive/Products/usr/local/bin/SDWebImageAVIFCoder_Example CLI"
         for file in $(find . -name \*.avif); do
-          "${CMD}" ${file} "./decoded/${file}.png"
+          file=$(basename ${file})
+          "${CMD}" "${file}" "./decoded/${file}.png"
+        done
+    - name: Install imagemagick to compare images.
+      shell: bash
+      run: brew install imagemagick
+    - name: Compare images
+      shell: bash
+      run: |
+        set -ex
+        cd avif-sample-images
+        for file in $(find . -name \*.avif); do
+          file=$(basename ${file})
+          if (cat ${file} | grep "\(monochrome\|crop\|rotate\|mirror\)"); then
+            # FIXME(ledyba-z): Check them.
+            echo "Ignore: ${file}"
+            continue
+          else
+            score=$(compare -metric PSNR "${file}" "decoded/${file}.png")
+            echo " * ${file}: ${score}"
+            if test $(echo "${score} >= 30.0" | bc -l) -eq 0; then
+              exit -1
+            fi
+          fi
         done
