@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6D37313D23E88F6B007F654B"
-               BuildableName = "SDWebImageAVIFCoder_CITestRunner"
-               BlueprintName = "SDWebImageAVIFCoder_CITestRunner"
+               BuildableName = "SDWebImageAVIFCoder_Example CLI"
+               BlueprintName = "SDWebImageAVIFCoder_Example CLI"
                ReferencedContainer = "container:SDWebImageAVIFCoder.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D37313D23E88F6B007F654B"
-            BuildableName = "SDWebImageAVIFCoder_CITestRunner"
-            BlueprintName = "SDWebImageAVIFCoder_CITestRunner"
+            BuildableName = "SDWebImageAVIFCoder_Example CLI"
+            BlueprintName = "SDWebImageAVIFCoder_Example CLI"
             ReferencedContainer = "container:SDWebImageAVIFCoder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6D37313D23E88F6B007F654B"
-            BuildableName = "SDWebImageAVIFCoder_CITestRunner"
-            BlueprintName = "SDWebImageAVIFCoder_CITestRunner"
+            BuildableName = "SDWebImageAVIFCoder_Example CLI"
+            BlueprintName = "SDWebImageAVIFCoder_Example CLI"
             ReferencedContainer = "container:SDWebImageAVIFCoder.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

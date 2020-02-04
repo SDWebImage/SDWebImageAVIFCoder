@@ -1,6 +1,6 @@
 //
 //  main.m
-//  SDWebImageAVIFCoder_CITestRunner
+//  SDWebImageAVIFCoder_Example CLI
 //
 //  Created by psi on 2020/02/04.
 //  Copyright © 2020 lizhuoli1126@126.com. All rights reserved.

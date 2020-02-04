@@ -15,8 +15,8 @@ jobs:
         pod install --repo-update
         xcrun xcodebuild \
           -workspace SDWebImageAVIFCoder.xcworkspace \
-          -scheme SDWebImageAVIFCoder_CITestRunner \
-          -archivePath ./CITestRunner \
+          -scheme "SDWebImageAVIFCoder_Example CLI" \
+          -archivePath ./CLI \
           archive
     - name: Clone test images
       shell: bash
@@ -28,8 +28,8 @@ jobs:
       run: |
         set -ex
         cd avif-sample-images
-        mkdir recoded
-        CMD="../Example/CITestRunner.xcarchive/Products/usr/local/bin/SDWebImageAVIFCoder_CITestRunner"
-        for $file in $(find . -name \*.avif); do
-          ${CMD} ${file} "./decoded/${file}.png"
+        mkdir decoded
+        CMD="../Example/CLI.xcarchive/Products/usr/local/bin/SDWebImageAVIFCoder_Example CLI"
+        for file in $(find . -name \*.avif); do
+          "${CMD}" ${file} "./decoded/${file}.png"
         done
