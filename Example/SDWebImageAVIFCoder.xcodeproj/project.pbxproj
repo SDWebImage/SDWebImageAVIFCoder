@@ -12,6 +12,7 @@
 		32D32641226344EC001B208C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32D32640226344EC001B208C /* Assets.xcassets */; };
 		32D32644226344EC001B208C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 32D32642226344EC001B208C /* Main.storyboard */; };
 		32D32647226344EC001B208C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D32646226344EC001B208C /* main.m */; };
+		560DF9D6CE4279F70E079FDE /* libPods-SDWebImageAVIFCoder_Example CLI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D6E4426F3B49328A49F041D /* libPods-SDWebImageAVIFCoder_Example CLI.a */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -25,6 +26,7 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
+		6D37314123E88F6B007F654B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D37314023E88F6B007F654B /* main.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		8011C06C17A1599DD88EBB28 /* libPods-SDWebImageAVIFCoder_Example macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D35147990C9781C1E45F4DE7 /* libPods-SDWebImageAVIFCoder_Example macOS.a */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
@@ -42,9 +44,22 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		6D37313C23E88F6B007F654B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		01396E21D67B93E6F560157A /* Pods-SDWebImageAVIFCoder_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Tests.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Tests/Pods-SDWebImageAVIFCoder_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		13CE9906000ABBFFA89F3F10 /* SDWebImageAVIFCoder.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SDWebImageAVIFCoder.podspec; path = ../SDWebImageAVIFCoder.podspec; sourceTree = "<group>"; };
+		1D6E4426F3B49328A49F041D /* libPods-SDWebImageAVIFCoder_Example CLI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImageAVIFCoder_Example CLI.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		207C633217DCC3D0312C335C /* Pods-SDWebImageAVIFCoder_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example/Pods-SDWebImageAVIFCoder_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2783F1D7B48DB3ED9ADFF864 /* libPods-SDWebImageAVIFCoder_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImageAVIFCoder_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3260C60722634CF90046E4C8 /* SDWebImageAVIFCoder_Example macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SDWebImageAVIFCoder_Example macOS.entitlements"; sourceTree = "<group>"; };
@@ -79,6 +94,11 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
+		646EA09807C18AE2FBD43C9D /* Pods-SDWebImageAVIFCoder_Example CLI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example CLI.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example CLI/Pods-SDWebImageAVIFCoder_Example CLI.release.xcconfig"; sourceTree = "<group>"; };
+		6C2B135EF73C44C782F0F9D8 /* Pods-SDWebImageAVIFCoder_Example CLI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example CLI.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example CLI/Pods-SDWebImageAVIFCoder_Example CLI.debug.xcconfig"; sourceTree = "<group>"; };
+		6D37313E23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "SDWebImageAVIFCoder_Example CLI"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6D37314023E88F6B007F654B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		6D37314523E89499007F654B /* SDWebImageAVIFCoder_Example CLI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SDWebImageAVIFCoder_Example CLI.entitlements"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7FE45EC1A1A0874CE3C32260 /* Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example macOS/Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig"; sourceTree = "<group>"; };
 		86EFB0D9CB82C3418B27F7C3 /* Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Tests/Pods-SDWebImageAVIFCoder_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -120,6 +140,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6D37313B23E88F6B007F654B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				560DF9D6CE4279F70E079FDE /* libPods-SDWebImageAVIFCoder_Example CLI.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -147,6 +175,7 @@
 				6003F593195388D20070C39A /* Example for SDWebImageAVIFCoder */,
 				6003F5B5195388D20070C39A /* Tests */,
 				32D32639226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */,
+				6D37313F23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */,
 				6003F58C195388D20070C39A /* Frameworks */,
 				6003F58B195388D20070C39A /* Products */,
 				E40A1283864141E18825AD7D /* Pods */,
@@ -159,6 +188,7 @@
 				6003F58A195388D20070C39A /* SDWebImageAVIFCoder_Example.app */,
 				6003F5AE195388D20070C39A /* SDWebImageAVIFCoder_Tests.xctest */,
 				32D32638226344EC001B208C /* SDWebImageAVIFCoder_Example macOS.app */,
+				6D37313E23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -173,6 +203,7 @@
 				2783F1D7B48DB3ED9ADFF864 /* libPods-SDWebImageAVIFCoder_Example.a */,
 				D35147990C9781C1E45F4DE7 /* libPods-SDWebImageAVIFCoder_Example macOS.a */,
 				4691BEB7EC16961149D74E32 /* libPods-SDWebImageAVIFCoder_Tests.a */,
+				1D6E4426F3B49328A49F041D /* libPods-SDWebImageAVIFCoder_Example CLI.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -233,6 +264,15 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
+		6D37313F23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */ = {
+			isa = PBXGroup;
+			children = (
+				6D37314523E89499007F654B /* SDWebImageAVIFCoder_Example CLI.entitlements */,
+				6D37314023E88F6B007F654B /* main.m */,
+			);
+			path = "SDWebImageAVIFCoder_Example CLI";
+			sourceTree = "<group>";
+		};
 		E40A1283864141E18825AD7D /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -242,6 +282,8 @@
 				01396E21D67B93E6F560157A /* Pods-SDWebImageAVIFCoder_Tests.release.xcconfig */,
 				7FE45EC1A1A0874CE3C32260 /* Pods-SDWebImageAVIFCoder_Example macOS.debug.xcconfig */,
 				EFA18806A2B2331D243CEBFE /* Pods-SDWebImageAVIFCoder_Example macOS.release.xcconfig */,
+				6C2B135EF73C44C782F0F9D8 /* Pods-SDWebImageAVIFCoder_Example CLI.debug.xcconfig */,
+				646EA09807C18AE2FBD43C9D /* Pods-SDWebImageAVIFCoder_Example CLI.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -304,6 +346,24 @@
 			productReference = 6003F5AE195388D20070C39A /* SDWebImageAVIFCoder_Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		6D37313D23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D37314423E88F6B007F654B /* Build configuration list for PBXNativeTarget "SDWebImageAVIFCoder_Example CLI" */;
+			buildPhases = (
+				E590E76A0606D9D1813727F4 /* [CP] Check Pods Manifest.lock */,
+				6D37313A23E88F6B007F654B /* Sources */,
+				6D37313B23E88F6B007F654B /* Frameworks */,
+				6D37313C23E88F6B007F654B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "SDWebImageAVIFCoder_Example CLI";
+			productName = SDWebImageAVIFCoder_CITestRunner;
+			productReference = 6D37313E23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -326,6 +386,10 @@
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
+					6D37313D23E88F6B007F654B = {
+						CreatedOnToolsVersion = 11.3.1;
+						ProvisioningStyle = Manual;
+					};
 				};
 			};
 			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "SDWebImageAVIFCoder" */;
@@ -345,6 +409,7 @@
 				6003F589195388D20070C39A /* SDWebImageAVIFCoder_Example */,
 				6003F5AD195388D20070C39A /* SDWebImageAVIFCoder_Tests */,
 				32D32637226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */,
+				6D37313D23E88F6B007F654B /* SDWebImageAVIFCoder_Example CLI */,
 			);
 		};
 /* End PBXProject section */
@@ -447,6 +512,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		E590E76A0606D9D1813727F4 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SDWebImageAVIFCoder_Example CLI-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -475,6 +562,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BC195388D20070C39A /* Tests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6D37313A23E88F6B007F654B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D37314123E88F6B007F654B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -754,6 +849,89 @@
 			};
 			name = Release;
 		};
+		6D37314223E88F6B007F654B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6C2B135EF73C44C782F0F9D8 /* Pods-SDWebImageAVIFCoder_Example CLI.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_ENTITLEMENTS = "SDWebImageAVIFCoder_Example CLI/SDWebImageAVIFCoder_Example CLI.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder_Example macOS/Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.SDWebImageAVIFCoder-Example-CLI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		6D37314323E88F6B007F654B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 646EA09807C18AE2FBD43C9D /* Pods-SDWebImageAVIFCoder_Example CLI.release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CODE_SIGN_ENTITLEMENTS = "SDWebImageAVIFCoder_Example CLI/SDWebImageAVIFCoder_Example CLI.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/SDWebImageAVIFCoder_Example macOS/Info.plist";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.SDWebImageAVIFCoder-Example-CLI";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -789,6 +967,15 @@
 			buildConfigurations = (
 				6003F5C3195388D20070C39A /* Debug */,
 				6003F5C4195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D37314423E88F6B007F654B /* Build configuration list for PBXNativeTarget "SDWebImageAVIFCoder_Example CLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D37314223E88F6B007F654B /* Debug */,
+				6D37314323E88F6B007F654B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

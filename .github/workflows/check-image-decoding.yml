@@ -1,0 +1,59 @@
+name: Check the decoded images.
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build CLI tool
+      shell: bash
+      run: |
+        set -ex
+        cd Example
+        pod install --repo-update
+        xcrun xcodebuild \
+          -workspace SDWebImageAVIFCoder.xcworkspace \
+          -scheme "SDWebImageAVIFCoder_Example CLI" \
+          -archivePath ./CLI \
+          archive
+    - name: Clone test images
+      shell: bash
+      run: |
+        set -ex
+        git clone https://github.com/link-u/avif-sample-images.git
+    - name: Decode all AVIF images
+      shell: bash
+      run: |
+        set -ex
+        cd avif-sample-images
+        mkdir decoded
+        CMD="../Example/CLI.xcarchive/Products/usr/local/bin/SDWebImageAVIFCoder_Example CLI"
+        for file in $(find . -name \*.avif); do
+          file=$(basename ${file})
+          "${CMD}" "${file}" "./decoded/${file}.png"
+        done
+    - name: Install imagemagick to compare images.
+      shell: bash
+      run: brew install imagemagick
+    - name: Compare images
+      shell: bash
+      run: |
+        set -ex
+        cd avif-sample-images
+        for file in $(find . -name \*.avif); do
+          file=$(basename ${file})
+          if (echo ${file} | grep "\(monochrome\|crop\|rotate\|mirror\)"); then
+            # FIXME(ledyba-z): Check them.
+            echo "Ignore: ${file}"
+            continue
+          else
+            orig=$(cat Makefile | grep "^${file}" | sed "s/^${file}: \(.*\)$/\1/")
+            score=$(compare -metric PSNR "${orig}" "decoded/${file}.png" NULL: 2>&1 || true)
+            echo " * ${file}: ${score}"
+            if test $(echo "${score} >= 35.0" | bc -l) -eq 0; then
+              exit -1
+            fi
+          fi
+        done

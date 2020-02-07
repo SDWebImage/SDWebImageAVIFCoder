@@ -17,3 +17,9 @@ target 'SDWebImageAVIFCoder_Example macOS' do
   pod 'SDWebImageAVIFCoder', :path => '../'
   pod 'libavif', :subspecs => ['librav1e', 'libdav1d']
 end
+
+target 'SDWebImageAVIFCoder_Example CLI' do
+  platform :osx, '10.10'
+  pod 'SDWebImageAVIFCoder', :path => '../'
+  pod 'libavif', :subspecs => ['librav1e', 'libdav1d']
+end
