@@ -144,6 +144,12 @@ You can try [AVIFQuickLook](https://github.com/dreampiggy/AVIFQuickLook) QuickLo
 
 You can also try using [avif.js](https://kagami.github.io/avif.js/) to view it online by using Chrome's AV1 codec.
 
+## Testing
+
+SDWebImageAVIFCoder use [GitHub Actions](https://github.com/SDWebImage/SDWebImageAVIFCoder/actions) for testing. Each merge request will run the test cases to ensure the AVIF decoding/encoding function works.
+
+Current test cases use macOS command line tools, to compare the AVIF sample decoding result with [ImageMagick](https://www.imagemagick.org/).
+
 ## Author
 
 DreamPiggy, lizhuoli1126@126.com
