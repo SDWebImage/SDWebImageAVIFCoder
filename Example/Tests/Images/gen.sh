@@ -20,7 +20,7 @@ function generate() {
   # TODO(ledyba-z): Add more loops for:
   # - with alpha / without alpha
   # - with thumbnail / without thumbnail
-  # - matrix coefficients, color primes, transfer characteristics
+  # - matrix coefficients, color primaries, transfer characteristics
   for bpc in 8 10 12; do
     for fmt in yuv420 yuv422 yuv444; do
       for range in full limited; do
