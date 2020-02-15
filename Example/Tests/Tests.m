@@ -217,8 +217,6 @@ end:
     size_t const stride = CGImageGetBytesPerRow(img);
     size_t const bitsPerPixel = CGImageGetBitsPerPixel(img);
     size_t const bytesPerPixel = bitsPerPixel/8;
-    size_t const numComponents = bitsPerPixel / CGImageGetBitsPerComponent(img);
-    XCTAssertTrue(numComponents >= expectedNumComponents);
     for(size_t y = 0; y < height; ++y) {
         for(size_t x = 0; x < width; ++x) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
@@ -255,8 +253,6 @@ end:
     size_t const stride = CGImageGetBytesPerRow(img);
     size_t const bitsPerPixel = CGImageGetBitsPerPixel(img);
     size_t const bytesPerPixel = bitsPerPixel/8;
-    size_t const numComponents = bitsPerPixel / CGImageGetBitsPerComponent(img);
-    XCTAssertTrue(numComponents >= expectedNumComponents);
     for(size_t y = 0; y < height; ++y) {
         for(size_t x = 0; x < width; ++x) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
