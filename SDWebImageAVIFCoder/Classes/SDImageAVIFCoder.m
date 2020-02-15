@@ -42,6 +42,7 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     
     
     // clean up
+    CGColorSpaceRelease(colorSpace);
     CGDataProviderRelease(provider);
     
     return imageRef;
