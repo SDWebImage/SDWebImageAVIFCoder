@@ -49,4 +49,5 @@ script:
   - xcodebuild clean build test -workspace Example/SDWebImageAVIFCoder.xcworkspace  -scheme "SDWebImageAVIFCoder-Example" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11 Pro' -enableCodeCoverage 'YES' -configuration Debug
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash) 
+    - bash <(curl -s https://codecov.io/bash) -D '~/Library/Developer/Xcode/DerivedData/' -J '^SDWebImageAVIFCoder$' -c -X gcov -F ios
+
