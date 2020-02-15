@@ -17,6 +17,10 @@ function generate() {
   convert ${orig} -resize 255x255! "${base}.255x255.png"
 
   local flag
+  # TODO(ledyba-z): Add more loops for:
+  # - with alpha / without alpha
+  # - with thumbnail / without thumbnail
+  # - matrix coefficients, color primes, transfer characteristics
   for bpc in 8 10 12; do
     for fmt in yuv420 yuv422 yuv444; do
       for range in full limited; do
