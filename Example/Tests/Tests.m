@@ -306,6 +306,7 @@ end:
 
         UIImage* img = [coder decodedImageWithData: imgData options:nil];
         bool hdr = CGImageGetBitsPerComponent(img.CGImage) != 8;
+        // FIXME(ledyba-z): add images with alpha.
         if([color isEqual: @"mono"]){
             if(!hdr) {
                 [self assertMono8: convertedFilename img:img.CGImage expectedNumComponents: 3];
