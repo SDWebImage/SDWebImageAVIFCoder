@@ -13,13 +13,17 @@
 #import "avif/avif.h"
 #endif
 
+static void FreeImageData(void *info, const void *data, size_t size) {
+    free((void *)data);
+}
+
 static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result) {
     BOOL monochrome = avif->yuvPlanes[1] == NULL || avif->yuvPlanes[2] == NULL;
     BOOL hasAlpha = avif->alphaPlane != NULL;
     BOOL usesU16 = avifImageUsesU16(avif);
     size_t components = (monochrome ? 1 : 3) + (hasAlpha ? 1 : 0);
 
-    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, result->data, result->rowBytes * result->height, NULL);
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, result->data, result->rowBytes * result->height, FreeImageData);
     CGBitmapInfo bitmapInfo = usesU16 ? kCGBitmapByteOrder16Host : kCGBitmapByteOrderDefault;
     bitmapInfo |= hasAlpha ? kCGImageAlphaFirst : kCGImageAlphaNone;
     // FIXME: (ledyba-z): Set appropriate color space.
@@ -39,7 +43,6 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     size_t rowBytes = result->width * components * (usesU16 ? sizeof(uint16_t) : sizeof(uint8_t));
 
     CGImageRef imageRef = CGImageCreate(result->width, result->height, bitsPerComponent, bitsPerPixel, rowBytes, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
-    
     
     // clean up
     CGColorSpaceRelease(colorSpace);
@@ -137,7 +140,7 @@ static void SetupConversionInfo(avifImage * avif,
 
 
 // Convert 8bit AVIF image into RGB888/ARGB8888/Mono/MonoA using vImage Acceralation Framework.
-static CGImageRef CreateImage16U(avifImage * avif) {
+static CGImageRef CreateImage8(avifImage * avif) {
     vImage_Error err = kvImageNoError;
     BOOL const monochrome = avif->yuvPlanes[1] == NULL || avif->yuvPlanes[2] == NULL;
     BOOL const hasAlpha = avif->alphaPlane != NULL;
@@ -503,9 +506,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
                 NSLog(@"Failed to combine mono and alpha: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &outBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &outBuffer);
         } else {
             err = vImageOverwriteChannels_ARGB8888(&alphaBuffer, &argbBuffer, &argbBuffer, 0x8, kvImageNoFlags);
             if(err != kvImageNoError) {
@@ -513,9 +514,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
                 NSLog(@"Failed to overwrite alpha: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &argbBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &argbBuffer);
         }
     } else {
         if(monochrome) {
@@ -544,9 +543,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
                 NSLog(@"Failed to convert ARGB to RGB: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &outBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &outBuffer);
         } else {
             vImage_Buffer outBuffer = {
                 .data = outPixels,
@@ -561,15 +558,13 @@ static CGImageRef CreateImage16U(avifImage * avif) {
                 NSLog(@"Failed to convert ARGB to RGB: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &outBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &outBuffer);
         }
     }
 }
 
 // Convert 10/12bit AVIF image into RGB16U/ARGB16U/Mono16U/MonoA16U
-static CGImageRef CreateImage8(avifImage * avif) {
+static CGImageRef CreateImage16U(avifImage * avif) {
     vImage_Error err = kvImageNoError;
     BOOL const monochrome = avif->yuvPlanes[1] == NULL || avif->yuvPlanes[2] == NULL;
     BOOL const hasAlpha = avif->alphaPlane != NULL;
@@ -1037,13 +1032,9 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 NSLog(@"Failed to convert ARGB to MonoA: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &outBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &outBuffer);
         }else{
-            CGImageRef img = CreateImageFromBuffer(avif, &argbBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &argbBuffer);
         }
     } else {
         vImage_Buffer outBuffer = {
@@ -1072,9 +1063,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 NSLog(@"Failed to convert ARGB to Mono: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &outBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &outBuffer);
         } else {
             err = vImageConvert_ARGB16UtoRGB16U(&argbBuffer, &outBuffer, kvImageNoFlags);
             free(argbPixels);
@@ -1083,9 +1072,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 NSLog(@"Failed to convert ARGB to RGB: %ld", err);
                 return NULL;
             }
-            CGImageRef img = CreateImageFromBuffer(avif, &outBuffer);
-            free(outPixels);
-            return img;
+            return CreateImageFromBuffer(avif, &outBuffer);
         }
     }
 }
@@ -1181,9 +1168,9 @@ static void FillRGBABufferWithAVIFImage(vImage_Buffer *red, vImage_Buffer *green
     CGImageRef image = NULL;
     // convert planar to ARGB/RGB
     if(avifImageUsesU16(avif)) { // 10bit or 12bit
-        image = CreateImage8(avif);
-    } else { //8bit
         image = CreateImage16U(avif);
+    } else { //8bit
+        image = CreateImage8(avif);
     }
     avifDecoderDestroy(decoder);
     return image;
