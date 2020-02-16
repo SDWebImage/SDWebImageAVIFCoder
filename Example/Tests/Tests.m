@@ -218,11 +218,17 @@ end:
     size_t const stride = CGImageGetBytesPerRow(img);
     size_t const bitsPerPixel = CGImageGetBitsPerPixel(img);
     size_t const bytesPerPixel = bitsPerPixel/8;
+    UInt8 const pix0 = *buf;
     XCTAssertEqual(1, bytesPerPixel);
+    int const threshold = 16;
     for(size_t y = 0; y < height; ++y) {
         for(size_t x = 0; x < width; ++x) {
             UInt8* pix = (buf + (stride * y) + (bytesPerPixel * x));
-            XCTAssertEqual(buf[0], *pix);
+            bool ok = false;
+            XCTAssertTrue(ok = (abs(pix0 - *pix) <= threshold), "(x: %ld, y: %ld): result=%d vs expected=%d (%@)", x, y, *pix, pix0, filename);
+            if(!ok) {
+                return;
+            }
         }
     }
 end:
@@ -232,6 +238,7 @@ end:
 
 -(void)assertMono16: (NSString*)filename img:(CGImageRef)img expectedNumComponents:(size_t)expectedNumComponents
 {
+    int const threshold = 16 << 8;
     CFDataRef rawData = CGDataProviderCopyData(CGImageGetDataProvider(img));
     UInt8* const buf = (UInt8 *) CFDataGetBytePtr(rawData);
     size_t const width = CGImageGetWidth(img);
@@ -240,10 +247,15 @@ end:
     size_t const bitsPerPixel = CGImageGetBitsPerPixel(img);
     size_t const bytesPerPixel = bitsPerPixel/8;
     XCTAssertEqual(2, bytesPerPixel);
+    UInt16 const pix0 = *((UInt16*)buf);
     for(size_t y = 0; y < height; ++y) {
         for(size_t x = 0; x < width; ++x) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
-            XCTAssertEqual(((UInt16*)buf)[0], *pix);
+            bool ok = false;
+            XCTAssertTrue(ok = (abs(pix0 - *pix) <= threshold), "(x: %ld, y: %ld): result=%d vs expected=%d (%@)", x, y, *pix, pix0, filename);
+            if(!ok) {
+                return;
+            }
         }
     }
 end:
