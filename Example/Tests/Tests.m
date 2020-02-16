@@ -29,6 +29,7 @@ static UInt16 kSpecial16[] = {0xe4 << 8,0x7a << 8,0x8c << 8};
 
 {
     @private
+    SDImageAVIFCoder* coder;
     NSMutableArray<NSDictionary*>* blackList;
     NSMutableArray<NSDictionary*>* whiteList;
     NSMutableArray<NSDictionary*>* grayList;
@@ -44,7 +45,7 @@ static UInt16 kSpecial16[] = {0xe4 << 8,0x7a << 8,0x8c << 8};
 - (void)setUp
 {
     [super setUp];
-    
+    self->coder = [[SDImageAVIFCoder alloc] init];
     self->blackList = [[NSMutableArray alloc] init];
     self->whiteList = [[NSMutableArray alloc] init];
     self->grayList = [[NSMutableArray alloc] init];
@@ -217,26 +218,11 @@ end:
     size_t const stride = CGImageGetBytesPerRow(img);
     size_t const bitsPerPixel = CGImageGetBitsPerPixel(img);
     size_t const bytesPerPixel = bitsPerPixel/8;
+    XCTAssertEqual(1, bytesPerPixel);
     for(size_t y = 0; y < height; ++y) {
         for(size_t x = 0; x < width; ++x) {
-            UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
-            UInt16 color = 0;
-            for(size_t c = 0; c < expectedNumComponents; ++c) {
-                bool ok = false;
-                if(c == 0) {
-                    color = pix[c];
-                }else if(pix[c] != color) {
-                    NSMutableString* colorStr = [[NSMutableString alloc] initWithString: @"["];
-                    for (size_t d = 0; d < expectedNumComponents; ++d) {
-                        [colorStr appendFormat: @"%d, ", pix[d]];
-                    }
-                    [colorStr appendString: @"]"];
-                    XCTAssertTrue(ok = (pix[c] == color), "(x: %ld, y: %ld, c:%ld): color=%@ (%@)", x, y, c, colorStr, filename);
-                }
-                if(!ok) {
-                    goto end;
-                }
-            }
+            UInt8* pix = (buf + (stride * y) + (bytesPerPixel * x));
+            XCTAssertEqual(buf[0], *pix);
         }
     }
 end:
@@ -253,26 +239,11 @@ end:
     size_t const stride = CGImageGetBytesPerRow(img);
     size_t const bitsPerPixel = CGImageGetBitsPerPixel(img);
     size_t const bytesPerPixel = bitsPerPixel/8;
+    XCTAssertEqual(2, bytesPerPixel);
     for(size_t y = 0; y < height; ++y) {
         for(size_t x = 0; x < width; ++x) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
-            UInt16 color = 0;
-            for(size_t c = 0; c < expectedNumComponents; ++c) {
-                bool ok = false;
-                if(c == 0) {
-                    color = pix[c];
-                }else if(pix[c] != color) {
-                    NSMutableString* colorStr = [[NSMutableString alloc] initWithString: @"["];
-                    for (size_t d = 0; d < expectedNumComponents; ++d) {
-                        [colorStr appendFormat: @"%d, ", pix[d]];
-                    }
-                    [colorStr appendString: @"]"];
-                    XCTAssertTrue(ok = (pix[c] == color), "(x: %ld, y: %ld, c:%ld): color=%@ (%@)", x, y, c, colorStr, filename);
-                }
-                if(!ok) {
-                    goto end;
-                }
-            }
+            XCTAssertEqual(((UInt16*)buf)[0], *pix);
         }
     }
 end:
@@ -282,7 +253,6 @@ end:
 - (void)assertImages: (NSMutableArray*) list colorName:(NSString*)colorName expectedColor8:(UInt8*)expectedColor8 expectedNumComponents8:(size_t)expectedNumComponents8
     expectedColor16:(UInt16*)expectedColor16 expectedNumComponents16:(size_t)expectedNumComponents16
 {
-    SDImageAVIFCoder* const coder = [SDImageAVIFCoder sharedCoder];
     NSLog(@"Testing %lu [%@] images", list.count, colorName);
     [list enumerateObjectsUsingBlock:^(NSDictionary* item, NSUInteger idx, BOOL *stop) {
         NSString* convertedFilename = [item objectForKey:@"converted"];
@@ -300,7 +270,13 @@ end:
         NSString* imgBundle = [[NSBundle mainBundle] pathForResource: convertedFilename ofType: @""];
         NSData* imgData = [[NSData alloc] initWithContentsOfFile: imgBundle];
 
-        UIImage* img = [coder decodedImageWithData: imgData options:nil];
+        UIImage* img = [self->coder decodedImageWithData: imgData options:nil];
+        [self->coder decodedImageWithData: imgData options:nil];
+        [self->coder decodedImageWithData: imgData options:nil];
+        [self->coder decodedImageWithData: imgData options:nil];
+        [self->coder decodedImageWithData: imgData options:nil];
+        [self->coder decodedImageWithData: imgData options:nil];
+        
         bool hdr = CGImageGetBitsPerComponent(img.CGImage) != 8;
         // FIXME(ledyba-z): add images with alpha.
         if([color isEqual: @"mono"]){
@@ -314,7 +290,6 @@ end:
         } else {
             [self assertColor16: convertedFilename img:img.CGImage expectedColor:expectedColor16 expectedNumComponents: expectedNumComponents16];
         }
-        
     }];
 }
 
