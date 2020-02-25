@@ -150,6 +150,8 @@ SDWebImageAVIFCoder use [GitHub Actions](https://github.com/SDWebImage/SDWebImag
 
 Current test cases use macOS command line tools, to compare the AVIF sample decoding result with [ImageMagick](https://www.imagemagick.org/).
 
+We have also the XCTest unit test target, you can run it by using Xcode's Test action.
+
 ## Author
 
 DreamPiggy, lizhuoli1126@126.com
