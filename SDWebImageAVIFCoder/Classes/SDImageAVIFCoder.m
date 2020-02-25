@@ -284,7 +284,6 @@ static void ConvertAvifImagePlanar8ToRGB8(avifImage * avif, uint8_t * outPixels)
                 return;
             }
 
-            ((uint8_t*)origY.data)[origY.rowBytes * (origY.height-1) + origY.width ] = 255;
             const vImagePixelCount alignedWidth = (origY.width+1) & (~1);
             vImage_Buffer tmpY1 = {
                 .data = calloc(alignedWidth/2 * origY.height, sizeof(uint8_t)),

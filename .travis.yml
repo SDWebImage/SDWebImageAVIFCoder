@@ -40,3 +40,13 @@ script:
   - pod install --project-directory=Example
   - xcodebuild build -workspace Example/SDWebImageAVIFCoder.xcworkspace -scheme 'SDWebImageAVIFCoder-Example' -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11 Pro' -configuration Debug | xcpretty -c
   - xcodebuild build -workspace Example/SDWebImageAVIFCoder.xcworkspace -scheme 'SDWebImageAVIFCoder-Example macOS' -sdk macosx -configuration Debug | xcpretty -c
+  - xcodebuild build -workspace Example/SDWebImageAVIFCoder.xcworkspace -scheme 'SDWebImageAVIFCoder_Example CLI' -sdk macosx -configuration Debug | xcpretty -c
+
+  - echo Clean builds
+  - rm -rf ~/Library/Developer/Xcode/DerivedData/
+
+  - echo Run unit tests
+  - xcodebuild clean build test -workspace Example/SDWebImageAVIFCoder.xcworkspace  -scheme "SDWebImageAVIFCoder-Example" -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11 Pro' -enableCodeCoverage 'YES' -configuration Debug | xcpretty -c
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
