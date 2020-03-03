@@ -500,7 +500,6 @@ static CGImageRef CreateImage8(avifImage * avif) {
                                                 outBuffer.width, outBuffer.height,
                                                 outBuffer.rowBytes, kvImageNoFlags);
             free(monoBuffer.data);
-            free(alphaBuffer.data);
             if(err != kvImageNoError) {
                 free(outPixels);
                 NSLog(@"Failed to combine mono and alpha: %ld", err);
