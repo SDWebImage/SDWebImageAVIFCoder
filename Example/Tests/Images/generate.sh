@@ -100,7 +100,7 @@ function generate() {
               fi
               local outFilename="${base}.${size}.${bpc}bpc.${fmt}.${color}.${range}.${alpha}.avif"
               ${CAVIF} -i "${base}.${size}.png" -o ${outFilename} ${flag}
-              echo "${base}.${size}.png" "${outFilename}" >> image-list.tsv
+              echo "${base}.${size}.png  ${outFilename}" >> image-list.tsv
             done
           done
         done
