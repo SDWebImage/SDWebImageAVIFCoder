@@ -30,7 +30,11 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     //  use avif->nclx.colourPrimaries and avif->nclx.transferCharacteristics to detect appropriate color space.
     CGColorSpaceRef colorSpace = NULL;
     if(monochrome){
-        colorSpace = CGColorSpaceCreateDeviceGray();
+        vImage_Error err;
+        vImageWhitePoint whitePoint ;
+        vImageTransferFunction transferFunction;
+        CGColorRenderingIntent intent;
+        colorSpace = vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(&whitePoint, &transferFunction, intent, kvImageNoFlags, &err);
     }else{
         colorSpace = CGColorSpaceCreateDeviceRGB();
     }
