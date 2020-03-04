@@ -568,7 +568,6 @@ static CGImageRef CreateImage16U(avifImage * avif) {
     BOOL const monochrome = avif->yuvPlanes[1] == NULL || avif->yuvPlanes[2] == NULL;
     BOOL const hasAlpha = avif->alphaPlane != NULL;
     size_t const components = (monochrome ? 1 : 3) + (hasAlpha ? 1 : 0);
-    size_t const rowBytes = components * sizeof(uint8_t) * avif->width;
 
     // setup conversion info
     avifReformatState state = {0};
@@ -578,7 +577,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
 
     vImage_YpCbCrToARGB convInfo = {0};
 
-    uint16_t* outPixels = calloc(components * rowBytes * avif->height, sizeof(uint16_t));
+    uint16_t* outPixels = calloc(components * avif->width * avif->height, sizeof(uint16_t));
     if(outPixels == NULL) {
         return NULL;
     }
@@ -634,6 +633,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
         if (err != kvImageNoError) {
             free(outPixels);
             free(argbPixels);
+            free(dummyCb);
             NSLog(@"Failed to fill dummy Cr buffer: %ld", err);
             return NULL;
         }
@@ -666,6 +666,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
             free(outPixels);
             free(argbPixels);
             free(dummyCb);
+            free(dummyCr);
             NSLog(@"Failed to fill dummy Cr buffer: %ld", err);
             return NULL;
         }
@@ -699,6 +700,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
             free(argbPixels);
             free(dummyCb);
             free(dummyCr);
+            free(dummyAlpha);
             NSLog(@"Failed to fill dummy alpha buffer: %ld", err);
             return NULL;
         }
@@ -888,7 +890,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
     if(hasAlpha) {
         if(monochrome){
             vImage_Buffer tmpBuffer = {
-                .data = calloc(avif->width, sizeof(uint8_t)),
+                .data = calloc(avif->width, sizeof(uint16_t)),
                 .width = avif->width,
                 .height = avif->height,
                 .rowBytes = 0,
@@ -929,6 +931,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
             if(err != kvImageNoError) {
                 free(outPixels);
                 free(monoBuffer.data);
+                free(alphaBuffer.data);
                 NSLog(@"Failed to convert ARGB to Mono: %ld", err);
                 return NULL;
             }
@@ -1021,7 +1024,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
                 .height = avif->height,
                 .rowBytes = avif->width * components * sizeof(uint16_t),
             };
-            err = vImageConvert_Planar16UtoARGB16U(&alphaBuffer1, &alphaBuffer2, &monoBuffer1, &monoBuffer2, &outBuffer, kvImageNoFlags);
+            err = vImageConvert_Planar8toARGB8888(&alphaBuffer1, &alphaBuffer2, &monoBuffer1, &monoBuffer2, &outBuffer, kvImageNoFlags);
             free(monoBuffer1.data);
             free(monoBuffer2.data);
             free(alphaBuffer1.data);
