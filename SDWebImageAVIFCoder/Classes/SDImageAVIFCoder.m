@@ -936,6 +936,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
 end_all:
     free(resultBufferData);
     free(argbBufferData);
+    free(ayuvBufferData);
     free(dummyCbData);
     free(dummyCrData);
     free(dummyAlphaData);
