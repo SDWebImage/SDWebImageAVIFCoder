@@ -451,6 +451,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 goto end_alpha_mono;
             }
             result = CreateImageFromBuffer(avif, &outBuffer);
+            outBufferData = NULL;
         end_alpha_mono:
             free(tmpBufferData);
             free(monoBufferData);
@@ -462,6 +463,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 goto end_alpha_color;
             }
             result = CreateImageFromBuffer(avif, &argbBuffer);
+            outBufferData = NULL;
         end_alpha_color:
             goto end_alpha;
         }
@@ -486,6 +488,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 goto end_no_alpha_mono;
             }
             result = CreateImageFromBuffer(avif, &outBuffer);
+            outBufferData = NULL;
         end_no_alpha_mono:
             free(tmpBufferData);
             goto end_no_alpha;
@@ -496,6 +499,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 goto end_no_alpha_color;
             }
             result = CreateImageFromBuffer(avif, &outBuffer);
+            outBufferData = NULL;
         end_no_alpha_color:
             goto end_no_alpha;
         }
