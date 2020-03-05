@@ -308,7 +308,6 @@ static CGImageRef CreateImage8(avifImage * avif) {
                 NSLog(@"Failed to convert to ARGB8888: %ld", err);
                 goto end_444;
             }
-            break;
         end_444:
             free(yuvBufferData);
             if(err == kvImageNoError) {
@@ -398,7 +397,6 @@ static CGImageRef CreateImage8(avifImage * avif) {
             if(err != kvImageNoError) {
                 goto end_422;
             }
-            break;
         end_422:
             free(y1BufferData);
             free(y2BufferData);
