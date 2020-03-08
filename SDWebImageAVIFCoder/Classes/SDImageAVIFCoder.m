@@ -29,11 +29,19 @@ default_color_space:
     *ref = defaultColorSpace;
     *shouldRelease = FALSE;
 }
+
 static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
-    static CGColorSpaceRef defaultColorSpace;
-    static CGColorSpaceRef sRGB;
-    static CGColorSpaceRef bt709;
-    static CGColorSpaceRef bt2020;
+    static CGColorSpaceRef defaultColorSpace = NULL;
+    static CGColorSpaceRef sRGB = NULL;
+    static CGColorSpaceRef bt709 = NULL;
+    static CGColorSpaceRef bt2020 = NULL;
+    static CGColorSpaceRef bt2020hlg = NULL;
+    static CGColorSpaceRef bt2020pq = NULL;
+    static CGColorSpaceRef bt2020linear = NULL;
+    static CGColorSpaceRef p3 = NULL;
+    static CGColorSpaceRef p3hlg = NULL;
+    static CGColorSpaceRef p3pq = NULL;
+    static CGColorSpaceRef p3linear = NULL;
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -45,13 +53,35 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
             }
             if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
                 bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
-            } else {
-                bt709 = defaultColorSpace;
-            }
-            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
                 bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
             } else {
+                bt709 = defaultColorSpace;
                 bt2020 = defaultColorSpace;
+                bt2020hlg = defaultColorSpace;
+            }
+            if (@available(macOS 10.11.2, iOS 9.3, tvOS 9.3, *)) {
+                p3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+            } else {
+                p3 = defaultColorSpace;
+            }
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+                p3linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
+                bt2020linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearITUR_2020);
+            } else {
+                p3linear = defaultColorSpace;
+                bt2020linear = defaultColorSpace;
+            }
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                bt2020hlg = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_HLG);
+                p3hlg = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_HLG);
+                bt2020pq = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_PQ_EOTF);
+                p3pq = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_PQ_EOTF);
+
+            } else {
+                bt2020hlg = defaultColorSpace;
+                p3hlg = defaultColorSpace;
+                bt2020pq = defaultColorSpace;
+                p3pq = defaultColorSpace;
             }
         });
     }
@@ -65,21 +95,68 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     }
     uint16_t colorPrimaries = avif->nclx.colourPrimaries;
     uint16_t transferCharacteristics = avif->nclx.transferCharacteristics;
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN) {
         goto default_color_space;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
         *ref = bt709;
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         *ref = sRGB;
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 && (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT || transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
+        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
         *ref = bt2020;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        *ref = bt2020linear;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+        *ref = bt2020hlg;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+        *ref = bt2020pq;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        *ref = p3;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+        *ref = p3hlg;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+        *ref = p3pq;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        *ref = p3linear;
         *shouldRelease = FALSE;
         return;
     }
