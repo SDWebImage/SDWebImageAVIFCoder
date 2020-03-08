@@ -16,6 +16,68 @@
 static void FreeImageData(void *info, const void *data, size_t size) {
     free((void *)data);
 }
+static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+    static CGColorSpaceRef defaultColorSpace;
+    {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            defaultColorSpace = CGColorSpaceCreateDeviceGray();
+        });
+    }
+default_color_space:
+    *ref = defaultColorSpace;
+    *shouldRelease = FALSE;
+}
+static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+    static CGColorSpaceRef defaultColorSpace;
+    static CGColorSpaceRef bt709;
+    static CGColorSpaceRef bt2020;
+    {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(iOS 9.0, tvOS 9.0, *)) {
+                defaultColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+            } else {
+                defaultColorSpace = CGColorSpaceCreateDeviceRGB();
+            }
+            if (@available(macOS 10.11, *)) {
+                bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
+            } else {
+                bt709 = defaultColorSpace;
+            }
+            if (@available(macOS 10.11, *)) {
+                bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
+            } else {
+                bt2020 = defaultColorSpace;
+            }
+        });
+    }
+
+    if((avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) && avif->icc.data && avif->icc.size) {
+        if (@available(macOS 10.12, *)) {
+            *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
+            *shouldRelease = TRUE;
+            return;
+        }
+    }
+    uint16_t colorPrimaries = avif->nclx.colourPrimaries;
+    uint16_t transferCharacteristics = avif->nclx.transferCharacteristics;
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN) {
+        goto default_color_space;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+        *ref = bt709;
+        *shouldRelease = FALSE;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 && (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT || transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+        *ref = bt2020;
+        *shouldRelease = FALSE;
+    }
+
+default_color_space:
+    *ref = defaultColorSpace;
+    *shouldRelease = FALSE;
+}
 
 static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result) {
     BOOL monochrome = avif->yuvPlanes[1] == NULL || avif->yuvPlanes[2] == NULL;
@@ -26,20 +88,17 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, result->data, result->rowBytes * result->height, FreeImageData);
     CGBitmapInfo bitmapInfo = usesU16 ? kCGBitmapByteOrder16Host : kCGBitmapByteOrderDefault;
     bitmapInfo |= hasAlpha ? kCGImageAlphaFirst : kCGImageAlphaNone;
-    // FIXME: (ledyba-z): Set appropriate color space.
-    //  use avif->nclx.colourPrimaries and avif->nclx.transferCharacteristics to detect appropriate color space.
+
+    // Calc color space
     CGColorSpaceRef colorSpace = NULL;
+    BOOL shouldReleaseColorSpace = FALSE;
     if(monochrome){
-        vImage_Error err;
-        vImageWhitePoint whitePoint ;
-        vImageTransferFunction transferFunction;
-        CGColorRenderingIntent intent;
-        colorSpace = vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(&whitePoint, &transferFunction, intent, kvImageNoFlags, &err);
+        CalcColorSpaceMono(avif, &colorSpace, &shouldReleaseColorSpace);
     }else{
-        colorSpace = CGColorSpaceCreateDeviceRGB();
+        CalcColorSpaceRGB(avif, &colorSpace, &shouldReleaseColorSpace);
     }
+
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-    
     size_t bitsPerComponent = usesU16 ? 16 : 8;
     size_t bitsPerPixel = components * bitsPerComponent;
     size_t rowBytes = result->width * components * (usesU16 ? sizeof(uint16_t) : sizeof(uint8_t));
@@ -47,7 +106,9 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     CGImageRef imageRef = CGImageCreate(result->width, result->height, bitsPerComponent, bitsPerPixel, rowBytes, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     // clean up
-    CGColorSpaceRelease(colorSpace);
+    if(shouldReleaseColorSpace) {
+        CGColorSpaceRelease(colorSpace);
+    }
     CGDataProviderRelease(provider);
     
     return imageRef;
