@@ -33,6 +33,7 @@ default_color_space:
 static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
     static CGColorSpaceRef defaultColorSpace = NULL;
     static CGColorSpaceRef sRGB = NULL;
+    static CGColorSpaceRef sRGBlinear = NULL;
     static CGColorSpaceRef bt709 = NULL;
     static CGColorSpaceRef bt2020 = NULL;
     static CGColorSpaceRef bt2020hlg = NULL;
@@ -63,6 +64,11 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
                 p3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
             } else {
                 p3 = defaultColorSpace;
+            }
+            if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+                sRGBlinear = CGColorSpaceCreateWithName(kCGColorSpaceLinearSRGB);
+            } else {
+                sRGBlinear = defaultColorSpace;
             }
             if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
                 p3linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
@@ -108,6 +114,12 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         *ref = sRGB;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        *ref = sRGBlinear;
         *shouldRelease = FALSE;
         return;
     }
