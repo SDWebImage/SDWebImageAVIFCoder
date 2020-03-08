@@ -17,6 +17,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     free((void *)data);
 }
 static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+    [SDImageCoderHelper colorSpaceGetDeviceRGB];
     static CGColorSpaceRef defaultColorSpace;
     {
         static dispatch_once_t onceToken;
@@ -30,22 +31,24 @@ default_color_space:
 }
 static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
     static CGColorSpaceRef defaultColorSpace;
+    static CGColorSpaceRef sRGB;
     static CGColorSpaceRef bt709;
     static CGColorSpaceRef bt2020;
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
+            defaultColorSpace = CGColorSpaceCreateDeviceRGB();
             if (@available(iOS 9.0, tvOS 9.0, *)) {
-                defaultColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+                sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
             } else {
-                defaultColorSpace = CGColorSpaceCreateDeviceRGB();
+                sRGB = defaultColorSpace;
             }
-            if (@available(macOS 10.11, *)) {
+            if (@available(iOS 9.0, tvOS 9.0, *)) {
                 bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
             } else {
                 bt709 = defaultColorSpace;
             }
-            if (@available(macOS 10.11, *)) {
+            if (@available(iOS 9.0, tvOS 9.0, *)) {
                 bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
             } else {
                 bt2020 = defaultColorSpace;
@@ -54,7 +57,7 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     }
 
     if((avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) && avif->icc.data && avif->icc.size) {
-        if (@available(macOS 10.12, *)) {
+        if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
             *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
             *shouldRelease = TRUE;
             return;
@@ -68,10 +71,17 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
         *ref = bt709;
         *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 && transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        *ref = sRGB;
+        *shouldRelease = FALSE;
+        return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 && (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT || transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
         *ref = bt2020;
         *shouldRelease = FALSE;
+        return;
     }
 
 default_color_space:
