@@ -38,7 +38,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: decoded-images
-        path: decoded
+        path: avif-sample-images/decoded
     - name: Install imagemagick to compare images.
       shell: bash
       run: brew install imagemagick
