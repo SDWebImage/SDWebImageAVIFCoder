@@ -38,17 +38,17 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             defaultColorSpace = CGColorSpaceCreateDeviceRGB();
-            if (@available(iOS 9.0, tvOS 9.0, *)) {
+            if (@available(macOS 10.5, iOS 9.0, tvOS 9.0, *)) {
                 sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
             } else {
                 sRGB = defaultColorSpace;
             }
-            if (@available(iOS 9.0, tvOS 9.0, *)) {
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
                 bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
             } else {
                 bt709 = defaultColorSpace;
             }
-            if (@available(iOS 9.0, tvOS 9.0, *)) {
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
                 bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
             } else {
                 bt2020 = defaultColorSpace;
