@@ -24,7 +24,21 @@ static void CalcWhitePoint(uint16_t const colorPrimaries, vImageWhitePoint* cons
     white->white_y = primaries[7];
 }
 
+static void CalcRGBPrimaries(uint16_t const colorPrimaries, vImageRGBPrimaries* const prim) {
+    float primaries[8];
+    avifNclxColourPrimariesGetValues(colorPrimaries, primaries);
+    prim->red_x = primaries[0];
+    prim->red_y = primaries[1];
+    prim->green_x = primaries[2];
+    prim->green_y = primaries[3];
+    prim->blue_x = primaries[4];
+    prim->blue_y = primaries[5];
+    prim->white_x = primaries[6];
+    prim->white_y = primaries[7];
+}
+
 static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageTransferFunction* const tf) {
+    // See: https://www.itu.int/rec/T-REC-H.273/en
     static const float alpha = 1.099296826809442f;
     static const float beta = 0.018053968510807f;
     /*
@@ -32,7 +46,6 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
      // R' = c4 * R + c5                             (R < cutoff)
     */
 
-    // See: https://www.itu.int/rec/T-REC-H.273/en
     switch(transferCharacteristics) {
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_GAMMA28: // 5
             tf->cutoff = -INFINITY;
@@ -131,7 +144,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 1.0f;
             tf->c5 = 0.0f;
             break;
-        // Can't be represented by vImageTransferFunction. Use gamma 2.2 as a default.
+        // Can't be represented by vImageTransferFunction. Use gamma 2.2 as a fallback.
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST2084: // 16
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG: // 18
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG_100_1: // 9
@@ -152,7 +165,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             break;
     }
 }
-static CGColorSpaceRef CreateMonoColorSpace(uint16_t const colorPrimaries, uint16_t const transferCharacteristics) {
+static CGColorSpaceRef CreateColorSpaceMono(uint16_t const colorPrimaries, uint16_t const transferCharacteristics) {
     if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
         vImage_Error err;
         vImageWhitePoint white;
@@ -162,6 +175,30 @@ static CGColorSpaceRef CreateMonoColorSpace(uint16_t const colorPrimaries, uint1
         CGColorSpaceRef colorSpace = vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(&white, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
         if(err != kvImageNoError) {
             NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
+            if(colorSpace != NULL) {
+                CGColorSpaceRelease(colorSpace);
+            }
+            return NULL;
+        }
+        return colorSpace;
+    }else{
+        return NULL;
+    }
+}
+
+static CGColorSpaceRef CreateColorSpaceRGB(uint16_t const colorPrimaries, uint16_t const transferCharacteristics) {
+    if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
+        vImage_Error err;
+        vImageRGBPrimaries primaries;
+        vImageTransferFunction transfer;
+        CalcRGBPrimaries(colorPrimaries, &primaries);
+        CalcTransferFunction(transferCharacteristics, &transfer);
+        CGColorSpaceRef colorSpace = vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(&primaries, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
+        if(err != kvImageNoError) {
+            NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
+            if(colorSpace != NULL) {
+                CGColorSpaceRelease(colorSpace);
+            }
             return NULL;
         }
         return colorSpace;
@@ -210,7 +247,7 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            sRGB = CreateMonoColorSpace(colorPrimaries, transferCharacteristics);
+            sRGB = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(sRGB == NULL) {
                 sRGB = defaultColorSpace;
             }
@@ -224,7 +261,7 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
         static CGColorSpaceRef bt709 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            bt709 = CreateMonoColorSpace(colorPrimaries, transferCharacteristics);
+            bt709 = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(bt709 == NULL) {
                 bt709 = defaultColorSpace;
             }
@@ -239,7 +276,7 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
         static CGColorSpaceRef bt2020 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            bt2020 = CreateMonoColorSpace(colorPrimaries, transferCharacteristics);
+            bt2020 = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(bt2020 == NULL) {
                 bt2020 = defaultColorSpace;
             }
@@ -253,7 +290,7 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            p3 = CreateMonoColorSpace(colorPrimaries, transferCharacteristics);
+            p3 = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(p3 == NULL) {
                 p3 = defaultColorSpace;
             }
@@ -263,7 +300,7 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
         return;
     }
 
-    *ref = CreateMonoColorSpace(colorPrimaries, transferCharacteristics);
+    *ref = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
     if(*ref != NULL) {
         *shouldRelease = TRUE;
     } else {
@@ -474,11 +511,14 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         *shouldRelease = FALSE;
         return;
     }
-    // TODO(ledyba-z): We can support more color spaces
-    //                 using vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction
 
-    *ref = defaultColorSpace;
-    *shouldRelease = FALSE;
+    *ref = CreateColorSpaceRGB(colorPrimaries, transferCharacteristics);
+    if(*ref != NULL) {
+        *shouldRelease = TRUE;
+    } else {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+    }
 }
 
 static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result) {
