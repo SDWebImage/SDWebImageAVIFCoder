@@ -226,8 +226,8 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
                 *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
                 *shouldRelease = TRUE;
             }else{
-                CFDataRef iccData = CFDataCreateWithBytesNoCopy(NULL, avif->icc.data, avif->icc.size, NULL);
-                *ref = CGColorSpaceCreateWithICCProfile(iccData);
+                NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
+                *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
                 *shouldRelease = TRUE;
             }
             return;
@@ -332,8 +332,8 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
                 *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
                 *shouldRelease = TRUE;
             }else{
-                CFDataRef iccData = CFDataCreateWithBytesNoCopy(NULL, avif->icc.data, avif->icc.size, NULL);
-                *ref = CGColorSpaceCreateWithICCProfile(iccData);
+                NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
+                *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
                 *shouldRelease = TRUE;
             }
             return;
