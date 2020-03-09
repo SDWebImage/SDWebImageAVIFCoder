@@ -226,7 +226,10 @@ static CGImageRef CreateImage8(avifImage * avif) {
         origCr.rowBytes = 0;
         memset(origCr.data, pixelRange.CbCr_bias, origCr.width);
     }
-        
+    
+    //TODO: (ledyba-z) we have to scale alpha when libavif v0.6.0 comes.
+    //  https://github.com/AOMediaCodec/libavif/issues/91
+
     uint8_t const permuteMap[4] = {0, 1, 2, 3};
     switch(avif->yuvFormat) {
         case AVIF_PIXEL_FORMAT_NONE:
@@ -521,6 +524,7 @@ static CGImageRef CreateImage16U(avifImage * avif) {
     uint16_t* resultBufferData = NULL;
     uint16_t* argbBufferData = NULL;
     uint16_t* ayuvBufferData = NULL;
+    uint16_t* scaledAlphaBufferData = NULL;
     uint16_t* dummyCbData = NULL;
     uint16_t* dummyCrData = NULL;
     uint16_t* dummyAlphaData = NULL;
@@ -637,10 +641,53 @@ static CGImageRef CreateImage16U(avifImage * avif) {
 
     vImage_Buffer origAlpha = {0};
     if(hasAlpha) {
+        float* floatAlphaBufferData = NULL;
+        floatAlphaBufferData = calloc(avif->width * avif->height, sizeof(float));
+        scaledAlphaBufferData = calloc(avif->width * avif->height, sizeof(uint16_t));
+        if(floatAlphaBufferData == NULL || scaledAlphaBufferData == NULL) {
+            err = kvImageMemoryAllocationError;
+            goto end_prepare_alpha;
+        }
         origAlpha.data = avif->alphaPlane;
         origAlpha.width = avif->width;
         origAlpha.height = avif->height;
         origAlpha.rowBytes = avif->alphaRowBytes;
+        
+        vImage_Buffer floatAlphaBuffer = {
+            .data = floatAlphaBufferData,
+            .width = avif->width,
+            .height = avif->height,
+            .rowBytes = avif->width * sizeof(float),
+        };
+        vImage_Buffer scaledAlphaBuffer = {
+            .data = scaledAlphaBufferData,
+            .width = avif->width,
+            .height = avif->height,
+            .rowBytes = avif->width * sizeof(uint16_t),
+        };
+        err = vImageConvert_16UToF(&origAlpha, &floatAlphaBuffer, 0.0f, 1.0f, kvImageNoFlags);
+        if(err != kvImageNoError) {
+            NSLog(@"Failed to convert alpha planes from uint16 to float: %ld", err);
+            goto end_prepare_alpha;
+        }
+        float scale = 1.0f;
+        if(avif->depth == 10) {
+            scale = (float)((1 << 10) - 1) / 65535.0f;
+        } else if(avif->depth == 12) {
+            scale = (float)((1 << 12) - 1) / 65535.0f;
+        }
+        err = vImageConvert_FTo16U(&floatAlphaBuffer, &scaledAlphaBuffer, 0.0f, scale, kvImageNoFlags);
+        if(err != kvImageNoError) {
+            NSLog(@"Failed to convert alpha planes from uint16 to float: %ld", err);
+            goto end_prepare_alpha;
+        }
+        origAlpha.data = scaledAlphaBufferData;
+        origAlpha.rowBytes = avif->width * sizeof(uint16_t);
+    end_prepare_alpha:
+        free(floatAlphaBufferData);
+        if(err != kvImageNoError) {
+            goto end_all;
+        }
     } else {
         // allocate dummy data to convert monochrome images.
         origAlpha.rowBytes = avif->width * sizeof(uint16_t);
@@ -750,6 +797,8 @@ static CGImageRef CreateImage16U(avifImage * avif) {
     dummyCrData = NULL;
     free(dummyAlphaData);
     dummyAlphaData = NULL;
+    free(scaledAlphaBufferData);
+    scaledAlphaBufferData = NULL;
 
     err = vImageConvert_YpCbCrToARGB_GenerateConversion(&matrix,
                                                         &pixelRange,
@@ -935,6 +984,7 @@ end_all:
     free(resultBufferData);
     free(argbBufferData);
     free(ayuvBufferData);
+    free(scaledAlphaBufferData);
     free(dummyCbData);
     free(dummyCrData);
     free(dummyAlphaData);
