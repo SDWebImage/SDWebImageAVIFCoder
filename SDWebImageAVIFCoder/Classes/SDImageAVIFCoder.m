@@ -32,63 +32,10 @@ default_color_space:
 
 static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
     static CGColorSpaceRef defaultColorSpace = NULL;
-    static CGColorSpaceRef sRGB = NULL;
-    static CGColorSpaceRef sRGBlinear = NULL;
-    static CGColorSpaceRef bt709 = NULL;
-    static CGColorSpaceRef bt2020 = NULL;
-    static CGColorSpaceRef bt2020hlg = NULL;
-    static CGColorSpaceRef bt2020pq = NULL;
-    static CGColorSpaceRef bt2020linear = NULL;
-    static CGColorSpaceRef p3 = NULL;
-    static CGColorSpaceRef p3hlg = NULL;
-    static CGColorSpaceRef p3pq = NULL;
-    static CGColorSpaceRef p3linear = NULL;
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             defaultColorSpace = CGColorSpaceCreateDeviceRGB();
-            if (@available(macOS 10.5, iOS 9.0, tvOS 9.0, *)) {
-                sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
-            } else {
-                sRGB = defaultColorSpace;
-            }
-            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
-                bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
-                bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
-            } else {
-                bt709 = defaultColorSpace;
-                bt2020 = defaultColorSpace;
-                bt2020hlg = defaultColorSpace;
-            }
-            if (@available(macOS 10.11.2, iOS 9.3, tvOS 9.3, *)) {
-                p3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
-            } else {
-                p3 = defaultColorSpace;
-            }
-            if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-                sRGBlinear = CGColorSpaceCreateWithName(kCGColorSpaceLinearSRGB);
-            } else {
-                sRGBlinear = defaultColorSpace;
-            }
-            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
-                p3linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
-                bt2020linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearITUR_2020);
-            } else {
-                p3linear = defaultColorSpace;
-                bt2020linear = defaultColorSpace;
-            }
-            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
-                bt2020hlg = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_HLG);
-                p3hlg = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_HLG);
-                bt2020pq = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_PQ_EOTF);
-                p3pq = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_PQ_EOTF);
-
-            } else {
-                bt2020hlg = defaultColorSpace;
-                p3hlg = defaultColorSpace;
-                bt2020pq = defaultColorSpace;
-                p3pq = defaultColorSpace;
-            }
         });
     }
 
@@ -101,24 +48,55 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     }
     uint16_t colorPrimaries = avif->nclx.colourPrimaries;
     uint16_t transferCharacteristics = avif->nclx.transferCharacteristics;
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN) {
-        goto default_color_space;
+    if((colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN ||
+        colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNSPECIFIED) &&
+       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN ||
+        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+        static CGColorSpaceRef bt709 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
+                bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
+            } else {
+                bt709 = defaultColorSpace;
+            }
+        });
         *ref = bt709;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        static CGColorSpaceRef sRGB = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.5, iOS 9.0, tvOS 9.0, *)) {
+                sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+            } else {
+                sRGB = defaultColorSpace;
+            }
+        });
         *ref = sRGB;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        static CGColorSpaceRef sRGBlinear = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+                sRGBlinear = CGColorSpaceCreateWithName(kCGColorSpaceLinearSRGB);
+            } else {
+                sRGBlinear = defaultColorSpace;
+            }
+        });
         *ref = sRGBlinear;
         *shouldRelease = FALSE;
         return;
@@ -126,54 +104,126 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
        (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
         transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+        static CGColorSpaceRef bt2020 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
+                bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
+            } else {
+                bt2020 = defaultColorSpace;
+            }
+        });
         *ref = bt2020;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        static CGColorSpaceRef bt2020linear = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+                bt2020linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearITUR_2020);
+            } else {
+                bt2020linear = defaultColorSpace;
+            }
+        });
         *ref = bt2020linear;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+        static CGColorSpaceRef bt2020hlg = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                bt2020hlg = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_HLG);
+            } else {
+                bt2020hlg = defaultColorSpace;
+            }
+        });
         *ref = bt2020hlg;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+        static CGColorSpaceRef bt2020pq = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                bt2020pq = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_PQ_EOTF);
+            } else {
+                bt2020pq = defaultColorSpace;
+            }
+        });
         *ref = bt2020pq;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        static CGColorSpaceRef p3 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.11.2, iOS 9.3, tvOS 9.3, *)) {
+                p3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+            } else {
+                p3 = defaultColorSpace;
+            }
+        });
         *ref = p3;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+        static CGColorSpaceRef p3hlg = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                p3hlg = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_HLG);
+            } else {
+                p3hlg = defaultColorSpace;
+            }
+        });
+
         *ref = p3hlg;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+        static CGColorSpaceRef p3pq = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                p3pq = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_PQ_EOTF);
+            } else {
+                p3pq = defaultColorSpace;
+            }
+        });
         *ref = p3pq;
         *shouldRelease = FALSE;
         return;
     }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        static CGColorSpaceRef p3linear = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+                p3linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
+            } else {
+                p3linear = defaultColorSpace;
+            }
+        });
         *ref = p3linear;
         *shouldRelease = FALSE;
         return;
     }
 
-default_color_space:
     *ref = defaultColorSpace;
     *shouldRelease = FALSE;
 }
