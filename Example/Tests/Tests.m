@@ -172,7 +172,9 @@ int const threshold16 = 16 << 8;
             for(size_t c = 0; c < 3; ++c) {
                 int32_t result = pix[c];
                 int32_t expected = expectedColor[c];
-                XCTAssertTrue(ok = (abs(result - expected) <= threshold8), "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)", x, y, c, result, expected, filename);
+                XCTAssertTrue(ok = (abs(result - expected) <= threshold8),
+                              "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)",
+                              x, y, c, result, expected, filename);
             }
             if(!ok) {
                 goto end;
@@ -202,9 +204,13 @@ end:
             for(size_t c = 1; c < 4; ++c) {
                 int32_t result = pix[c];
                 int32_t expected = expectedColor[c-1];
-                XCTAssertTrue(ok &= (abs(result - expected) <= threshold8), "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)", x, y, c, result, expected, filename);
+                XCTAssertTrue(ok &= (abs(result - expected) <= threshold8),
+                              "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)",
+                              x, y, c, result, expected, filename);
             }
-            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xff : 0x00)), "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)", x, y, pix[0], x < 128 ? 0xff : 0x00, filename);
+            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xff : 0x00)),
+                          "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)",
+                          x, y, pix[0], x < 128 ? 0xff : 0x00, filename);
             if(!ok) {
                 goto end;
             }
@@ -233,7 +239,9 @@ end:
             for(size_t c = 0; c < 3; ++c) {
                 int32_t result = pix[c];
                 int32_t expected = expectedColor[c];
-                XCTAssertTrue(ok &= (abs(result - expected) <= threshold16), "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)", x, y, c, result, expected, filename);
+                XCTAssertTrue(ok &= (abs(result - expected) <= threshold16),
+                              "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)",
+                              x, y, c, result, expected, filename);
             }
             if(!ok) {
                 goto end;
@@ -257,15 +265,19 @@ end:
     XCTAssertEqual(numComponents, 4);
     XCTAssertEqual(bytesPerPixel, 8);
     for(size_t y = 0; y < height; ++y) {
-        for(size_t x = 0; x < width; ++x) {
+        for(size_t x = 64; x < width; x+=128) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
             bool ok = true;
             for(size_t c = 1; c < 4; ++c) {
                 int32_t result = pix[c];
                 int32_t expected = expectedColor[c-1];
-                XCTAssertTrue(ok &= (abs(result - expected) <= threshold16), "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)", x, y, c, result, expected, filename);
+                XCTAssertTrue(ok &= (abs(result - expected) <= threshold16),
+                              "(x: %ld, y: %ld, c:%ld): result=%d vs expected=%d (%@)",
+                              x, y, c, result, expected, filename);
             }
-            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xffff : 0x0000)), "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)", x, y, pix[0], x < 128 ? 0xffff : 0x00, filename);
+            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xffff : 0x0000)),
+                          "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)",
+                          x, y, pix[0], x < 128 ? 0xffff : 0x00, filename);
             if(!ok) {
                 goto end;
             }
@@ -292,7 +304,9 @@ end:
         for(size_t x = 0; x < width; ++x) {
             bool ok = true;
             UInt8* pix = (buf + (stride * y) + (bytesPerPixel * x));
-            XCTAssertTrue(ok &= (abs(pix0 - *pix) <= threshold8), "(x: %ld, y: %ld): result=%d vs expected=%d (%@)", x, y, *pix, pix0, filename);
+            XCTAssertTrue(ok &= (abs(pix0 - *pix) <= threshold8),
+                          "(x: %ld, y: %ld): result=%d vs expected=%d (%@)",
+                          x, y, *pix, pix0, filename);
             if(!ok) {
                 goto end;
             }
@@ -319,8 +333,12 @@ end:
         for(size_t x = 64; x < width; x+=128) {
             bool ok = true;
             UInt8* pix = (buf + (stride * y) + (bytesPerPixel * x));
-            XCTAssertTrue(ok &= (abs(pix0 - pix[1]) <= threshold8), "(x: %ld, y: %ld, c: mono): result=%d vs expected=%d (%@)", x, y, pix[1], pix0, filename);
-            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xff : 0x00)), "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)", x, y, pix[0], x < 128 ? 0xff : 0x00, filename);
+            XCTAssertTrue(ok &= (abs(pix0 - pix[1]) <= threshold8),
+                          "(x: %ld, y: %ld, c: mono): result=%d vs expected=%d (%@)",
+                          x, y, pix[1], pix0, filename);
+            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xff : 0x00)),
+                          "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)",
+                          x, y, pix[0], x < 128 ? 0xff : 0x00, filename);
             if(!ok) {
                 goto end;
             }
@@ -348,7 +366,9 @@ end:
         for(size_t x = 0; x < width; ++x) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
             bool ok = true;
-            XCTAssertTrue(ok &= (abs(pix0 - *pix) <= threshold16), "(x: %ld, y: %ld): result=%d vs expected=%d (%@)", x, y, *pix, pix0, filename);
+            XCTAssertTrue(ok &= (abs(pix0 - *pix) <= threshold16),
+                          "(x: %ld, y: %ld): result=%d vs expected=%d (%@)",
+                          x, y, *pix, pix0, filename);
             if(!ok) {
                 goto end;
             }
@@ -372,11 +392,15 @@ end:
     XCTAssertEqual(bytesPerPixel, 4);
     UInt16 const pix0 = ((UInt16*)buf)[1];
     for(size_t y = 0; y < height; ++y) {
-        for(size_t x = 0; x < width; ++x) {
+        for(size_t x = 64; x < width; x+=128) {
             UInt16* pix = (UInt16*)(buf + (stride * y) + (bytesPerPixel * x));
             bool ok = true;
-            XCTAssertTrue(ok &= (abs(pix0 - pix[1]) <= threshold16), "(x: %ld, y: %ld): result=%d vs expected=%d (%@)", x, y, pix[1], pix0, filename);
-            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xffff : 0x0000)), "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)", x, y, pix[0], x < 128 ? 0xffff : 0x0000, filename);
+            XCTAssertTrue(ok &= (abs(pix0 - pix[1]) <= threshold16),
+                          "(x: %ld, y: %ld): result=%d vs expected=%d (%@)",
+                          x, y, pix[1], pix0, filename);
+            XCTAssertTrue(ok &= (pix[0] == (x < 128 ? 0xffff : 0x0000)),
+                          "(x: %ld, y: %ld, c: alpha): result=%d vs expected=%d (%@)",
+                          x, y, pix[0], x < 128 ? 0xffff : 0x0000, filename);
             if(!ok) {
                 goto end;
             }
@@ -420,9 +444,7 @@ end:
                 }
             }else{
                 if([alpha isEqualToString:@"with-alpha"]) {
-                    // FIXME(ledyba-z): This issue blocks testing alpha plane:
-                    //  https://github.com/AOMediaCodec/libavif/issues/86
-                    //[self assertMonoAlpha16: convertedFilename img:img.CGImage];
+                    [self assertMonoAlpha16: convertedFilename img:img.CGImage];
                 }else{
                     [self assertMono16: convertedFilename img:img.CGImage];
                 }
@@ -436,9 +458,7 @@ end:
                 }
             } else {
                 if([alpha isEqualToString:@"with-alpha"]) {
-                    // FIXME(ledyba-z): This issue blocks testing alpha plane:
-                    //  https://github.com/AOMediaCodec/libavif/issues/86
-                    //[self assertColorAlpha16: convertedFilename img:img.CGImage expectedColor:expectedColor16];
+                    [self assertColorAlpha16: convertedFilename img:img.CGImage expectedColor:expectedColor16];
                 } else {
                     [self assertColor16: convertedFilename img:img.CGImage expectedColor:expectedColor16];
                 }
