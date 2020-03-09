@@ -225,8 +225,12 @@ static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* sho
             if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
                 *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
                 *shouldRelease = TRUE;
-                return;
+            }else{
+                CFDataRef iccData = CFDataCreateWithBytesNoCopy(NULL, avif->icc.data, avif->icc.size, NULL);
+                *ref = CGColorSpaceCreateWithICCProfile(iccData);
+                *shouldRelease = TRUE;
             }
+            return;
         }
         *ref = defaultColorSpace;
         *shouldRelease = FALSE;
@@ -327,8 +331,12 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
             if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
                 *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
                 *shouldRelease = TRUE;
-                return;
+            }else{
+                CFDataRef iccData = CFDataCreateWithBytesNoCopy(NULL, avif->icc.data, avif->icc.size, NULL);
+                *ref = CGColorSpaceCreateWithICCProfile(iccData);
+                *shouldRelease = TRUE;
             }
+            return;
         }
         *ref = defaultColorSpace;
         *shouldRelease = FALSE;
