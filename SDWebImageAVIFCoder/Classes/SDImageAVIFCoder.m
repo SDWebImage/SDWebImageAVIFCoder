@@ -38,13 +38,22 @@ static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
             defaultColorSpace = CGColorSpaceCreateDeviceRGB();
         });
     }
-
-    if((avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) && avif->icc.data && avif->icc.size) {
-        if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-            *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
-            *shouldRelease = TRUE;
-            return;
+    if(avif->profileFormat == AVIF_PROFILE_FORMAT_NONE) {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
+        if(avif->icc.data && avif->icc.size) {
+            if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+                *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
+                *shouldRelease = TRUE;
+                return;
+            }
         }
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
     }
     uint16_t colorPrimaries = avif->nclx.colourPrimaries;
     uint16_t transferCharacteristics = avif->nclx.transferCharacteristics;
