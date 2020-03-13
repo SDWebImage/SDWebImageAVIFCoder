@@ -17,6 +17,518 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     free((void *)data);
 }
 
+static void CalcWhitePoint(uint16_t const colorPrimaries, vImageWhitePoint* const white) {
+    float primaries[8];
+    avifNclxColourPrimariesGetValues(colorPrimaries, primaries);
+    white->white_x = primaries[6];
+    white->white_y = primaries[7];
+}
+
+static void CalcRGBPrimaries(uint16_t const colorPrimaries, vImageRGBPrimaries* const prim) {
+    float primaries[8];
+    avifNclxColourPrimariesGetValues(colorPrimaries, primaries);
+    prim->red_x = primaries[0];
+    prim->red_y = primaries[1];
+    prim->green_x = primaries[2];
+    prim->green_y = primaries[3];
+    prim->blue_x = primaries[4];
+    prim->blue_y = primaries[5];
+    prim->white_x = primaries[6];
+    prim->white_y = primaries[7];
+}
+
+static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageTransferFunction* const tf) {
+    // See: https://www.itu.int/rec/T-REC-H.273/en
+    static const float alpha = 1.099296826809442f;
+    static const float beta = 0.018053968510807f;
+    /*
+     // R' = c0 * pow( c1 * R + c2, gamma ) + c3,    (R >= cutoff)
+     // R' = c4 * R + c5                             (R < cutoff)
+    */
+
+    switch(transferCharacteristics) {
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_GAMMA28: // 5
+            tf->cutoff = -INFINITY;
+            tf->c0 = 1.0f;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->c3 = 0.0f;
+            tf->c4 = 0.0f;
+            tf->c5 = 0.0f;
+            tf->gamma = 1.0f/2.8f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709: // 1
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT601: // 6
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT: // 14
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT: // 15
+            tf->cutoff = beta;
+            //
+            tf->c0 = alpha;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->gamma = 0.45f;
+            tf->c3 = -(alpha - 1);
+            //
+            tf->c4 = 4.5f;
+            tf->c5 = 0.0f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST240: // 7
+            tf->cutoff = beta;
+            //
+            tf->c0 = alpha;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->gamma = 0.45f;
+            tf->c3 = -(alpha - 1);
+            //
+            tf->c4 = 4.0f;
+            tf->c5 = 0.0f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR: // 8
+            tf->cutoff = INFINITY;
+            //
+            tf->c0 = 1.0f;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->gamma = 1.0f;
+            tf->c3 = 0.0f;
+            //
+            tf->c4 = 4.0f;
+            tf->c5 = 0.0f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_IEC61966: // 11
+            tf->cutoff = beta;
+            //
+            tf->c0 = alpha;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->gamma = 0.45f;
+            tf->c3 = -(alpha - 1);
+            //
+            tf->c4 = 4.5f;
+            tf->c5 = 0.0f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT1361_EXTENDED: // 12
+            tf->cutoff = beta;
+            //
+            tf->c0 = alpha;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->gamma = 0.45f;
+            tf->c3 = -(alpha - 1);
+            //
+            tf->c4 = 4.5f;
+            tf->c5 = 0.0f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB: // 13
+            tf->cutoff = beta;
+            //
+            tf->c0 = alpha;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->gamma = 1.0f/2.4f;
+            tf->c3 = -(alpha - 1);
+            //
+            tf->c4 = 12.92f;
+            tf->c5 = 0.0f;
+            break;
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST428: // 17
+            tf->cutoff = -INFINITY;
+            //
+            tf->c0 = 1.0f;
+            tf->c1 = 48.0f / 52.37f;
+            tf->c2 = 0.0f;
+            tf->gamma = 1.0f/2.6f;
+            tf->c3 = 0.0f;
+            //
+            tf->c4 = 1.0f;
+            tf->c5 = 0.0f;
+            break;
+        // Can't be represented by vImageTransferFunction. Use gamma 2.2 as a fallback.
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST2084: // 16
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG: // 18
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG_100_1: // 9
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG_100_SQRT: // 10
+        //
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN: // 0
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED: // 2
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_GAMMA22: // 4
+        default:
+            tf->cutoff = -INFINITY;
+            tf->c0 = 1.0f;
+            tf->c1 = 1.0f;
+            tf->c2 = 0.0f;
+            tf->c3 = 0.0f;
+            tf->c4 = 0.0f;
+            tf->c5 = 0.0f;
+            tf->gamma = 1.0f/2.2f;
+            break;
+    }
+}
+static CGColorSpaceRef CreateColorSpaceMono(uint16_t const colorPrimaries, uint16_t const transferCharacteristics) {
+    if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
+        vImage_Error err;
+        vImageWhitePoint white;
+        vImageTransferFunction transfer;
+        CalcWhitePoint(colorPrimaries, &white);
+        CalcTransferFunction(transferCharacteristics, &transfer);
+        CGColorSpaceRef colorSpace = vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(&white, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
+        if(err != kvImageNoError) {
+            NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
+            if(colorSpace != NULL) {
+                CGColorSpaceRelease(colorSpace);
+            }
+            return NULL;
+        }
+        return colorSpace;
+    }else{
+        return NULL;
+    }
+}
+
+static CGColorSpaceRef CreateColorSpaceRGB(uint16_t const colorPrimaries, uint16_t const transferCharacteristics) {
+    if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
+        vImage_Error err;
+        vImageRGBPrimaries primaries;
+        vImageTransferFunction transfer;
+        CalcRGBPrimaries(colorPrimaries, &primaries);
+        CalcTransferFunction(transferCharacteristics, &transfer);
+        CGColorSpaceRef colorSpace = vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(&primaries, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
+        if(err != kvImageNoError) {
+            NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
+            if(colorSpace != NULL) {
+                CGColorSpaceRelease(colorSpace);
+            }
+            return NULL;
+        }
+        return colorSpace;
+    }else{
+        return NULL;
+    }
+}
+
+static void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+    static CGColorSpaceRef defaultColorSpace;
+    {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            defaultColorSpace = CGColorSpaceCreateDeviceGray();
+        });
+    }
+    if(avif->profileFormat == AVIF_PROFILE_FORMAT_NONE) {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
+        if(avif->icc.data && avif->icc.size) {
+            if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+                *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
+                *shouldRelease = TRUE;
+            }else{
+                NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
+                *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
+                *shouldRelease = TRUE;
+            }
+            return;
+        }
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    uint16_t const colorPrimaries = avif->nclx.colourPrimaries;
+    uint16_t const transferCharacteristics = avif->nclx.transferCharacteristics;
+    if((colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN ||
+        colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNSPECIFIED) &&
+       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN ||
+        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        static CGColorSpaceRef sRGB = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            sRGB = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            if(sRGB == NULL) {
+                sRGB = defaultColorSpace;
+            }
+        });
+        *ref = sRGB;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+        static CGColorSpaceRef bt709 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            bt709 = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            if(bt709 == NULL) {
+                bt709 = defaultColorSpace;
+            }
+        });
+        *ref = bt709;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
+        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+        static CGColorSpaceRef bt2020 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            bt2020 = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            if(bt2020 == NULL) {
+                bt2020 = defaultColorSpace;
+            }
+        });
+        *ref = bt2020;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        static CGColorSpaceRef p3 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            p3 = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            if(p3 == NULL) {
+                p3 = defaultColorSpace;
+            }
+        });
+        *ref = p3;
+        *shouldRelease = FALSE;
+        return;
+    }
+
+    *ref = CreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+    if(*ref != NULL) {
+        *shouldRelease = TRUE;
+    } else {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+    }
+}
+
+static void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+    static CGColorSpaceRef defaultColorSpace = NULL;
+    {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            defaultColorSpace = CGColorSpaceCreateDeviceRGB();
+        });
+    }
+    if(avif->profileFormat == AVIF_PROFILE_FORMAT_NONE) {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
+        if(avif->icc.data && avif->icc.size) {
+            if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+                *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
+                *shouldRelease = TRUE;
+            }else{
+                NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
+                *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
+                *shouldRelease = TRUE;
+            }
+            return;
+        }
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    uint16_t const colorPrimaries = avif->nclx.colourPrimaries;
+    uint16_t const transferCharacteristics = avif->nclx.transferCharacteristics;
+    if((colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN ||
+        colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNSPECIFIED) &&
+       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN ||
+        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+        static CGColorSpaceRef bt709 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
+                bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
+            } else {
+                bt709 = defaultColorSpace;
+            }
+        });
+        *ref = bt709;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        static CGColorSpaceRef sRGB = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.5, iOS 9.0, tvOS 9.0, *)) {
+                sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+            } else {
+                sRGB = defaultColorSpace;
+            }
+        });
+        *ref = sRGB;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        static CGColorSpaceRef sRGBlinear = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+                sRGBlinear = CGColorSpaceCreateWithName(kCGColorSpaceLinearSRGB);
+            } else {
+                sRGBlinear = defaultColorSpace;
+            }
+        });
+        *ref = sRGBlinear;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
+        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+        static CGColorSpaceRef bt2020 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
+                bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
+            } else {
+                bt2020 = defaultColorSpace;
+            }
+        });
+        *ref = bt2020;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        static CGColorSpaceRef bt2020linear = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+                bt2020linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearITUR_2020);
+            } else {
+                bt2020linear = defaultColorSpace;
+            }
+        });
+        *ref = bt2020linear;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+        static CGColorSpaceRef bt2020hlg = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                bt2020hlg = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_HLG);
+            } else {
+                bt2020hlg = defaultColorSpace;
+            }
+        });
+        *ref = bt2020hlg;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+        static CGColorSpaceRef bt2020pq = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                bt2020pq = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_PQ_EOTF);
+            } else {
+                bt2020pq = defaultColorSpace;
+            }
+        });
+        *ref = bt2020pq;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+        static CGColorSpaceRef p3 = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.11.2, iOS 9.3, tvOS 9.3, *)) {
+                p3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+            } else {
+                p3 = defaultColorSpace;
+            }
+        });
+        *ref = p3;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+        static CGColorSpaceRef p3hlg = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                p3hlg = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_HLG);
+            } else {
+                p3hlg = defaultColorSpace;
+            }
+        });
+
+        *ref = p3hlg;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+        static CGColorSpaceRef p3pq = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+                p3pq = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_PQ_EOTF);
+            } else {
+                p3pq = defaultColorSpace;
+            }
+        });
+        *ref = p3pq;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+        static CGColorSpaceRef p3linear = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+                p3linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
+            } else {
+                p3linear = defaultColorSpace;
+            }
+        });
+        *ref = p3linear;
+        *shouldRelease = FALSE;
+        return;
+    }
+
+    *ref = CreateColorSpaceRGB(colorPrimaries, transferCharacteristics);
+    if(*ref != NULL) {
+        *shouldRelease = TRUE;
+    } else {
+        *ref = defaultColorSpace;
+        *shouldRelease = FALSE;
+    }
+}
+
 static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result) {
     BOOL monochrome = avif->yuvPlanes[1] == NULL || avif->yuvPlanes[2] == NULL;
     BOOL hasAlpha = avif->alphaPlane != NULL;
@@ -26,16 +538,17 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, result->data, result->rowBytes * result->height, FreeImageData);
     CGBitmapInfo bitmapInfo = usesU16 ? kCGBitmapByteOrder16Host : kCGBitmapByteOrderDefault;
     bitmapInfo |= hasAlpha ? kCGImageAlphaFirst : kCGImageAlphaNone;
-    // FIXME: (ledyba-z): Set appropriate color space.
-    //  use avif->nclx.colourPrimaries and avif->nclx.transferCharacteristics to detect appropriate color space.
+
+    // Calc color space
     CGColorSpaceRef colorSpace = NULL;
+    BOOL shouldReleaseColorSpace = FALSE;
     if(monochrome){
-        colorSpace = CGColorSpaceCreateDeviceGray();
+        CalcColorSpaceMono(avif, &colorSpace, &shouldReleaseColorSpace);
     }else{
-        colorSpace = CGColorSpaceCreateDeviceRGB();
+        CalcColorSpaceRGB(avif, &colorSpace, &shouldReleaseColorSpace);
     }
+
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-    
     size_t bitsPerComponent = usesU16 ? 16 : 8;
     size_t bitsPerPixel = components * bitsPerComponent;
     size_t rowBytes = result->width * components * (usesU16 ? sizeof(uint16_t) : sizeof(uint8_t));
@@ -43,7 +556,9 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     CGImageRef imageRef = CGImageCreate(result->width, result->height, bitsPerComponent, bitsPerPixel, rowBytes, colorSpace, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     // clean up
-    CGColorSpaceRelease(colorSpace);
+    if(shouldReleaseColorSpace) {
+        CGColorSpaceRelease(colorSpace);
+    }
     CGDataProviderRelease(provider);
     
     return imageRef;
@@ -53,7 +568,16 @@ static void SetupConversionInfo(avifImage * avif,
                                 avifReformatState* state,
                                 vImage_YpCbCrToARGBMatrix* matrix,
                                 vImage_YpCbCrPixelRange* pixelRange) {
-    avifPrepareReformatState(avif, state);
+    avifRGBImage emptyRGBImage = {
+        .width = avif->width,
+        .height = avif->height,
+        .depth = avif->depth,
+        .format = AVIF_RGB_FORMAT_ARGB,
+
+        .pixels = NULL,
+        .rowBytes = 0,
+    };
+    avifPrepareReformatState(avif, &emptyRGBImage, state);
 
     // Setup Matrix
     matrix->Yp = 1.0f;
@@ -144,6 +668,7 @@ static CGImageRef CreateImage8(avifImage * avif) {
     uint8_t* argbBufferData = NULL;
     uint8_t* dummyCbData = NULL;
     uint8_t* dummyCrData = NULL;
+    uint8_t* scaledAlphaBufferData = NULL;
 
     vImage_Error err = kvImageNoError;
 
@@ -413,12 +938,52 @@ static CGImageRef CreateImage8(avifImage * avif) {
     }
 
     if(hasAlpha) { // alpha
-        vImage_Buffer alphaBuffer = {
-            .data = avif->alphaPlane,
-            .width = avif->width,
-            .height = avif->height,
-            .rowBytes = avif->alphaRowBytes,
-        };
+        vImage_Buffer alphaBuffer = {0};
+        if(avif->alphaRange == AVIF_RANGE_LIMITED) {
+            float* floatAlphaBufferData = NULL;
+            floatAlphaBufferData = calloc(avif->width * avif->height, sizeof(float));
+            scaledAlphaBufferData = calloc(avif->width * avif->height, sizeof(uint8_t));
+            if(floatAlphaBufferData == NULL || scaledAlphaBufferData == NULL) {
+                err = kvImageMemoryAllocationError;
+                goto end_prepare_alpha;
+            }
+            vImage_Buffer origAlphaBuffer = {
+                .data = avif->alphaPlane,
+                .width = avif->width,
+                .height = avif->height,
+                .rowBytes = avif->alphaRowBytes,
+            };
+            vImage_Buffer floatAlphaBuffer = {
+                .data = floatAlphaBufferData,
+                .width = avif->width,
+                .height = avif->height,
+                .rowBytes = avif->width * sizeof(float),
+            };
+            alphaBuffer.width = avif->width;
+            alphaBuffer.height = avif->height;
+            alphaBuffer.data = scaledAlphaBufferData;
+            alphaBuffer.rowBytes = avif->width * sizeof(uint8_t);
+            err = vImageConvert_Planar8toPlanarF(&origAlphaBuffer, &floatAlphaBuffer, 255.0f, 0.0f, kvImageNoFlags);
+            if(err != kvImageNoError) {
+               NSLog(@"Failed to convert alpha planes from uint8 to float: %ld", err);
+                goto end_prepare_alpha;
+            }
+            err = vImageConvert_PlanarFtoPlanar8(&floatAlphaBuffer, &alphaBuffer, 235.0f, 16.0f, kvImageNoFlags);
+            if(err != kvImageNoError) {
+                NSLog(@"Failed to convert alpha planes from float to uint8: %ld", err);
+                goto end_prepare_alpha;
+            }
+        end_prepare_alpha:
+            free(floatAlphaBufferData);
+            if(err != kvImageNoError) {
+                goto end_alpha;
+            }
+        } else {
+            alphaBuffer.width = avif->width;
+            alphaBuffer.height = avif->height;
+            alphaBuffer.data = avif->alphaPlane;
+            alphaBuffer.rowBytes = avif->alphaRowBytes;
+        }
         if(monochrome) { // alpha_mono
             uint8_t* tmpBufferData = NULL;
             uint8_t* monoBufferData = NULL;
@@ -515,6 +1080,7 @@ end_all:
     free(argbBufferData);
     free(dummyCbData);
     free(dummyCrData);
+    free(scaledAlphaBufferData);
     return result;
 }
 
@@ -665,18 +1231,32 @@ static CGImageRef CreateImage16U(avifImage * avif) {
             .height = avif->height,
             .rowBytes = avif->width * sizeof(uint16_t),
         };
+        float offset = 0.0f;
+        float rangeMax = 0.0f;
+        if(avif->depth == 10) {
+            if(avif->alphaRange == AVIF_RANGE_LIMITED) {
+                offset = 64.0f;
+                rangeMax = 940.0f;
+            } else {
+                offset = 0.0f;
+                rangeMax = 1023.0f;
+            }
+        } else if(avif->depth == 12) {
+            if(avif->alphaRange == AVIF_RANGE_LIMITED) {
+                offset = 256.0f;
+                rangeMax = 3760.0f;
+            } else {
+                offset = 0.0f;
+                rangeMax = 4095.0f;
+            }
+        }
+        float const scale = (float)(rangeMax - offset) / 65535.0f;
         err = vImageConvert_16UToF(&origAlpha, &floatAlphaBuffer, 0.0f, 1.0f, kvImageNoFlags);
         if(err != kvImageNoError) {
             NSLog(@"Failed to convert alpha planes from uint16 to float: %ld", err);
             goto end_prepare_alpha;
         }
-        float scale = 1.0f;
-        if(avif->depth == 10) {
-            scale = (float)((1 << 10) - 1) / 65535.0f;
-        } else if(avif->depth == 12) {
-            scale = (float)((1 << 12) - 1) / 65535.0f;
-        }
-        err = vImageConvert_FTo16U(&floatAlphaBuffer, &scaledAlphaBuffer, 0.0f, scale, kvImageNoFlags);
+        err = vImageConvert_FTo16U(&floatAlphaBuffer, &scaledAlphaBuffer, offset, scale, kvImageNoFlags);
         if(err != kvImageNoError) {
             NSLog(@"Failed to convert alpha planes from uint16 to float: %ld", err);
             goto end_prepare_alpha;
@@ -991,30 +1571,6 @@ end_all:
     return result;
 }
 
-static void FillRGBABufferWithAVIFImage(vImage_Buffer *red, vImage_Buffer *green, vImage_Buffer *blue, vImage_Buffer *alpha, avifImage *img) {
-    red->width = img->width;
-    red->height = img->height;
-    red->data = img->rgbPlanes[AVIF_CHAN_R];
-    red->rowBytes = img->rgbRowBytes[AVIF_CHAN_R];
-    
-    green->width = img->width;
-    green->height = img->height;
-    green->data = img->rgbPlanes[AVIF_CHAN_G];
-    green->rowBytes = img->rgbRowBytes[AVIF_CHAN_G];
-    
-    blue->width = img->width;
-    blue->height = img->height;
-    blue->data = img->rgbPlanes[AVIF_CHAN_B];
-    blue->rowBytes = img->rgbRowBytes[AVIF_CHAN_B];
-    
-    if (img->alphaPlane != NULL) {
-        alpha->width = img->width;
-        alpha->height = img->height;
-        alpha->data = img->alphaPlane;
-        alpha->rowBytes = img->alphaRowBytes;
-    }
-}
-
 @implementation SDImageAVIFCoder
 
 + (instancetype)sharedCoder {
@@ -1154,31 +1710,27 @@ static void FillRGBABufferWithAVIFImage(vImage_Buffer *red, vImage_Buffer *green
     }
     
     avifPixelFormat avifFormat = AVIF_PIXEL_FORMAT_YUV444;
-    enum avifPlanesFlags planesFlags = hasAlpha ? AVIF_PLANES_RGB | AVIF_PLANES_A : AVIF_PLANES_RGB;
-    
+
     avifImage *avif = avifImageCreate((int)width, (int)height, 8, avifFormat);
     if (!avif) {
         free(dest.data);
         return nil;
     }
-    avifImageAllocatePlanes(avif, planesFlags);
-    
+    avifRGBImage rgb = {
+        .width = (uint32_t)width,
+        .height = (uint32_t)height,
+        .depth = 8,
+        .format = hasAlpha ? AVIF_RGB_FORMAT_ARGB : AVIF_RGB_FORMAT_RGB,
+        .pixels = dest.data,
+        .rowBytes = (uint32_t)dest.rowBytes,
+    };
+    avifImageRGBToYUV(avif, &rgb);
+    free(dest.data);
+    dest.data = NULL;
+
     NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
     
     avifImageSetProfileICC(avif, (uint8_t *)iccProfile.bytes, iccProfile.length);
-    
-    vImage_Buffer red, green, blue, alpha;
-    FillRGBABufferWithAVIFImage(&red, &green, &blue, &alpha, avif);
-    
-    if (hasAlpha) {
-        v_error = vImageConvert_ARGB8888toPlanar8(&dest, &alpha, &red, &green, &blue, kvImageNoFlags);
-    } else {
-        v_error = vImageConvert_RGB888toPlanar8(&dest, &red, &green, &blue, kvImageNoFlags);
-    }
-    free(dest.data);
-    if (v_error != kvImageNoError) {
-        return nil;
-    }
     
     double compressionQuality = 1;
     if (options[SDImageCoderEncodeCompressionQuality]) {

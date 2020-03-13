@@ -34,6 +34,11 @@ jobs:
           file=$(basename ${file})
           "${CMD}" "${file}" "./decoded/${file}.png"
         done
+    - name: Upload result
+      uses: actions/upload-artifact@v1
+      with:
+        name: decoded-images
+        path: avif-sample-images/decoded
     - name: Install imagemagick to compare images.
       shell: bash
       run: brew install imagemagick
