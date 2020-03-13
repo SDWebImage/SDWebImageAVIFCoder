@@ -1056,30 +1056,6 @@ end_all:
     return result;
 }
 
-static void FillRGBABufferWithAVIFImage(vImage_Buffer *red, vImage_Buffer *green, vImage_Buffer *blue, vImage_Buffer *alpha, avifImage *img) {
-    red->width = img->width;
-    red->height = img->height;
-    red->data = img->rgbPlanes[AVIF_CHAN_R];
-    red->rowBytes = img->rgbRowBytes[AVIF_CHAN_R];
-    
-    green->width = img->width;
-    green->height = img->height;
-    green->data = img->rgbPlanes[AVIF_CHAN_G];
-    green->rowBytes = img->rgbRowBytes[AVIF_CHAN_G];
-    
-    blue->width = img->width;
-    blue->height = img->height;
-    blue->data = img->rgbPlanes[AVIF_CHAN_B];
-    blue->rowBytes = img->rgbRowBytes[AVIF_CHAN_B];
-    
-    if (img->alphaPlane != NULL) {
-        alpha->width = img->width;
-        alpha->height = img->height;
-        alpha->data = img->alphaPlane;
-        alpha->rowBytes = img->alphaRowBytes;
-    }
-}
-
 @implementation SDImageAVIFCoder
 
 + (instancetype)sharedCoder {
@@ -1219,31 +1195,27 @@ static void FillRGBABufferWithAVIFImage(vImage_Buffer *red, vImage_Buffer *green
     }
     
     avifPixelFormat avifFormat = AVIF_PIXEL_FORMAT_YUV444;
-    enum avifPlanesFlags planesFlags = hasAlpha ? AVIF_PLANES_RGB | AVIF_PLANES_A : AVIF_PLANES_RGB;
-    
+
     avifImage *avif = avifImageCreate((int)width, (int)height, 8, avifFormat);
     if (!avif) {
         free(dest.data);
         return nil;
     }
-    avifImageAllocatePlanes(avif, planesFlags);
-    
+    avifRGBImage rgb = {
+        .width = (uint32_t)width,
+        .height = (uint32_t)height,
+        .depth = 8,
+        .format = hasAlpha ? AVIF_RGB_FORMAT_ARGB : AVIF_RGB_FORMAT_RGB,
+        .pixels = dest.data,
+        .rowBytes = (uint32_t)dest.rowBytes,
+    };
+    avifImageRGBToYUV(avif, &rgb);
+    free(dest.data);
+    dest.data = NULL;
+
     NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
     
     avifImageSetProfileICC(avif, (uint8_t *)iccProfile.bytes, iccProfile.length);
-    
-    vImage_Buffer red, green, blue, alpha;
-    FillRGBABufferWithAVIFImage(&red, &green, &blue, &alpha, avif);
-    
-    if (hasAlpha) {
-        v_error = vImageConvert_ARGB8888toPlanar8(&dest, &alpha, &red, &green, &blue, kvImageNoFlags);
-    } else {
-        v_error = vImageConvert_RGB888toPlanar8(&dest, &red, &green, &blue, kvImageNoFlags);
-    }
-    free(dest.data);
-    if (v_error != kvImageNoError) {
-        return nil;
-    }
     
     double compressionQuality = 1;
     if (options[SDImageCoderEncodeCompressionQuality]) {
