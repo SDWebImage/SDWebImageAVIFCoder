@@ -752,9 +752,6 @@ static CGImageRef CreateImage8(avifImage * avif) {
         memset(origCr.data, pixelRange.CbCr_bias, origCr.width);
     }
     
-    //TODO: (ledyba-z) we have to scale alpha when libavif v0.6.0 comes.
-    //  https://github.com/AOMediaCodec/libavif/issues/91
-
     uint8_t const permuteMap[4] = {0, 1, 2, 3};
     switch(avif->yuvFormat) {
         case AVIF_PIXEL_FORMAT_NONE:
