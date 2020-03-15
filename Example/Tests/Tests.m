@@ -27,6 +27,10 @@ static UInt16 kGreen16[] = {0,65535,0};
 static UInt16 kBlue16[] = {0,0,65535};
 static UInt16 kSpecial16[] = {0xe4 << 8,0x7a << 8,0x8c << 8};
 
+static avifNclxColourPrimaries const kNumPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_EBU3213E;
+static avifNclxTransferCharacteristics const kNumTransfers = AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG;
+
+
 // FIXME(ledyba-z): libavif does not respect MatrixCoefficients in AV1 Sequence Header.
 // Instead, it uses ColorPrimaries to calculate MatrixCoefficients.
 // This threashold can be less if libavif respects MatrixCoefficients...
@@ -156,10 +160,8 @@ int const threshold16 = 16 << 8;
 
 -(void)testAllColorSpaceSupportsOutput
 {
-    static avifNclxColourPrimaries const numPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_EBU3213E;
-    static avifNclxTransferCharacteristics const numTransfers = AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG;
-    for(avifNclxColourPrimaries primaries = 0; primaries < numPrimaries; ++primaries) {
-        for(avifNclxTransferCharacteristics transfer = 0; transfer < numTransfers; ++transfer) {
+    for(avifNclxColourPrimaries primaries = 0; primaries < kNumPrimaries; ++primaries) {
+        for(avifNclxTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
             CGColorSpaceRef space = NULL;
             
             space = CreateColorSpaceRGB(primaries, transfer);
@@ -172,6 +174,82 @@ int const threshold16 = 16 << 8;
         }
 
     }
+}
+
+-(void)testCalcNCLXColorSpaceFromAVIFImage
+{
+    avifImage* img = avifImageCreate(100, 100, 8, AVIF_PIXEL_FORMAT_YUV420);
+    for(avifNclxColourPrimaries primaries = 0; primaries < kNumPrimaries; ++primaries) {
+        for(avifNclxTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
+            avifNclxColorProfile nclx;
+            nclx.colourPrimaries = primaries;
+            nclx.transferCharacteristics = transfer;
+            avifImageSetProfileNCLX(img, &nclx);
+            avifImageAllocatePlanes(img, AVIF_PLANES_YUV);
+
+            CGColorSpaceRef space = NULL;
+            BOOL shouldRelease = FALSE;
+            
+            CalcColorSpaceRGB(img, &space, &shouldRelease);
+            XCTAssertTrue(CGColorSpaceSupportsOutput(space));
+            if(shouldRelease) {
+                CGColorSpaceRelease(space);
+            }
+            
+            // monochrome
+            free(img->yuvPlanes[AVIF_CHAN_U]);
+            img->yuvPlanes[AVIF_CHAN_U] = NULL;
+            img->yuvRowBytes[AVIF_CHAN_U] = 0;
+            free(img->yuvPlanes[AVIF_CHAN_V]);
+            img->yuvPlanes[AVIF_CHAN_V] = NULL;
+            img->yuvRowBytes[AVIF_CHAN_V] = 0;
+
+            CalcColorSpaceMono(img, &space, &shouldRelease);
+            XCTAssertTrue(CGColorSpaceSupportsOutput(space));
+            if(shouldRelease) {
+                CGColorSpaceRelease(space);
+            }
+
+            avifImageFreePlanes(img, AVIF_PLANES_ALL);
+        }
+    }
+    avifImageDestroy(img);
+}
+
+-(void)testCalcICCColorSpaceFromAVIFImage
+{
+    NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
+    avifImage* img = avifImageCreate(100, 100, 8, AVIF_PIXEL_FORMAT_YUV420);
+    avifImageSetProfileICC(img, (uint8_t *)iccProfile.bytes, iccProfile.length);
+
+    avifImageAllocatePlanes(img, AVIF_PLANES_YUV);
+
+    CGColorSpaceRef space = NULL;
+    BOOL shouldRelease = FALSE;
+
+    CalcColorSpaceRGB(img, &space, &shouldRelease);
+    XCTAssertTrue(CGColorSpaceSupportsOutput(space));
+    if(shouldRelease) {
+        CGColorSpaceRelease(space);
+    }
+
+    // monochrome
+    free(img->yuvPlanes[AVIF_CHAN_U]);
+    img->yuvPlanes[AVIF_CHAN_U] = NULL;
+    img->yuvRowBytes[AVIF_CHAN_U] = 0;
+    free(img->yuvPlanes[AVIF_CHAN_V]);
+    img->yuvPlanes[AVIF_CHAN_V] = NULL;
+    img->yuvRowBytes[AVIF_CHAN_V] = 0;
+
+    CalcColorSpaceMono(img, &space, &shouldRelease);
+    XCTAssertTrue(CGColorSpaceSupportsOutput(space));
+    if(shouldRelease) {
+        CGColorSpaceRelease(space);
+    }
+
+    avifImageFreePlanes(img, AVIF_PLANES_ALL);
+
+    avifImageDestroy(img);
 }
 
 -(void)assertColor8: (NSString*)filename img:(CGImageRef)img expectedColor:(UInt8*)expectedColor

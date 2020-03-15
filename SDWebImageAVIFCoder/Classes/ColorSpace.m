@@ -219,7 +219,9 @@ void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRele
     if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
         if(avif->icc.data && avif->icc.size) {
             if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-                *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
+                CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
+                *ref = CGColorSpaceCreateWithICCData(iccData);
+                CFRelease(iccData);
                 *shouldRelease = TRUE;
             }else{
                 NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
@@ -325,7 +327,9 @@ void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelea
     if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
         if(avif->icc.data && avif->icc.size) {
             if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-                *ref = CGColorSpaceCreateWithICCData(avif->icc.data);
+                CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
+                *ref = CGColorSpaceCreateWithICCData(iccData);
+                CFRelease(iccData);
                 *shouldRelease = TRUE;
             }else{
                 NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
