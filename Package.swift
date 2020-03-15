@@ -28,7 +28,7 @@ let package = Package(
             dependencies: ["SDWebImage", "libavif"],
             path: ".",
             sources: ["SDWebImageAVIFCoder/Classes"],
-            publicHeadersPath: "SDWebImageAVIFCoder/Classes"
+            publicHeadersPath: "SDWebImageAVIFCoder/Classes/Public"
         )
     ]
 )
