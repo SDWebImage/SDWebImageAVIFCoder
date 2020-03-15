@@ -8,6 +8,8 @@
 @import XCTest;
 
 #import <SDWebImageAVIFCoder/SDImageAVIFCoder.h>
+#import <SDWebImageAVIFCoder/Conversion.h>
+#import <SDWebImageAVIFCoder/ColorSpace.h>
 
 static UInt8 kBlack8[] = {0,0,0};
 static UInt8 kGray8[] = {0x88,0x88,0x88};
@@ -152,6 +154,25 @@ int const threshold16 = 16 << 8;
        expectedColor16:kSpecial16 expectedNumComponents16:3];
 }
 
+-(void)testAllColorSpaceSupportsOutput
+{
+    static avifNclxColourPrimaries const numPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_EBU3213E;
+    static avifNclxTransferCharacteristics const numTransfers = AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG;
+    for(avifNclxColourPrimaries primaries = 0; primaries < numPrimaries; ++primaries) {
+        for(avifNclxTransferCharacteristics transfer = 0; transfer < numTransfers; ++transfer) {
+            CGColorSpaceRef space = NULL;
+            
+            space = CreateColorSpaceRGB(primaries, transfer);
+            XCTAssertTrue(CGColorSpaceSupportsOutput(space));
+            CGColorSpaceRelease(space);
+
+            space = CreateColorSpaceMono(primaries, transfer);
+            XCTAssertTrue(CGColorSpaceSupportsOutput(space));
+            CGColorSpaceRelease(space);
+        }
+
+    }
+}
 
 -(void)assertColor8: (NSString*)filename img:(CGImageRef)img expectedColor:(UInt8*)expectedColor
 {
