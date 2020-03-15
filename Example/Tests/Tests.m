@@ -252,6 +252,23 @@ int const threshold16 = 16 << 8;
     avifImageDestroy(img);
 }
 
+-(void)testEncodingAndDecoding
+{
+    CGSize size = CGSizeMake(100, 100);
+    UIGraphicsBeginImageContextWithOptions(size, YES, 0);
+    [[UIColor redColor] setFill];
+    UIRectFill(CGRectMake(0, 0, size.width, size.height));
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    NSData* encoded = [self->coder encodedDataWithImage:image format:SDImageFormatAVIF options:nil];
+    image = nil;
+    
+    XCTAssertTrue([self->coder canDecodeFromData:encoded]);
+
+    image = [self->coder decodedImageWithData:encoded options:nil];
+    [self assertColor8:@"<in-memory>" img:image.CGImage expectedColor: kRed8];
+}
+
 -(void)assertColor8: (NSString*)filename img:(CGImageRef)img expectedColor:(UInt8*)expectedColor
 {
     CFDataRef rawData = CGDataProviderCopyData(CGImageGetDataProvider(img));
