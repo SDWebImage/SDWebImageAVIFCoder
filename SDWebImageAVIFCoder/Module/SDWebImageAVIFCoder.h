@@ -13,4 +13,3 @@
 
 FOUNDATION_EXPORT double SDWebImageAVIFCoderVersionNumber;
 FOUNDATION_EXPORT const unsigned char SDWebImageAVIFCoderVersionString[];
-

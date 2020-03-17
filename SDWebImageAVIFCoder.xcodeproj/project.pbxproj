@@ -12,17 +12,33 @@
 		3237D42422639480001D069D /* SDWebImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3237D42122639480001D069D /* SDWebImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3237D42522639480001D069D /* SDWebImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3237D42122639480001D069D /* SDWebImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3237D42622639480001D069D /* SDWebImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 3237D42122639480001D069D /* SDWebImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3237D427226394D1001D069D /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3237D428226394D1001D069D /* SDImageAVIFCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */; };
-		3237D429226394D1001D069D /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3237D42A226394D1001D069D /* SDImageAVIFCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */; };
-		3237D42B226394D2001D069D /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3237D42C226394D2001D069D /* SDImageAVIFCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */; };
 		3237D42E22639517001D069D /* libavif.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3237D42D22639516001D069D /* libavif.framework */; };
 		3237D43022639525001D069D /* libavif.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3237D42F22639525001D069D /* libavif.framework */; };
 		3237D43222639530001D069D /* libavif.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3237D43122639530001D069D /* libavif.framework */; };
 		32C2B19D22638A7100EA889C /* SDImageAVIFCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */; };
-		32C2B19F22638A7100EA889C /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6DD0A1BB241E594E0066E0EE /* Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B5241E594E0066E0EE /* Conversion.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1BC241E594E0066E0EE /* Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B5241E594E0066E0EE /* Conversion.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1BD241E594E0066E0EE /* Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B5241E594E0066E0EE /* Conversion.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1BE241E594E0066E0EE /* Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B5241E594E0066E0EE /* Conversion.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1BF241E594E0066E0EE /* ColorSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B6241E594E0066E0EE /* ColorSpace.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1C0241E594E0066E0EE /* ColorSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B6241E594E0066E0EE /* ColorSpace.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1C1241E594E0066E0EE /* ColorSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B6241E594E0066E0EE /* ColorSpace.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1C2241E594E0066E0EE /* ColorSpace.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B6241E594E0066E0EE /* ColorSpace.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		6DD0A1C3241E594E0066E0EE /* ColorSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1B7241E594E0066E0EE /* ColorSpace.m */; };
+		6DD0A1C4241E594E0066E0EE /* ColorSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1B7241E594E0066E0EE /* ColorSpace.m */; };
+		6DD0A1C5241E594E0066E0EE /* ColorSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1B7241E594E0066E0EE /* ColorSpace.m */; };
+		6DD0A1C6241E594E0066E0EE /* ColorSpace.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1B7241E594E0066E0EE /* ColorSpace.m */; };
+		6DD0A1C7241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B9241E594E0066E0EE /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6DD0A1C8241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B9241E594E0066E0EE /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6DD0A1C9241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B9241E594E0066E0EE /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6DD0A1CA241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 6DD0A1B9241E594E0066E0EE /* SDImageAVIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6DD0A1CB241E594E0066E0EE /* Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1BA241E594E0066E0EE /* Conversion.m */; };
+		6DD0A1CC241E594E0066E0EE /* Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1BA241E594E0066E0EE /* Conversion.m */; };
+		6DD0A1CD241E594E0066E0EE /* Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1BA241E594E0066E0EE /* Conversion.m */; };
+		6DD0A1CE241E594E0066E0EE /* Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DD0A1BA241E594E0066E0EE /* Conversion.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,7 +54,11 @@
 		3237D43322639BA5001D069D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Module/Info.plist; sourceTree = "<group>"; };
 		32C2B18E2263879300EA889C /* SDWebImageAVIFCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageAVIFCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDImageAVIFCoder.m; sourceTree = "<group>"; };
-		32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDImageAVIFCoder.h; sourceTree = "<group>"; };
+		6DD0A1B5241E594E0066E0EE /* Conversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Conversion.h; sourceTree = "<group>"; };
+		6DD0A1B6241E594E0066E0EE /* ColorSpace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorSpace.h; sourceTree = "<group>"; };
+		6DD0A1B7241E594E0066E0EE /* ColorSpace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorSpace.m; sourceTree = "<group>"; };
+		6DD0A1B9241E594E0066E0EE /* SDImageAVIFCoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDImageAVIFCoder.h; sourceTree = "<group>"; };
+		6DD0A1BA241E594E0066E0EE /* Conversion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Conversion.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,10 +142,30 @@
 		32C2B19922638A7100EA889C /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				32C2B19C22638A7100EA889C /* SDImageAVIFCoder.h */,
+				6DD0A1CF241E5A0E0066E0EE /* Public */,
+				6DD0A1B4241E594E0066E0EE /* Private */,
+				6DD0A1B7241E594E0066E0EE /* ColorSpace.m */,
+				6DD0A1BA241E594E0066E0EE /* Conversion.m */,
 				32C2B19A22638A7100EA889C /* SDImageAVIFCoder.m */,
 			);
 			path = Classes;
+			sourceTree = "<group>";
+		};
+		6DD0A1B4241E594E0066E0EE /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				6DD0A1B5241E594E0066E0EE /* Conversion.h */,
+				6DD0A1B6241E594E0066E0EE /* ColorSpace.h */,
+			);
+			path = Private;
+			sourceTree = "<group>";
+		};
+		6DD0A1CF241E5A0E0066E0EE /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				6DD0A1B9241E594E0066E0EE /* SDImageAVIFCoder.h */,
+			);
+			path = Public;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,7 +176,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3237D42422639480001D069D /* SDWebImageAVIFCoder.h in Headers */,
-				3237D427226394D1001D069D /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1C0241E594E0066E0EE /* ColorSpace.h in Headers */,
+				6DD0A1C8241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1BC241E594E0066E0EE /* Conversion.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,7 +187,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3237D42522639480001D069D /* SDWebImageAVIFCoder.h in Headers */,
-				3237D429226394D1001D069D /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1C1241E594E0066E0EE /* ColorSpace.h in Headers */,
+				6DD0A1C9241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1BD241E594E0066E0EE /* Conversion.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,7 +198,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3237D42622639480001D069D /* SDWebImageAVIFCoder.h in Headers */,
-				3237D42B226394D2001D069D /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1C2241E594E0066E0EE /* ColorSpace.h in Headers */,
+				6DD0A1CA241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1BE241E594E0066E0EE /* Conversion.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,7 +209,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3237D42322639480001D069D /* SDWebImageAVIFCoder.h in Headers */,
-				32C2B19F22638A7100EA889C /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1BF241E594E0066E0EE /* ColorSpace.h in Headers */,
+				6DD0A1C7241E594E0066E0EE /* SDImageAVIFCoder.h in Headers */,
+				6DD0A1BB241E594E0066E0EE /* Conversion.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +369,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6DD0A1CC241E594E0066E0EE /* Conversion.m in Sources */,
+				6DD0A1C4241E594E0066E0EE /* ColorSpace.m in Sources */,
 				3237D428226394D1001D069D /* SDImageAVIFCoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -329,6 +379,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6DD0A1CD241E594E0066E0EE /* Conversion.m in Sources */,
+				6DD0A1C5241E594E0066E0EE /* ColorSpace.m in Sources */,
 				3237D42A226394D1001D069D /* SDImageAVIFCoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,6 +389,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6DD0A1CE241E594E0066E0EE /* Conversion.m in Sources */,
+				6DD0A1C6241E594E0066E0EE /* ColorSpace.m in Sources */,
 				3237D42C226394D2001D069D /* SDImageAVIFCoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -345,6 +399,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6DD0A1CB241E594E0066E0EE /* Conversion.m in Sources */,
+				6DD0A1C3241E594E0066E0EE /* ColorSpace.m in Sources */,
 				32C2B19D22638A7100EA889C /* SDImageAVIFCoder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

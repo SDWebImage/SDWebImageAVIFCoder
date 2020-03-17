@@ -34,6 +34,8 @@ Which is built based on the open-sourced libavif codec.
   s.watchos.deployment_target = '2.0'
 
   s.source_files = 'SDWebImageAVIFCoder/Classes/**/*', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
+  s.public_header_files  = 'SDWebImageAVIFCoder/Classes/Public/*.{h,m}'
+  s.private_header_files = 'SDWebImageAVIFCoder/Classes/Private/*.{h,m}'
   
   s.dependency 'SDWebImage', '~> 5.0'
   s.dependency 'libavif', '~> 0.6'
