@@ -32,9 +32,9 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     CGColorSpaceRef colorSpace = NULL;
     BOOL shouldReleaseColorSpace = FALSE;
     if(monochrome){
-        SDCalcColorSpaceMonoAVIF(avif, &colorSpace, &shouldReleaseColorSpace);
+        SDAVIFCalcColorSpaceMono(avif, &colorSpace, &shouldReleaseColorSpace);
     }else{
-        SDCalcColorSpaceRGBAVIF(avif, &colorSpace, &shouldReleaseColorSpace);
+        SDAVIFCalcColorSpaceRGB(avif, &colorSpace, &shouldReleaseColorSpace);
     }
 
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;

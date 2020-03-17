@@ -12,8 +12,8 @@
 #import "avif/avif.h"
 #endif
 
-extern CGColorSpaceRef _Nullable SDCreateAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) __attribute__((visibility("hidden")));
-extern CGColorSpaceRef _Nullable SDCreateAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) __attribute__((visibility("hidden")));
+extern CGColorSpaceRef _Nullable SDAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) __attribute__((visibility("hidden")));
+extern CGColorSpaceRef _Nullable SDAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) __attribute__((visibility("hidden")));
 
-void SDCalcColorSpaceMonoAVIF(avifImage * _Nonnull avif, CGColorSpaceRef _Nullable * _Nonnull ref, BOOL* _Nonnull shouldRelease);
-void SDCalcColorSpaceRGBAVIF(avifImage * _Nonnull avif, CGColorSpaceRef _Nullable * _Nonnull ref, BOOL* _Nonnull shouldRelease);
+void SDAVIFCalcColorSpaceMono(avifImage * _Nonnull avif, CGColorSpaceRef _Nullable * _Nonnull ref, BOOL* _Nonnull shouldRelease);
+void SDAVIFCalcColorSpaceRGB(avifImage * _Nonnull avif, CGColorSpaceRef _Nullable * _Nonnull ref, BOOL* _Nonnull shouldRelease);

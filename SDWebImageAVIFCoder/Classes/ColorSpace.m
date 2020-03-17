@@ -161,7 +161,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             break;
     }
 }
-CGColorSpaceRef SDCreateAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) {
+CGColorSpaceRef SDAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) {
     if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
         vImage_Error err;
         vImageWhitePoint white;
@@ -182,7 +182,7 @@ CGColorSpaceRef SDCreateAVIFCreateColorSpaceMono(avifNclxColourPrimaries const c
     }
 }
 
-CGColorSpaceRef SDCreateAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) {
+CGColorSpaceRef SDAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) {
     if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
         vImage_Error err;
         vImageRGBPrimaries primaries;
@@ -203,7 +203,7 @@ CGColorSpaceRef SDCreateAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const co
     }
 }
 
-void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
     static CGColorSpaceRef defaultColorSpace;
     {
         static dispatch_once_t onceToken;
@@ -249,7 +249,7 @@ void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            sRGB = SDCreateAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            sRGB = SDAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(sRGB == NULL) {
                 sRGB = defaultColorSpace;
             }
@@ -263,7 +263,7 @@ void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         static CGColorSpaceRef bt709 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            bt709 = SDCreateAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            bt709 = SDAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(bt709 == NULL) {
                 bt709 = defaultColorSpace;
             }
@@ -278,7 +278,7 @@ void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         static CGColorSpaceRef bt2020 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            bt2020 = SDCreateAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            bt2020 = SDAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(bt2020 == NULL) {
                 bt2020 = defaultColorSpace;
             }
@@ -292,7 +292,7 @@ void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            p3 = SDCreateAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+            p3 = SDAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
             if(p3 == NULL) {
                 p3 = defaultColorSpace;
             }
@@ -302,7 +302,7 @@ void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         return;
     }
 
-    *ref = SDCreateAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
+    *ref = SDAVIFCreateColorSpaceMono(colorPrimaries, transferCharacteristics);
     if(*ref != NULL) {
         *shouldRelease = TRUE;
     } else {
@@ -311,7 +311,7 @@ void SDCalcColorSpaceMonoAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     }
 }
 
-void SDCalcColorSpaceRGBAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
+void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
     static CGColorSpaceRef defaultColorSpace = NULL;
     {
         static dispatch_once_t onceToken;
@@ -520,7 +520,7 @@ void SDCalcColorSpaceRGBAVIF(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         return;
     }
 
-    *ref = SDCreateAVIFCreateColorSpaceRGB(colorPrimaries, transferCharacteristics);
+    *ref = SDAVIFCreateColorSpaceRGB(colorPrimaries, transferCharacteristics);
     if(*ref != NULL) {
         *shouldRelease = TRUE;
     } else {
