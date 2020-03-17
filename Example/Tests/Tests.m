@@ -164,11 +164,11 @@ int const threshold16 = 16 << 8;
         for(avifNclxTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
             CGColorSpaceRef space = NULL;
             
-            space = CreateColorSpaceRGB(primaries, transfer);
+            space = SDCreateAVIFCreateColorSpaceRGB(primaries, transfer);
             XCTAssertTrue(CGColorSpaceSupportsOutput(space));
             CGColorSpaceRelease(space);
 
-            space = CreateColorSpaceMono(primaries, transfer);
+            space = SDCreateAVIFCreateColorSpaceMono(primaries, transfer);
             XCTAssertTrue(CGColorSpaceSupportsOutput(space));
             CGColorSpaceRelease(space);
         }
@@ -190,7 +190,7 @@ int const threshold16 = 16 << 8;
             CGColorSpaceRef space = NULL;
             BOOL shouldRelease = FALSE;
             
-            CalcColorSpaceRGB(img, &space, &shouldRelease);
+            SDCalcColorSpaceRGBAVIF(img, &space, &shouldRelease);
             XCTAssertTrue(CGColorSpaceSupportsOutput(space));
             if(shouldRelease) {
                 CGColorSpaceRelease(space);
@@ -204,7 +204,7 @@ int const threshold16 = 16 << 8;
             img->yuvPlanes[AVIF_CHAN_V] = NULL;
             img->yuvRowBytes[AVIF_CHAN_V] = 0;
 
-            CalcColorSpaceMono(img, &space, &shouldRelease);
+            SDCalcColorSpaceMonoAVIF(img, &space, &shouldRelease);
             XCTAssertTrue(CGColorSpaceSupportsOutput(space));
             if(shouldRelease) {
                 CGColorSpaceRelease(space);
@@ -227,7 +227,7 @@ int const threshold16 = 16 << 8;
     CGColorSpaceRef space = NULL;
     BOOL shouldRelease = FALSE;
 
-    CalcColorSpaceRGB(img, &space, &shouldRelease);
+    SDCalcColorSpaceRGBAVIF(img, &space, &shouldRelease);
     XCTAssertTrue(CGColorSpaceSupportsOutput(space));
     if(shouldRelease) {
         CGColorSpaceRelease(space);
@@ -241,7 +241,7 @@ int const threshold16 = 16 << 8;
     img->yuvPlanes[AVIF_CHAN_V] = NULL;
     img->yuvRowBytes[AVIF_CHAN_V] = 0;
 
-    CalcColorSpaceMono(img, &space, &shouldRelease);
+    SDCalcColorSpaceMonoAVIF(img, &space, &shouldRelease);
     XCTAssertTrue(CGColorSpaceSupportsOutput(space));
     if(shouldRelease) {
         CGColorSpaceRelease(space);

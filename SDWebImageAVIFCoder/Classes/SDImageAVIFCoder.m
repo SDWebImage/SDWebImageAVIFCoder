@@ -77,7 +77,7 @@
         avifDecoderDestroy(decoder);
         return nil;
     }
-    CGImageRef const image = CreateCGImageFromAVIF(decoder->image);
+    CGImageRef const image = SDCreateCGImageFromAVIF(decoder->image);
     avifDecoderDestroy(decoder);
     return image;
 }

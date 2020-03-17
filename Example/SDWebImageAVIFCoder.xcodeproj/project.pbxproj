@@ -8052,6 +8052,7 @@
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SDWebImageAVIFCoder_Example.app/SDWebImageAVIFCoder_Example";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -8072,7 +8073,9 @@
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SDWebImageAVIFCoder_Example.app/SDWebImageAVIFCoder_Example";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;

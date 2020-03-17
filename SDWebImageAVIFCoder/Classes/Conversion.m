@@ -32,9 +32,9 @@ static CGImageRef CreateImageFromBuffer(avifImage * avif, vImage_Buffer* result)
     CGColorSpaceRef colorSpace = NULL;
     BOOL shouldReleaseColorSpace = FALSE;
     if(monochrome){
-        CalcColorSpaceMono(avif, &colorSpace, &shouldReleaseColorSpace);
+        SDCalcColorSpaceMonoAVIF(avif, &colorSpace, &shouldReleaseColorSpace);
     }else{
-        CalcColorSpaceRGB(avif, &colorSpace, &shouldReleaseColorSpace);
+        SDCalcColorSpaceRGBAVIF(avif, &colorSpace, &shouldReleaseColorSpace);
     }
 
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
@@ -1058,6 +1058,6 @@ end_all:
 }
 
 // convert planar to ARGB/RGB
-CGImageRef CreateCGImageFromAVIF(avifImage * avif) {
+CGImageRef SDCreateCGImageFromAVIF(avifImage * avif) {
     return avifImageUsesU16(avif) ? CreateCGImage16U(avif) : CreateCGImage8(avif);
 }

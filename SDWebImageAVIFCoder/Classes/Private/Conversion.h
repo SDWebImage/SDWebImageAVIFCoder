@@ -2,7 +2,7 @@
 //  Conversion.h
 //  SDWebImageAVIFCoder
 //
-//  Created by psi on 2020/03/15.
+//  Created by Ryo Hirafuji on 2020/03/15.
 //
 
 #pragma once
@@ -12,4 +12,4 @@
 #import "avif/avif.h"
 #endif
 
-CGImageRef CreateCGImageFromAVIF(avifImage * avif);
+extern CGImageRef _Nullable SDCreateCGImageFromAVIF(avifImage * _Nonnull avif) __attribute__((visibility("hidden")));

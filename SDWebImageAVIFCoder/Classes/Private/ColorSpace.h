@@ -2,7 +2,7 @@
 //  ColorSpace.h
 //  SDWebImageAVIFCoder
 //
-//  Created by psi on 2020/03/15.
+//  Created by Ryo Hirafuji on 2020/03/15.
 //
 
 #pragma once
@@ -12,8 +12,8 @@
 #import "avif/avif.h"
 #endif
 
-CGColorSpaceRef CreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics);
-CGColorSpaceRef CreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics);
+extern CGColorSpaceRef _Nullable SDCreateAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) __attribute__((visibility("hidden")));
+extern CGColorSpaceRef _Nullable SDCreateAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) __attribute__((visibility("hidden")));
 
-void CalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease);
-void CalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease);
+void SDCalcColorSpaceMonoAVIF(avifImage * _Nonnull avif, CGColorSpaceRef _Nullable * _Nonnull ref, BOOL* _Nonnull shouldRelease);
+void SDCalcColorSpaceRGBAVIF(avifImage * _Nonnull avif, CGColorSpaceRef _Nullable * _Nonnull ref, BOOL* _Nonnull shouldRelease);
