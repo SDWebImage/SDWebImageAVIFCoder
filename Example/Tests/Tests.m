@@ -27,8 +27,8 @@ static UInt16 kGreen16[] = {0,65535,0};
 static UInt16 kBlue16[] = {0,0,65535};
 static UInt16 kSpecial16[] = {0xe4 << 8,0x7a << 8,0x8c << 8};
 
-static avifNclxColourPrimaries const kNumPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_EBU3213E;
-static avifNclxTransferCharacteristics const kNumTransfers = AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG;
+static avifNclxColourPrimaries const kNumPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_EBU3213;
+static avifNclxTransferCharacteristics const kNumTransfers = AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG;
 
 
 // FIXME(ledyba-z): libavif does not respect MatrixCoefficients in AV1 Sequence Header.
