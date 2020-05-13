@@ -32,6 +32,11 @@ jobs:
         CMD="../Example/CLI.xcarchive/Products/usr/local/bin/SDWebImageAVIFCoder_Example CLI"
         for file in $(find . -name \*.avif); do
           file=$(basename ${file})
+          if (echo ${file} | grep "profile"); then
+            # FIXME(ledyba-z): https://github.com/SDWebImage/SDWebImageAVIFCoder/issues/21
+            echo "Ignore: ${file}"
+            continue
+          fi
           "${CMD}" "${file}" "./decoded/${file}.png"
         done
     - name: Upload result
