@@ -53,6 +53,10 @@ jobs:
             # FIXME(ledyba-z): Check them.
             echo "Ignore: ${file}"
             continue
+          elif (echo ${file} | grep "profile"); then
+            # FIXME(ledyba-z): https://github.com/SDWebImage/SDWebImageAVIFCoder/issues/21
+            echo "Ignore: ${file}"
+            continue
           else
             orig=$(cat Makefile | grep "^${file}" | sed "s/^${file}: \(.*\)$/\1/")
             score=$(compare -metric PSNR "${orig}" "decoded/${file}.png" NULL: 2>&1 || true)
