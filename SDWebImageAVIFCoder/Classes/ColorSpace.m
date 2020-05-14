@@ -43,7 +43,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
     */
 
     switch(transferCharacteristics) {
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_GAMMA28: // 5
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT470BG: // 5, gamma=2.8
             tf->cutoff = -INFINITY;
             tf->c0 = 1.0f;
             tf->c1 = 1.0f;
@@ -53,7 +53,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c5 = 0.0f;
             tf->gamma = 1.0f/2.8f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709: // 1
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709: // 1, sRGB
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT601: // 6
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT: // 14
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT: // 15
@@ -68,7 +68,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.5f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST240: // 7
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE240: // 7
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -104,7 +104,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.5f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT1361_EXTENDED: // 12
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT1361: // 12
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -128,7 +128,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 12.92f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST428: // 17
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE428: // 17
             tf->cutoff = -INFINITY;
             //
             tf->c0 = 1.0f;
@@ -141,14 +141,14 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c5 = 0.0f;
             break;
         // Can't be represented by vImageTransferFunction. Use gamma 2.2 as a fallback.
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_ST2084: // 16
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG: // 18
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG_100_1: // 9
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG_100_SQRT: // 10
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE2084: // 16
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG: // 18
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG100: // 9
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG100_SQRT10: // 10
         //
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN: // 0
         case AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED: // 2
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_GAMMA22: // 4
+        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT470M: // 4
         default:
             tf->cutoff = -INFINITY;
             tf->c0 = 1.0f;
@@ -244,7 +244,7 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
@@ -287,7 +287,7 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
@@ -367,7 +367,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 /* sRGB */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
@@ -382,7 +382,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SRGB &&
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 /* sRGB */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef sRGBlinear = NULL;
         static dispatch_once_t onceToken;
@@ -428,8 +428,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG) {
         static CGColorSpaceRef bt2020hlg = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -443,8 +443,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2100 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE2084 /* PQ */) {
         static CGColorSpaceRef bt2020pq = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -458,7 +458,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
@@ -473,8 +473,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_HLG) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG) {
         static CGColorSpaceRef p3hlg = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -489,8 +489,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2100_PQ) {
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE2084 /* PQ */) {
         static CGColorSpaceRef p3pq = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -504,7 +504,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_P3 &&
+    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef p3linear = NULL;
         static dispatch_once_t onceToken;
