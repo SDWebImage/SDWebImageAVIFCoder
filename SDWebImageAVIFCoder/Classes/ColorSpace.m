@@ -443,21 +443,6 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE2084 /* PQ */) {
-        static CGColorSpaceRef bt2020pq = NULL;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
-                bt2020pq = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_PQ_EOTF);
-            } else {
-                bt2020pq = defaultColorSpace;
-            }
-        });
-        *ref = bt2020pq;
-        *shouldRelease = FALSE;
-        return;
-    }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef p3 = NULL;
@@ -486,21 +471,6 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         });
 
         *ref = p3hlg;
-        *shouldRelease = FALSE;
-        return;
-    }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE2084 /* PQ */) {
-        static CGColorSpaceRef p3pq = NULL;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
-                p3pq = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_PQ_EOTF);
-            } else {
-                p3pq = defaultColorSpace;
-            }
-        });
-        *ref = p3pq;
         *shouldRelease = FALSE;
         return;
     }
