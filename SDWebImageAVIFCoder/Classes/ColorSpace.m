@@ -428,21 +428,6 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG) {
-        static CGColorSpaceRef bt2020hlg = NULL;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
-                bt2020hlg = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020_HLG);
-            } else {
-                bt2020hlg = defaultColorSpace;
-            }
-        });
-        *ref = bt2020hlg;
-        *shouldRelease = FALSE;
-        return;
-    }
     if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef p3 = NULL;
