@@ -27,14 +27,13 @@ Which is built based on the open-sourced libavif codec.
   s.author           = { 'DreamPiggy' => 'lizhuoli1126@126.com' }
   s.source           = { :git => 'https://github.com/SDWebImage/SDWebImageAVIFCoder.git', :tag => s.version.to_s }
 
-  s.module_map = 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.modulemap'
   s.ios.deployment_target = '8.0'
   s.osx.deployment_target = '10.10'
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
 
   s.source_files = 'SDWebImageAVIFCoder/Classes/**/*', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
-  s.public_header_files  = 'SDWebImageAVIFCoder/Classes/Public/*.{h,m}'
+  s.public_header_files  = 'SDWebImageAVIFCoder/Classes/Public/*.{h,m}', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
   s.private_header_files = 'SDWebImageAVIFCoder/Classes/Private/*.{h,m}'
   
   s.dependency 'SDWebImage', '~> 5.0'
