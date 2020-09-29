@@ -247,7 +247,7 @@ static CGImageRef CreateCGImage8(avifImage * avif) {
             NSLog(@"Invalid pixel format.");
             goto end_all;
         case AVIF_PIXEL_FORMAT_YUV420:
-        case AVIF_PIXEL_FORMAT_YV12:
+        case AVIF_PIXEL_FORMAT_YUV400:
         {
             err =
             vImageConvert_YpCbCrToARGB_GenerateConversion(&matrix,
@@ -781,7 +781,7 @@ static CGImageRef CreateCGImage16U(avifImage * avif) {
             goto end_all;
         case AVIF_PIXEL_FORMAT_YUV420:
         case AVIF_PIXEL_FORMAT_YUV422:
-        case AVIF_PIXEL_FORMAT_YV12:
+        case AVIF_PIXEL_FORMAT_YUV400:
         {
             uint16_t* scaledCbData = NULL;
             uint16_t* scaledCrData = NULL;
