@@ -222,8 +222,6 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
             *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
             *shouldRelease = TRUE;
         }
-        *ref = defaultColorSpace;
-        *shouldRelease = FALSE;
         return;
     }
     avifColorPrimaries const colorPrimaries = avif->colorPrimaries;
@@ -322,8 +320,6 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
             *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
             *shouldRelease = TRUE;
         }
-        *ref = defaultColorSpace;
-        *shouldRelease = FALSE;
         return;
     }
     avifColorPrimaries const colorPrimaries = avif->colorPrimaries;
