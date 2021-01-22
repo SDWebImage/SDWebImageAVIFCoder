@@ -27,8 +27,8 @@ static UInt16 kGreen16[] = {0,65535,0};
 static UInt16 kBlue16[] = {0,0,65535};
 static UInt16 kSpecial16[] = {0xe4 << 8,0x7a << 8,0x8c << 8};
 
-static avifNclxColourPrimaries const kNumPrimaries = AVIF_NCLX_COLOUR_PRIMARIES_EBU3213;
-static avifNclxTransferCharacteristics const kNumTransfers = AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG;
+static avifColorPrimaries const kNumPrimaries = AVIF_COLOR_PRIMARIES_EBU3213;
+static avifTransferCharacteristics const kNumTransfers = AVIF_TRANSFER_CHARACTERISTICS_HLG;
 
 
 // FIXME(ledyba-z): libavif does not respect MatrixCoefficients in AV1 Sequence Header.
@@ -160,8 +160,8 @@ int const threshold16 = 16 << 8;
 
 -(void)testAllColorSpaceSupportsOutput
 {
-    for(avifNclxColourPrimaries primaries = 0; primaries < kNumPrimaries; ++primaries) {
-        for(avifNclxTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
+    for(avifColorPrimaries primaries = 0; primaries < kNumPrimaries; ++primaries) {
+        for(avifTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
             CGColorSpaceRef space = NULL;
             
             space = SDAVIFCreateColorSpaceRGB(primaries, transfer);
@@ -179,12 +179,10 @@ int const threshold16 = 16 << 8;
 -(void)testCalcNCLXColorSpaceFromAVIFImage
 {
     avifImage* img = avifImageCreate(100, 100, 8, AVIF_PIXEL_FORMAT_YUV420);
-    for(avifNclxColourPrimaries primaries = 0; primaries < kNumPrimaries; ++primaries) {
-        for(avifNclxTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
-            avifNclxColorProfile nclx;
-            nclx.colourPrimaries = primaries;
-            nclx.transferCharacteristics = transfer;
-            avifImageSetProfileNCLX(img, &nclx);
+    for(avifColorPrimaries primaries = 0; primaries < kNumPrimaries; ++primaries) {
+        for(avifTransferCharacteristics transfer = 0; transfer < kNumTransfers; ++transfer) {
+            img->colorPrimaries = primaries;
+            img->transferCharacteristics = transfer;
             avifImageAllocatePlanes(img, AVIF_PLANES_YUV);
 
             CGColorSpaceRef space = NULL;

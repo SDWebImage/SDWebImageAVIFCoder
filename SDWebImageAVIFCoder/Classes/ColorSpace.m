@@ -15,14 +15,14 @@
 
 static void CalcWhitePoint(uint16_t const colorPrimaries, vImageWhitePoint* const white) {
     float primaries[8];
-    avifNclxColourPrimariesGetValues(colorPrimaries, primaries);
+    avifColorPrimariesGetValues(colorPrimaries, primaries);
     white->white_x = primaries[6];
     white->white_y = primaries[7];
 }
 
 static void CalcRGBPrimaries(uint16_t const colorPrimaries, vImageRGBPrimaries* const prim) {
     float primaries[8];
-    avifNclxColourPrimariesGetValues(colorPrimaries, primaries);
+    avifColorPrimariesGetValues(colorPrimaries, primaries);
     prim->red_x = primaries[0];
     prim->red_y = primaries[1];
     prim->green_x = primaries[2];
@@ -43,7 +43,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
     */
 
     switch(transferCharacteristics) {
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT470BG: // 5, gamma=2.8
+        case AVIF_TRANSFER_CHARACTERISTICS_BT470BG: // 5, gamma=2.8
             tf->cutoff = -INFINITY;
             tf->c0 = 1.0f;
             tf->c1 = 1.0f;
@@ -53,10 +53,10 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c5 = 0.0f;
             tf->gamma = 1.0f/2.8f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709: // 1, sRGB
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT601: // 6
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT: // 14
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT: // 15
+        case AVIF_TRANSFER_CHARACTERISTICS_BT709: // 1, sRGB
+        case AVIF_TRANSFER_CHARACTERISTICS_BT601: // 6
+        case AVIF_TRANSFER_CHARACTERISTICS_BT2020_10BIT: // 14
+        case AVIF_TRANSFER_CHARACTERISTICS_BT2020_12BIT: // 15
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -68,7 +68,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.5f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE240: // 7
+        case AVIF_TRANSFER_CHARACTERISTICS_SMPTE240: // 7
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -80,7 +80,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.0f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR: // 8
+        case AVIF_TRANSFER_CHARACTERISTICS_LINEAR: // 8
             tf->cutoff = INFINITY;
             //
             tf->c0 = 1.0f;
@@ -92,7 +92,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.0f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_IEC61966: // 11
+        case AVIF_TRANSFER_CHARACTERISTICS_IEC61966: // 11
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -104,7 +104,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.5f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT1361: // 12
+        case AVIF_TRANSFER_CHARACTERISTICS_BT1361: // 12
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -116,7 +116,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 4.5f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB: // 13
+        case AVIF_TRANSFER_CHARACTERISTICS_SRGB: // 13
             tf->cutoff = beta;
             //
             tf->c0 = alpha;
@@ -128,7 +128,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c4 = 12.92f;
             tf->c5 = 0.0f;
             break;
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE428: // 17
+        case AVIF_TRANSFER_CHARACTERISTICS_SMPTE428: // 17
             tf->cutoff = -INFINITY;
             //
             tf->c0 = 1.0f;
@@ -141,14 +141,14 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             tf->c5 = 0.0f;
             break;
         // Can't be represented by vImageTransferFunction. Use gamma 2.2 as a fallback.
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_SMPTE2084: // 16
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG: // 18
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG100: // 9
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_LOG100_SQRT10: // 10
+        case AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084: // 16
+        case AVIF_TRANSFER_CHARACTERISTICS_HLG: // 18
+        case AVIF_TRANSFER_CHARACTERISTICS_LOG100: // 9
+        case AVIF_TRANSFER_CHARACTERISTICS_LOG100_SQRT10: // 10
         //
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN: // 0
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED: // 2
-        case AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT470M: // 4
+        case AVIF_TRANSFER_CHARACTERISTICS_UNKNOWN: // 0
+        case AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED: // 2
+        case AVIF_TRANSFER_CHARACTERISTICS_BT470M: // 4
         default:
             tf->cutoff = -INFINITY;
             tf->c0 = 1.0f;
@@ -161,7 +161,7 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
             break;
     }
 }
-CGColorSpaceRef SDAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) {
+CGColorSpaceRef SDAVIFCreateColorSpaceMono(avifColorPrimaries const colorPrimaries, avifTransferCharacteristics const transferCharacteristics) {
     if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
         vImage_Error err;
         vImageWhitePoint white;
@@ -182,7 +182,7 @@ CGColorSpaceRef SDAVIFCreateColorSpaceMono(avifNclxColourPrimaries const colorPr
     }
 }
 
-CGColorSpaceRef SDAVIFCreateColorSpaceRGB(avifNclxColourPrimaries const colorPrimaries, avifNclxTransferCharacteristics const transferCharacteristics) {
+CGColorSpaceRef SDAVIFCreateColorSpaceRGB(avifColorPrimaries const colorPrimaries, avifTransferCharacteristics const transferCharacteristics) {
     if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
         vImage_Error err;
         vImageRGBPrimaries primaries;
@@ -211,41 +211,31 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
             defaultColorSpace = CGColorSpaceCreateDeviceGray();
         });
     }
-    if(avif->profileFormat == AVIF_PROFILE_FORMAT_NONE) {
-        *ref = defaultColorSpace;
-        *shouldRelease = FALSE;
-        return;
-    }
-    if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
-        if(avif->icc.data && avif->icc.size) {
-            if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-                CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
-                *ref = CGColorSpaceCreateWithICCData(iccData);
-                CFRelease(iccData);
-                *shouldRelease = TRUE;
-            }else{
-                NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
-                *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
-                *shouldRelease = TRUE;
-            }
-            return;
+    if(avif->icc.data && avif->icc.size) {
+        if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+            CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
+            *ref = CGColorSpaceCreateWithICCData(iccData);
+            CFRelease(iccData);
+            *shouldRelease = TRUE;
+        }else{
+            NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
+            *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
+            *shouldRelease = TRUE;
         }
+        return;
+    }
+    avifColorPrimaries const colorPrimaries = avif->colorPrimaries;
+    avifTransferCharacteristics const transferCharacteristics = avif->transferCharacteristics;
+    if((colorPrimaries == AVIF_COLOR_PRIMARIES_UNKNOWN ||
+        colorPrimaries == AVIF_COLOR_PRIMARIES_UNSPECIFIED) &&
+       (transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_UNKNOWN ||
+        transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
         *ref = defaultColorSpace;
         *shouldRelease = FALSE;
         return;
     }
-    avifNclxColourPrimaries const colorPrimaries = avif->nclx.colourPrimaries;
-    avifNclxTransferCharacteristics const transferCharacteristics = avif->nclx.transferCharacteristics;
-    if((colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN ||
-        colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNSPECIFIED) &&
-       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN ||
-        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
-        *ref = defaultColorSpace;
-        *shouldRelease = FALSE;
-        return;
-    }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT709 &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -258,8 +248,8 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT709 &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_BT709) {
         static CGColorSpaceRef bt709 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -272,9 +262,9 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
-       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
-        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
+       (transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
+        transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
         static CGColorSpaceRef bt2020 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -287,8 +277,8 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -319,41 +309,31 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
             defaultColorSpace = CGColorSpaceCreateDeviceRGB();
         });
     }
-    if(avif->profileFormat == AVIF_PROFILE_FORMAT_NONE) {
-        *ref = defaultColorSpace;
-        *shouldRelease = FALSE;
-        return;
-    }
-    if(avif->profileFormat == AVIF_PROFILE_FORMAT_ICC) {
-        if(avif->icc.data && avif->icc.size) {
-            if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-                CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
-                *ref = CGColorSpaceCreateWithICCData(iccData);
-                CFRelease(iccData);
-                *shouldRelease = TRUE;
-            }else{
-                NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
-                *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
-                *shouldRelease = TRUE;
-            }
-            return;
+    if(avif->icc.data && avif->icc.size) {
+        if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+            CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
+            *ref = CGColorSpaceCreateWithICCData(iccData);
+            CFRelease(iccData);
+            *shouldRelease = TRUE;
+        }else{
+            NSData* iccData = [NSData dataWithBytes:avif->icc.data length:avif->icc.size];
+            *ref = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)iccData);
+            *shouldRelease = TRUE;
         }
+        return;
+    }
+    avifColorPrimaries const colorPrimaries = avif->colorPrimaries;
+    avifTransferCharacteristics const transferCharacteristics = avif->transferCharacteristics;
+    if((colorPrimaries == AVIF_COLOR_PRIMARIES_UNKNOWN ||
+        colorPrimaries == AVIF_COLOR_PRIMARIES_UNSPECIFIED) &&
+       (transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_UNKNOWN ||
+        transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
         *ref = defaultColorSpace;
         *shouldRelease = FALSE;
         return;
     }
-    avifNclxColourPrimaries const colorPrimaries = avif->nclx.colourPrimaries;
-    avifNclxTransferCharacteristics const transferCharacteristics = avif->nclx.transferCharacteristics;
-    if((colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNKNOWN ||
-        colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_UNSPECIFIED) &&
-       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNKNOWN ||
-        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_UNSPECIFIED)) {
-        *ref = defaultColorSpace;
-        *shouldRelease = FALSE;
-        return;
-    }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT709) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT709 &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_BT709) {
         static CGColorSpaceRef bt709 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -367,8 +347,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 /* sRGB */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT709 /* sRGB */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -382,8 +362,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT709 /* sRGB */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT709 /* sRGB */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef sRGBlinear = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -397,9 +377,9 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
-       (transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
-        transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
+       (transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_BT2020_10BIT ||
+        transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_BT2020_12BIT)) {
         static CGColorSpaceRef bt2020 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -413,8 +393,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_BT2020 &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef bt2020linear = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -428,8 +408,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_SRGB) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SRGB) {
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -443,8 +423,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_HLG) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_HLG) {
         static CGColorSpaceRef p3hlg = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -459,8 +439,8 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         *shouldRelease = FALSE;
         return;
     }
-    if(colorPrimaries == AVIF_NCLX_COLOUR_PRIMARIES_SMPTE432 /* Display P3 */ &&
-       transferCharacteristics == AVIF_NCLX_TRANSFER_CHARACTERISTICS_LINEAR) {
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef p3linear = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{

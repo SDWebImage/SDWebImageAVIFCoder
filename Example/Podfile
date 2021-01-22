@@ -1,4 +1,4 @@
-#use_frameworks!
+install! 'cocoapods', :generate_multiple_pod_projects => true
 
 target 'SDWebImageAVIFCoder_Example' do
   platform :ios, '8.0'
@@ -7,8 +7,6 @@ target 'SDWebImageAVIFCoder_Example' do
 
   target 'SDWebImageAVIFCoder_Tests' do
     inherit! :search_paths
-
-    
   end
 end
 
