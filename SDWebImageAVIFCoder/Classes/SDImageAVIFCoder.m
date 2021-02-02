@@ -110,7 +110,8 @@
         .bitsPerComponent = (uint32_t)bitsPerComponent,
         .bitsPerPixel = (uint32_t)bitsPerPixel,
         .colorSpace = CGImageGetColorSpace(imageRef),
-        .bitmapInfo = bitmapInfo
+        .bitmapInfo = bitmapInfo,
+        .renderingIntent = CGImageGetRenderingIntent(imageRef)
     };
     vImage_CGImageFormat destFormat = {
         .bitsPerComponent = 8,
