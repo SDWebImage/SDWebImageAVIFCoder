@@ -12,7 +12,7 @@
 #else
 #import "avif/avif.h"
 #endif
-#import "ColorSpace.h"
+#import "Private/ColorSpace.h"
 
 static void FreeImageData(void *info, const void *data, size_t size) {
     free((void *)data);

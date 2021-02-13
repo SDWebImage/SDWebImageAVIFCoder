@@ -13,7 +13,7 @@
 #import "avif/avif.h"
 #endif
 
-#import "Conversion.h"
+#import "Private/Conversion.h"
 
 @implementation SDImageAVIFCoder
 
