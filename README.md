@@ -21,7 +21,7 @@ AVIF image spec is still in evolve. And the current upstream AVIF codec is a sim
 
 Since we rely on the external codec libavif. We may periodically update the dependency and bump version. Make sure you're using the latest version as possible as you can :)
 
-## aom && dav1d && rav1e
+## AV1 Codec
 
 libavif is a still image codec. But AVIF is based on the AV1 Video standard. So it need a AV1 codec for support. This relationship is just like HEIF(image) and HEVC(video) codec.
 
@@ -36,6 +36,12 @@ By default, libavif is built with [aom](https://aomedia.googlesource.com/aom/) c
 See more about [explanation for why starting a new project but not improving aom](https://github.com/videolan/dav1d#why-do-you-not-improve-libaom-rather-than-starting-a-new-project)
 
 From v0.3.0, libavif can built with dav1d. For CocoaPods user, you can simply use the subspec for this. Carthage for optional dav1d codec is not supported currently.
+
+### libgav1 (Decoding)
+
+[libgav1](https://chromium.googlesource.com/codecs/libgav1/) libgav1 is a Main profile (0) & High profile (1) compliant AV1 decoder. More information on the AV1 video format can be found at aomedia.org.
+
+From v0.8.3, libavif can built with libgav1. For For CocoaPods user, you can simply use the subspec for this.
 
 ### rav1e (Encoding)
 
@@ -53,6 +59,15 @@ Note that for CocoaPods user, rav1e is prebuilt binary (to avoid developer to in
 brew install git-lfs
 git lfs install
 ```
+
+### SVT-AV1 (Encoding)
+
+[SVT-AV1](https://gitlab.com/AOMediaCodec/SVT-AV1) is the Scalable Video Technology for AV1 (SVT-AV1 Encoder and Decoder) is an AV1-compliant encoder/decoder library core.
+
+From v0.8.3, libavif can built with STV-AV1. For For CocoaPods user, you can simply use the subspec for this.
+
+### SVT-AV1
+
 
 ## Requirements
 
@@ -78,6 +93,16 @@ pod 'SDWebImageAVIFCoder'
 pod 'libavif', :subpsecs => [
   'libdav1d',
   'librav1e'
+]
+```
+
+or, for libgav1 && SVT-AV1, use:
+
+```ruby
+pod 'SDWebImageAVIFCoder'
+pod 'libavif', :subpsecs => [
+  'libgva1',
+  'SVT-AV1'
 ]
 ```
 

@@ -9,8 +9,10 @@
 #import <Accelerate/Accelerate.h>
 #if __has_include(<libavif/avif.h>)
 #import <libavif/avif.h>
+#import <libavif/internal.h>
 #else
-#import "avif/avif.h"
+#import "avif/avifs.h"
+#import "avif/internal.h"
 #endif
 
 static void CalcWhitePoint(uint16_t const colorPrimaries, vImageWhitePoint* const white) {

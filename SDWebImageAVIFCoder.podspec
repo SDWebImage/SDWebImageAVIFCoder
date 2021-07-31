@@ -35,7 +35,11 @@ Which is built based on the open-sourced libavif codec.
   s.source_files = 'SDWebImageAVIFCoder/Classes/**/*', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
   s.public_header_files  = 'SDWebImageAVIFCoder/Classes/Public/*.{h,m}', 'SDWebImageAVIFCoder/Module/SDWebImageAVIFCoder.h'
   s.private_header_files = 'SDWebImageAVIFCoder/Classes/Private/*.{h,m}'
+  s.pod_target_xcconfig = {
+    'HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/libavif/include',
+  }
   
   s.dependency 'SDWebImage', '~> 5.10'
-  s.dependency 'libavif', '>= 0.8'
+  s.dependency 'libavif', '>= 0.8.3'
+  s.libraries = 'c++'
 end

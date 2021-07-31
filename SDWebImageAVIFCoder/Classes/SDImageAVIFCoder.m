@@ -9,8 +9,10 @@
 #import <Accelerate/Accelerate.h>
 #if __has_include(<libavif/avif.h>)
 #import <libavif/avif.h>
+#import <libavif/internal.h>
 #else
-#import "avif/avif.h"
+#import "avif/avifs.h"
+#import "avif/internal.h"
 #endif
 
 #import "Private/Conversion.h"
@@ -60,12 +62,9 @@
 
 - (nullable CGImageRef)sd_createAVIFImageWithData:(nonnull NSData *)data CF_RETURNS_RETAINED {
     // Decode it
-    avifROData rawData = {
-        .data = (uint8_t *)data.bytes,
-        .size = data.length
-    };
     avifDecoder * decoder = avifDecoderCreate();
-    avifResult decodeResult = avifDecoderParse(decoder, &rawData);
+    avifDecoderSetIOMemory(decoder, data.bytes, data.length);
+    avifResult decodeResult = avifDecoderParse(decoder);
     if (decodeResult != AVIF_RESULT_OK) {
         NSLog(@"Failed to decode image: %s", avifResultToString(decodeResult));
         avifDecoderDestroy(decoder);
