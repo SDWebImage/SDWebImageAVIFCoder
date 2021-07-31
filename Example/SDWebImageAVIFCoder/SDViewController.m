@@ -23,11 +23,12 @@
     SDImageAVIFCoder *AVIFCoder = [SDImageAVIFCoder sharedCoder];
     [[SDImageCodersManager sharedManager] addCoder:AVIFCoder];
     NSURL *AVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/fox.profile0.8bpc.yuv420.avif"];
-    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/hato.profile2.12bpc.yuv422.avif"];
+//    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/hato.profile2.12bpc.yuv422.avif"];
+    NSURL *animatedAVIFSURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/star-12bpc-with-alpha.avifs"];
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
     
     UIImageView *imageView1 = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height / 2)];
-    UIImageView *imageView2 = [[UIImageView alloc] initWithFrame:CGRectMake(0, screenSize.height / 2, screenSize.width, screenSize.height / 2)];
+    SDAnimatedImageView *imageView2 = [[SDAnimatedImageView alloc] initWithFrame:CGRectMake(0, screenSize.height / 2, screenSize.width, screenSize.height / 2)];
     
     [self.view addSubview:imageView1];
     [self.view addSubview:imageView2];
@@ -43,10 +44,9 @@
             });
         }
     }];
-    [imageView2 sd_setImageWithURL:HDRAVIFURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        // 10-bit HDR
+    [imageView2 sd_setImageWithURL:animatedAVIFSURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
-            NSLog(@"HDR AVIF load success");
+            NSLog(@"Animated AVIFS load success");
         }
     }];
     // Do any additional setup after loading the view, typically from a nib.
