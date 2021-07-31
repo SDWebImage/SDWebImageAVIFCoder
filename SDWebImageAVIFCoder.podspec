@@ -40,6 +40,6 @@ Which is built based on the open-sourced libavif codec.
   }
   
   s.dependency 'SDWebImage', '~> 5.10'
-  s.dependency 'libavif', '>= 0.8.2'
+  s.dependency 'libavif', '>= 0.9.1'
   s.libraries = 'c++'
 end
