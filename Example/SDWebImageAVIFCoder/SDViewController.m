@@ -22,9 +22,8 @@
     
     SDImageAVIFCoder *AVIFCoder = [SDImageAVIFCoder sharedCoder];
     [[SDImageCodersManager sharedManager] addCoder:AVIFCoder];
-    NSURL *AVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/AOMediaCodec/av1-avif/master/testFiles/Microsoft/kids_720p.avif"];
-    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/AOMediaCodec/av1-avif/master/testFiles/Microsoft/Chimera_10bit_cropped_to_1920x1008.avif"];
-    
+    NSURL *AVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/fox.profile0.8bpc.yuv420.avif"];
+    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/hato.profile2.12bpc.yuv422.avif"];
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
     
     UIImageView *imageView1 = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height / 2)];
