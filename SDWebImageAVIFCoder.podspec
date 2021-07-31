@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SDWebImageAVIFCoder'
-  s.version          = '0.8.0'
+  s.version          = '0.8.1'
   s.summary          = 'A SDWebImage coder plugin to support AVIF(AV1 Image File Format) image'
 
 # This description is used to generate tags and improve search results.
@@ -40,6 +40,6 @@ Which is built based on the open-sourced libavif codec.
   }
   
   s.dependency 'SDWebImage', '~> 5.10'
-  s.dependency 'libavif', '>= 0.8.3'
+  s.dependency 'libavif', '>= 0.8.2'
   s.libraries = 'c++'
 end
