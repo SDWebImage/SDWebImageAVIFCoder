@@ -64,6 +64,8 @@
     // Decode it
     avifDecoder * decoder = avifDecoderCreate();
     avifDecoderSetIOMemory(decoder, data.bytes, data.length);
+    // Disable strict mode to keep some AVIF image compatible
+    decoder->strictFlags = AVIF_STRICT_DISABLED;
     avifResult decodeResult = avifDecoderParse(decoder);
     if (decodeResult != AVIF_RESULT_OK) {
         NSLog(@"Failed to decode image: %s", avifResultToString(decodeResult));

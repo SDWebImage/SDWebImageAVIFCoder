@@ -1,2 +1,2 @@
 github "SDWebImage/SDWebImage" ~> 5.10
-github "SDWebImage/libavif-Xcode" >= 0.8.2
+github "SDWebImage/libavif-Xcode" >= 0.9.1
