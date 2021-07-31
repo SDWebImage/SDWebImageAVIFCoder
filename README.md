@@ -11,9 +11,13 @@
 
 This is a [SDWebImage](https://github.com/rs/SDWebImage) coder plugin to add [AV1 Image File Format (AVIF)](https://aomediacodec.github.io/av1-avif/) support. Which is built based on the open-sourced [libavif](https://github.com/AOMediaCodec/libavif) codec.
 
-This AVIF coder plugin currently support AVIF still image **decoding**. Including alpha channel, as well as 10bit/12bit/16bit HDR images.
+This AVIF coder plugin support AVIF still image. Including alpha channel, as well as 10bit/12bit/16bit HDR images.
+
+And, the new 0.9.0+ version add the support for AVIF sequence animated image! Including alpha channel, as well as 10bit/12bit/16bit HDR images.
 
 The AVIF encoding is also supported now. Which always encode as 8-bit depth images.
+
+See the demo for the more showcase.
 
 ## Note
 

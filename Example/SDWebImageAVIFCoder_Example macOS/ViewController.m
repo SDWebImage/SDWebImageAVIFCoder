@@ -17,15 +17,16 @@
     
     SDImageAVIFCoder *AVIFCoder = [SDImageAVIFCoder sharedCoder];
     [[SDImageCodersManager sharedManager] addCoder:AVIFCoder];
-    NSURL *AVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/AOMediaCodec/av1-avif/master/testFiles/Microsoft/kids_720p.avif"];
-    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/AOMediaCodec/av1-avif/master/testFiles/Microsoft/Chimera_10bit_cropped_to_1920x1008.avif"];
+    NSURL *AVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/fox.profile0.8bpc.yuv420.avif"];
+//    NSURL *HDRAVIFURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/hato.profile2.12bpc.yuv422.avif"];
+    NSURL *animatedAVIFSURL = [NSURL URLWithString:@"https://raw.githubusercontent.com/link-u/avif-sample-images/master/star-12bpc-with-alpha.avifs"];
     
     CGSize screenSize = self.view.bounds.size;
     
     UIImageView *imageView1 = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, screenSize.width / 2, screenSize.height)];
     imageView1.imageScaling = NSImageScaleProportionallyUpOrDown;
     
-    UIImageView *imageView2 = [[UIImageView alloc] initWithFrame:CGRectMake(screenSize.width / 2, 0, screenSize.width / 2, screenSize.height)];
+    SDAnimatedImageView *imageView2 = [[SDAnimatedImageView alloc] initWithFrame:CGRectMake(screenSize.width / 2, 0, screenSize.width / 2, screenSize.height)];
     imageView2.imageScaling = NSImageScaleProportionallyUpOrDown;
     
     [self.view addSubview:imageView1];
@@ -42,10 +43,9 @@
             });
         }
     }];
-    [imageView2 sd_setImageWithURL:HDRAVIFURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        // 10-bit HDR
+    [imageView2 sd_setImageWithURL:animatedAVIFSURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
-            NSLog(@"HDR AVIF load success");
+            NSLog(@"Animated AVIFS load success");
         }
     }];
 }

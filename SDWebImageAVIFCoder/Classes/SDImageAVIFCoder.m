@@ -7,6 +7,8 @@
 
 #import "SDImageAVIFCoder.h"
 #import <Accelerate/Accelerate.h>
+#import <os/lock.h>
+#import <libkern/OSAtomic.h>
 #if __has_include(<libavif/avif.h>)
 #import <libavif/avif.h>
 #import <libavif/internal.h>
@@ -17,7 +19,62 @@
 
 #import "Private/Conversion.h"
 
-@implementation SDImageAVIFCoder
+#define SD_USE_OS_UNFAIR_LOCK TARGET_OS_MACCATALYST ||\
+    (__IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_10_0) ||\
+    (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_12) ||\
+    (__TV_OS_VERSION_MIN_REQUIRED >= __TVOS_10_0) ||\
+    (__WATCH_OS_VERSION_MIN_REQUIRED >= __WATCHOS_3_0)
+
+#ifndef SD_LOCK_DECLARE
+#if SD_USE_OS_UNFAIR_LOCK
+#define SD_LOCK_DECLARE(lock) os_unfair_lock lock
+#else
+#define SD_LOCK_DECLARE(lock) os_unfair_lock lock API_AVAILABLE(ios(10.0), tvos(10), watchos(3), macos(10.12)); \
+OSSpinLock lock##_deprecated;
+#endif
+#endif
+
+#ifndef SD_LOCK_INIT
+#if SD_USE_OS_UNFAIR_LOCK
+#define SD_LOCK_INIT(lock) lock = OS_UNFAIR_LOCK_INIT
+#else
+#define SD_LOCK_INIT(lock) if (@available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *)) lock = OS_UNFAIR_LOCK_INIT; \
+else lock##_deprecated = OS_SPINLOCK_INIT;
+#endif
+#endif
+
+#ifndef SD_LOCK
+#if SD_USE_OS_UNFAIR_LOCK
+#define SD_LOCK(lock) os_unfair_lock_lock(&lock)
+#else
+#define SD_LOCK(lock) if (@available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *)) os_unfair_lock_lock(&lock); \
+else OSSpinLockLock(&lock##_deprecated);
+#endif
+#endif
+
+#ifndef SD_UNLOCK
+#if SD_USE_OS_UNFAIR_LOCK
+#define SD_UNLOCK(lock) os_unfair_lock_unlock(&lock)
+#else
+#define SD_UNLOCK(lock) if (@available(iOS 10, tvOS 10, watchOS 3, macOS 10.12, *)) os_unfair_lock_unlock(&lock); \
+else OSSpinLockUnlock(&lock##_deprecated);
+#endif
+#endif
+
+@implementation SDImageAVIFCoder {
+    avifDecoder *_decoder;
+    NSData *_imageData;
+    CGFloat _scale;
+    NSUInteger _loopCount;
+    NSUInteger _frameCount;
+    SD_LOCK_DECLARE(_lock);
+}
+
+- (void)dealloc {
+    if (_decoder) {
+        avifDecoderDestroy(_decoder);
+    }
+}
 
 + (instancetype)sharedCoder {
     static SDImageAVIFCoder *coder;
@@ -44,23 +101,6 @@
         }
     }
     
-    // Currently only support primary image :)
-    CGImageRef imageRef = [self sd_createAVIFImageWithData:data];
-    if (!imageRef) {
-        return nil;
-    }
-    
-#if SD_MAC
-    UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:kCGImagePropertyOrientationUp];
-#else
-    UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
-#endif
-    CGImageRelease(imageRef);
-    
-    return image;
-}
-
-- (nullable CGImageRef)sd_createAVIFImageWithData:(nonnull NSData *)data CF_RETURNS_RETAINED {
     // Decode it
     avifDecoder * decoder = avifDecoderCreate();
     avifDecoderSetIOMemory(decoder, data.bytes, data.length);
@@ -72,15 +112,54 @@
         avifDecoderDestroy(decoder);
         return nil;
     }
-    avifResult nextImageResult = avifDecoderNextImage(decoder);
-    if (nextImageResult != AVIF_RESULT_OK || nextImageResult == AVIF_RESULT_NO_IMAGES_REMAINING) {
-        NSLog(@"Failed to decode image: %s", avifResultToString(nextImageResult));
-        avifDecoderDestroy(decoder);
-        return nil;
+    
+    // Static image
+    if (decoder->imageCount <= 1) {
+        avifResult nextImageResult = avifDecoderNextImage(decoder);
+        if (nextImageResult != AVIF_RESULT_OK) {
+            NSLog(@"Failed to decode image: %s", avifResultToString(nextImageResult));
+            avifDecoderDestroy(decoder);
+            return nil;
+        }
+        CGImageRef imageRef = SDCreateCGImageFromAVIF(decoder->image);
+        if (!imageRef) {
+            return nil;
+        }
+    #if SD_MAC
+        UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:kCGImagePropertyOrientationUp];
+    #else
+        UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+    #endif
+        CGImageRelease(imageRef);
+        return image;
     }
-    CGImageRef const image = SDCreateCGImageFromAVIF(decoder->image);
+    
+    // Animated image
+    NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
+    while (avifDecoderNextImage(decoder) == AVIF_RESULT_OK) {
+        @autoreleasepool {
+            CGImageRef imageRef = SDCreateCGImageFromAVIF(decoder->image);
+            if (!imageRef) {
+                continue;
+            }
+#if SD_MAC
+            UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:kCGImagePropertyOrientationUp];
+#else
+            UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+#endif
+            NSTimeInterval duration = decoder->imageTiming.duration; // Should use `decoder->imageTiming`, not the `decoder->duration`, see libavif source code
+            SDImageFrame *frame = [SDImageFrame frameWithImage:image duration:duration];
+            [frames addObject:frame];
+        }
+    }
+    
     avifDecoderDestroy(decoder);
-    return image;
+    
+    UIImage *animatedImage = [SDImageCoderHelper animatedImageWithFrames:frames];
+    animatedImage.sd_imageLoopCount = 0;
+    animatedImage.sd_imageFormat = SDImageFormatAVIF;
+    
+    return animatedImage;
 }
 
 // The AVIF encoding seems slow at the current time, but at least works
@@ -193,6 +272,91 @@
     avifEncoderDestroy(encoder);
     
     return imageData;
+}
+
+#pragma mark - Animation
+- (instancetype)initWithAnimatedImageData:(NSData *)data options:(SDImageCoderOptions *)options {
+    self = [super init];
+    if (self) {
+        avifDecoder *decoder = avifDecoderCreate();
+        avifDecoderSetIOMemory(decoder, data.bytes, data.length);
+        // Disable strict mode to keep some AVIF image compatible
+        decoder->strictFlags = AVIF_STRICT_DISABLED;
+        avifResult decodeResult = avifDecoderParse(decoder);
+        if (decodeResult != AVIF_RESULT_OK) {
+            avifDecoderDestroy(decoder);
+            NSLog(@"Failed to decode image: %s", avifResultToString(decodeResult));
+            return nil;
+        }
+        // TODO: Optimize the performance like WebPCoder (frame meta cache, etc)
+        _frameCount = decoder->imageCount;
+        _loopCount = 0;
+        CGFloat scale = 1;
+        NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
+        if (scaleFactor != nil) {
+            scale = [scaleFactor doubleValue];
+            if (scale < 1) {
+                scale = 1;
+            }
+        }
+        _scale = scale;
+        _decoder = decoder;
+        _imageData = data;
+        SD_LOCK_INIT(_lock);
+    }
+    return self;
+}
+
+- (NSData *)animatedImageData {
+    return _imageData;
+}
+
+- (NSUInteger)animatedImageLoopCount {
+    return _loopCount;
+}
+
+- (NSUInteger)animatedImageFrameCount {
+    return _frameCount;
+}
+
+- (NSTimeInterval)animatedImageDurationAtIndex:(NSUInteger)index {
+    if (index >= _frameCount) {
+        return 0;
+    }
+    if (_frameCount <= 1) {
+        return 0;
+    }
+    SD_LOCK(_lock);
+    avifImageTiming timing;
+    avifResult decodeResult = avifDecoderNthImageTiming(_decoder, (uint32_t)index, &timing);
+    SD_UNLOCK(_lock);
+    if (decodeResult != AVIF_RESULT_OK) {
+        return 0;
+    }
+    return timing.duration;
+}
+
+- (UIImage *)animatedImageFrameAtIndex:(NSUInteger)index {
+    if (index >= _frameCount) {
+        return nil;
+    }
+    SD_LOCK(_lock);
+    avifResult decodeResult = avifDecoderNthImage(_decoder, (uint32_t)index);
+    if (decodeResult != AVIF_RESULT_OK) {
+        return nil;
+    }
+    CGImageRef imageRef = SDCreateCGImageFromAVIF(_decoder->image);
+    SD_UNLOCK(_lock);
+    if (!imageRef) {
+        return nil;
+    }
+#if SD_MAC
+    UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
+#else
+    UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
+#endif
+    CGImageRelease(imageRef);
+    return image;
 }
 
 
