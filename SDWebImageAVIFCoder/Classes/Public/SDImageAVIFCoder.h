@@ -13,7 +13,8 @@
 
 static const SDImageFormat SDImageFormatAVIF = 15; // AV1-codec based HEIF
 
-@interface SDImageAVIFCoder : NSObject <SDImageCoder>
+/// Supports AVIF static image and AVIFS animated image
+@interface SDImageAVIFCoder : NSObject <SDAnimatedImageCoder>
 
 @property (nonatomic, class, readonly, nonnull) SDImageAVIFCoder *sharedCoder;
 
