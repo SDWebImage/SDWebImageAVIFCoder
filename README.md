@@ -11,9 +11,7 @@
 
 This is a [SDWebImage](https://github.com/rs/SDWebImage) coder plugin to add [AV1 Image File Format (AVIF)](https://aomediacodec.github.io/av1-avif/) support. Which is built based on the open-sourced [libavif](https://github.com/AOMediaCodec/libavif) codec.
 
-This AVIF coder plugin support AVIF still image. Including alpha channel, as well as 10bit/12bit/16bit HDR images.
-
-And, the new 0.9.0+ version add the support for AVIF sequence animated image! Including alpha channel, as well as 10bit/12bit/16bit HDR images.
+This AVIF coder plugin support AVIF still/sequence image. Including alpha channel, as well as 10bit/12bit/16bit HDR images. (The AVIF sequence animation is available from v0.9.0).
 
 The AVIF encoding is also supported now. Which always encode as 8-bit depth images.
 
@@ -27,11 +25,13 @@ Since we rely on the external codec libavif. We may periodically update the depe
 
 ## AV1 Codec
 
-libavif is a still image codec. But AVIF is based on the AV1 Video standard. So it need a AV1 codec for support. This relationship is just like HEIF(image) and HEVC(video) codec.
+libavif is a image codec. But AVIF is based on the AV1 Video standard. So it need a AV1 codec for support. This relationship is just like HEIF(image) and HEVC(video) codec.
+
+You can choose the codec and use `libavif` CocoaPods subspec to choose the one you'd like.
 
 ### aom
 
-By default, libavif is built with [aom](https://aomedia.googlesource.com/aom/) codec support. aom is the first AV1 codec during the standard draft implementation.
+By default, libavif is built with [aom](https://aomedia.googlesource.com/aom/) codec support. aom is the first AV1 codec during the standard draft implementation. The aom support both decodinng and encoding
 
 ### dav1d (Decoding)
 
@@ -43,7 +43,7 @@ From v0.3.0, libavif can built with dav1d. For CocoaPods user, you can simply us
 
 ### libgav1 (Decoding)
 
-[libgav1](https://chromium.googlesource.com/codecs/libgav1/) libgav1 is a Main profile (0) & High profile (1) compliant AV1 decoder. More information on the AV1 video format can be found at aomedia.org.
+[libgav1](https://chromium.googlesource.com/codecs/libgav1/) is a Main profile (0) & High profile (1) compliant AV1 decoder. More information on the AV1 video format can be found at aomedia.org.
 
 From v0.8.3, libavif can built with libgav1. For For CocoaPods user, you can simply use the subspec for this.
 
@@ -69,8 +69,6 @@ git lfs install
 [SVT-AV1](https://gitlab.com/AOMediaCodec/SVT-AV1) is the Scalable Video Technology for AV1 (SVT-AV1 Encoder and Decoder) is an AV1-compliant encoder/decoder library core.
 
 From v0.8.3, libavif can built with STV-AV1. For For CocoaPods user, you can simply use the subspec for this.
-
-### SVT-AV1
 
 
 ## Requirements
