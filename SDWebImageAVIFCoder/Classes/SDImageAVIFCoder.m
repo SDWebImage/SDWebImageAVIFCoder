@@ -123,6 +123,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
         }
         CGImageRef imageRef = SDCreateCGImageFromAVIF(decoder->image);
         if (!imageRef) {
+            avifDecoderDestroy(decoder);
             return nil;
         }
     #if SD_MAC
