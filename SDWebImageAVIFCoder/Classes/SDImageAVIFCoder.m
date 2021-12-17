@@ -123,6 +123,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
         }
         CGImageRef imageRef = SDCreateCGImageFromAVIF(decoder->image);
         if (!imageRef) {
+            avifDecoderDestroy(decoder);
             return nil;
         }
     #if SD_MAC
@@ -131,6 +132,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
         UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
     #endif
         CGImageRelease(imageRef);
+        avifDecoderDestroy(decoder);
         return image;
     }
     
