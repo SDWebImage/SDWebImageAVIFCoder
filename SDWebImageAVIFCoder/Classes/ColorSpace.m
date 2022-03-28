@@ -11,7 +11,7 @@
 #import <libavif/avif.h>
 #import <libavif/internal.h>
 #else
-#import "avif/avifs.h"
+#import "avif/avif.h"
 #import "avif/internal.h"
 #endif
 
