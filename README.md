@@ -92,7 +92,7 @@ Note: From version 0.4.0, if you want to use rav1e or dav1e instead aom for fast
 
 ```ruby
 pod 'SDWebImageAVIFCoder'
-pod 'libavif', :subpsecs => [
+pod 'libavif', :subspecs => [
   'libdav1d',
   'librav1e'
 ]
@@ -102,7 +102,7 @@ or, for libgav1 && SVT-AV1, use:
 
 ```ruby
 pod 'SDWebImageAVIFCoder'
-pod 'libavif', :subpsecs => [
+pod 'libavif', :subspecs => [
   'libgva1',
   'SVT-AV1'
 ]
