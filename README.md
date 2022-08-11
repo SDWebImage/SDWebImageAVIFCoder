@@ -129,7 +129,7 @@ The framework through SwiftPM only supports libaom for AVIF decoding && encoding
 ```swift
 let package = Package(
     dependencies: [
-        .package(url: "https://github.com/SDWebImage/SDWebImageAVIF.git", from: "0.5")
+        .package(url: "https://github.com/SDWebImage/SDWebImageAVIFCoder.git", from: "0.5")
     ]
 )
 ```
