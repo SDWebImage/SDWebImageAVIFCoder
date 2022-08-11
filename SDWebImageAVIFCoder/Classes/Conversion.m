@@ -704,11 +704,11 @@ static CGImageRef CreateCGImage8(avifImage * avif) {
     }
 
 end_all:
-    free(resultBufferData);
-    free(argbBufferData);
-    free(dummyCbData);
-    free(dummyCrData);
-    free(scaledAlphaBufferData);
+    if (resultBufferData) free(resultBufferData);
+    if (argbBufferData) free(argbBufferData);
+    if (dummyCbData) free(dummyCbData);
+    if (dummyCrData) free(dummyCrData);
+    if (scaledAlphaBufferData) free(scaledAlphaBufferData);
     return result;
 }
 

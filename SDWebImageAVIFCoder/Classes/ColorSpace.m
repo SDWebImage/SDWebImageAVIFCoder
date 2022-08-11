@@ -215,7 +215,7 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
     }
     if(avif->icc.data && avif->icc.size) {
         if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-            CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
+            CFDataRef iccData = CFDataCreate(kCFAllocatorDefault, avif->icc.data, avif->icc.size);
             *ref = CGColorSpaceCreateWithICCData(iccData);
             CFRelease(iccData);
             *shouldRelease = TRUE;
@@ -313,7 +313,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
     }
     if(avif->icc.data && avif->icc.size) {
         if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
-            CFDataRef iccData = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, avif->icc.data, avif->icc.size,kCFAllocatorNull);
+            CFDataRef iccData = CFDataCreate(kCFAllocatorDefault, avif->icc.data, avif->icc.size);
             *ref = CGColorSpaceCreateWithICCData(iccData);
             CFRelease(iccData);
             *shouldRelease = TRUE;

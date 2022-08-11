@@ -210,12 +210,14 @@ else OSSpinLockUnlock(&lock##_deprecated);
     vImage_Buffer src;
     v_error = vImageBuffer_InitWithCGImage(&src, &srcFormat, NULL, imageRef, kvImageNoFlags);
     if (v_error != kvImageNoError) {
+        vImageConverter_Release(convertor);
         return nil;
     }
     vImage_Buffer dest;
-    vImageBuffer_Init(&dest, height, width, hasAlpha ? 32 : 24, kvImageNoFlags);
-    if (!dest.data) {
-        free(src.data);
+    v_error = vImageBuffer_Init(&dest, height, width, hasAlpha ? 32 : 24, kvImageNoFlags);
+    if (v_error != kvImageNoError) {
+        if (src.data) free(src.data);
+        vImageConverter_Release(convertor);
         return nil;
     }
     
@@ -224,7 +226,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     free(src.data);
     vImageConverter_Release(convertor);
     if (v_error != kvImageNoError) {
-        free(dest.data);
+        if(dest.data) free(dest.data);
         return nil;
     }
     
@@ -232,7 +234,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
 
     avifImage *avif = avifImageCreate((int)width, (int)height, 8, avifFormat);
     if (!avif) {
-        free(dest.data);
+        if (dest.data) free(dest.data);
         return nil;
     }
     avifRGBImage rgb = {
@@ -245,7 +247,6 @@ else OSSpinLockUnlock(&lock##_deprecated);
     };
     avifImageRGBToYUV(avif, &rgb);
     free(dest.data);
-    dest.data = NULL;
 
     NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
     
@@ -264,14 +265,15 @@ else OSSpinLockUnlock(&lock##_deprecated);
     encoder->maxThreads = 2;
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
+    avifImageDestroy(avif);
+    avifEncoderDestroy(encoder);
     if (result != AVIF_RESULT_OK) {
-        avifEncoderDestroy(encoder);
+        if (raw.data) avifRWDataFree(&raw);
         return nil;
     }
     
     NSData *imageData = [NSData dataWithBytes:raw.data length:raw.size];
-    free(raw.data);
-    avifEncoderDestroy(encoder);
+    avifRWDataFree(&raw);
     
     return imageData;
 }
