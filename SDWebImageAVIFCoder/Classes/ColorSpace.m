@@ -7,7 +7,7 @@
 
 #import "SDImageAVIFCoder.h"
 #import <Accelerate/Accelerate.h>
-#if __has_include(<libavif/avif.h>)
+#if __has_include(<libavif/avif.h>) && __has_include(<libavif/internal.h>)
 #import <libavif/avif.h>
 #import <libavif/internal.h>
 #else
