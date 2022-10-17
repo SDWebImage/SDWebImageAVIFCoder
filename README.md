@@ -185,7 +185,7 @@ DreamPiggy, lizhuoli1126@126.com
 
 ## Contributor
 
-ledyba-z, ryo.hirafuji@link-u.co.jp
+[ledyba-z](https://github.com/ledyba-z), ryo.hirafuji@gmail.com
 
 ## License
 
