@@ -149,6 +149,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
 #else
             UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
 #endif
+            CGImageRelease(imageRef);
             NSTimeInterval duration = decoder->imageTiming.duration; // Should use `decoder->imageTiming`, not the `decoder->duration`, see libavif source code
             SDImageFrame *frame = [SDImageFrame frameWithImage:image duration:duration];
             [frames addObject:frame];
