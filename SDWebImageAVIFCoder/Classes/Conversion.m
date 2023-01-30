@@ -1129,6 +1129,7 @@ static CGImageRef CreateCGImage16U(avifImage * avif) {
             err = vImageConvert_Planar8toARGB8888(&alphaBuffer1, &alphaBuffer2, &monoBuffer1, &monoBuffer2, &resultBuffer, kvImageNoFlags);
             if(err != kvImageNoError) {
                 free(resultBufferData);
+                resultBufferData = NULL;
                 NSLog(@"Failed to convert Planar Alpha + Mono to MonoA: %ld", err);
                 goto end_alpha_mono;
             }
