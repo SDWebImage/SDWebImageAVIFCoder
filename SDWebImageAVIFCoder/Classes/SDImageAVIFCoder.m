@@ -348,6 +348,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     SD_LOCK(_lock);
     avifResult decodeResult = avifDecoderNthImage(_decoder, (uint32_t)index);
     if (decodeResult != AVIF_RESULT_OK) {
+        SD_UNLOCK(_lock);
         return nil;
     }
     CGImageRef imageRef = SDCreateCGImageFromAVIF(_decoder->image);
