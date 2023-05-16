@@ -67,7 +67,10 @@ else OSSpinLockUnlock(&lock##_deprecated);
     CGFloat _scale;
     NSUInteger _loopCount;
     NSUInteger _frameCount;
+    BOOL _hasAnimation;
     SD_LOCK_DECLARE(_lock);
+    BOOL _preserveAspectRatio;
+    CGSize _thumbnailSize;
 }
 
 - (void)dealloc {
@@ -93,12 +96,30 @@ else OSSpinLockUnlock(&lock##_deprecated);
     if (!data) {
         return nil;
     }
+    BOOL decodeFirstFrame = [options[SDImageCoderDecodeFirstFrameOnly] boolValue];
     CGFloat scale = 1;
-    if ([options valueForKey:SDImageCoderDecodeScaleFactor]) {
-        scale = [[options valueForKey:SDImageCoderDecodeScaleFactor] doubleValue];
+    NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
+    if (scaleFactor != nil) {
+        scale = [scaleFactor doubleValue];
         if (scale < 1) {
             scale = 1;
         }
+    }
+    
+    CGSize thumbnailSize = CGSizeZero;
+    NSValue *thumbnailSizeValue = options[SDImageCoderDecodeThumbnailPixelSize];
+    if (thumbnailSizeValue != nil) {
+#if SD_MAC
+        thumbnailSize = thumbnailSizeValue.sizeValue;
+#else
+        thumbnailSize = thumbnailSizeValue.CGSizeValue;
+#endif
+    }
+    
+    BOOL preserveAspectRatio = YES;
+    NSNumber *preserveAspectRatioValue = options[SDImageCoderDecodePreserveAspectRatio];
+    if (preserveAspectRatioValue != nil) {
+        preserveAspectRatio = preserveAspectRatioValue.boolValue;
     }
     
     // Decode it
@@ -113,15 +134,27 @@ else OSSpinLockUnlock(&lock##_deprecated);
         return nil;
     }
     
+    BOOL hasAnimation = decoder->imageCount > 1;
+    uint32_t width = decoder->image->width;
+    uint32_t height = decoder->image->height;
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:thumbnailSize preserveAspectRatio:preserveAspectRatio shouldScaleUp:NO];
+    
     // Static image
-    if (decoder->imageCount <= 1) {
+    if (!hasAnimation || decodeFirstFrame) {
         avifResult nextImageResult = avifDecoderNextImage(decoder);
         if (nextImageResult != AVIF_RESULT_OK) {
             NSLog(@"Failed to decode image: %s", avifResultToString(nextImageResult));
             avifDecoderDestroy(decoder);
             return nil;
         }
-        CGImageRef imageRef = SDCreateCGImageFromAVIF(decoder->image);
+        CGImageRef originImageRef = SDCreateCGImageFromAVIF(decoder->image);
+        if (!originImageRef) {
+            avifDecoderDestroy(decoder);
+            return nil;
+        }
+        // TODO: optimization using vImageScale directly during transform
+        CGImageRef imageRef = [SDImageCoderHelper CGImageCreateScaled:originImageRef size:scaledSize];
+        CGImageRelease(originImageRef);
         if (!imageRef) {
             avifDecoderDestroy(decoder);
             return nil;
@@ -140,7 +173,13 @@ else OSSpinLockUnlock(&lock##_deprecated);
     NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
     while (avifDecoderNextImage(decoder) == AVIF_RESULT_OK) {
         @autoreleasepool {
-            CGImageRef imageRef = SDCreateCGImageFromAVIF(decoder->image);
+            CGImageRef originImageRef = SDCreateCGImageFromAVIF(decoder->image);
+            if (!originImageRef) {
+                continue;
+            }
+            // TODO: optimization using vImageScale directly during transform
+            CGImageRef imageRef = [SDImageCoderHelper CGImageCreateScaled:originImageRef size:scaledSize];
+            CGImageRelease(originImageRef);
             if (!imageRef) {
                 continue;
             }
@@ -263,6 +302,8 @@ else OSSpinLockUnlock(&lock##_deprecated);
     avifEncoder *encoder = avifEncoderCreate();
     encoder->minQuantizer = rescaledQuality;
     encoder->maxQuantizer = rescaledQuality;
+    encoder->minQuantizerAlpha = rescaledQuality;
+    encoder->maxQuantizerAlpha = rescaledQuality;
     encoder->maxThreads = 2;
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
@@ -296,6 +337,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
         // TODO: Optimize the performance like WebPCoder (frame meta cache, etc)
         _frameCount = decoder->imageCount;
         _loopCount = 0;
+        _hasAnimation = decoder->imageCount > 1;
         CGFloat scale = 1;
         NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
         if (scaleFactor != nil) {
@@ -305,6 +347,22 @@ else OSSpinLockUnlock(&lock##_deprecated);
             }
         }
         _scale = scale;
+        CGSize thumbnailSize = CGSizeZero;
+        NSValue *thumbnailSizeValue = options[SDImageCoderDecodeThumbnailPixelSize];
+        if (thumbnailSizeValue != nil) {
+    #if SD_MAC
+            thumbnailSize = thumbnailSizeValue.sizeValue;
+    #else
+            thumbnailSize = thumbnailSizeValue.CGSizeValue;
+    #endif
+        }
+        _thumbnailSize = thumbnailSize;
+        BOOL preserveAspectRatio = YES;
+        NSNumber *preserveAspectRatioValue = options[SDImageCoderDecodePreserveAspectRatio];
+        if (preserveAspectRatioValue != nil) {
+            preserveAspectRatio = preserveAspectRatioValue.boolValue;
+        }
+        _preserveAspectRatio = preserveAspectRatio;
         _decoder = decoder;
         _imageData = data;
         SD_LOCK_INIT(_lock);
@@ -345,14 +403,25 @@ else OSSpinLockUnlock(&lock##_deprecated);
     if (index >= _frameCount) {
         return nil;
     }
+    uint32_t width = 0;
+    uint32_t height = 0;
     SD_LOCK(_lock);
     avifResult decodeResult = avifDecoderNthImage(_decoder, (uint32_t)index);
     if (decodeResult != AVIF_RESULT_OK) {
         SD_UNLOCK(_lock);
         return nil;
     }
-    CGImageRef imageRef = SDCreateCGImageFromAVIF(_decoder->image);
+    width = _decoder->image->width;
+    height = _decoder->image->height;
+    CGImageRef originImageRef = SDCreateCGImageFromAVIF(_decoder->image);
     SD_UNLOCK(_lock);
+    if (!originImageRef) {
+        return nil;
+    }
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
+    // TODO: optimization using vImageScale directly during transform
+    CGImageRef imageRef = [SDImageCoderHelper CGImageCreateScaled:originImageRef size:scaledSize];
+    CGImageRelease(originImageRef);
     if (!imageRef) {
         return nil;
     }

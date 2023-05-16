@@ -156,6 +156,66 @@ let imageView: UIImageView
 imageView.sd_setImage(with: url)
 ```
 
+### Decoding
+
++ Objective-C
+
+```objective-c
+// AVIF image decoding
+NSData *avifData;
+UIImage *image = [[SDImageAVIFCoder sharedCoder] decodedImageWithData:avifData options:nil];
+```
+
++ Swift
+
+```swift
+// AVIF image decoding
+let avifData: Data
+let image = SDImageAVIFCoder.shared.decodedImage(with: data, options: nil)
+```
+
+### Thumbnail Decoding (0.10.0+)
+
++ Objective-C
+
+```objective-c
+// AVIF thumbnail image decoding
+NSData *avifData;
+CGSize thumbnailSize = CGSizeMake(300, 300);
+UIImage *thumbnailImage = [[SDImageAVIFCoder sharedCoder] decodedImageWithData:avifData options:@{SDImageCoderDecodeThumbnailPixelSize : @(thumbnailSize)}];
+```
+
++ Swift
+
+```swift
+// AVIF thumbnail image decoding
+let avifData: Data
+let thumbnailSize = CGSize(width: 300, height: 300)
+let image = SDImageAVIFCoder.shared.decodedImage(with: data, options: [.decodeThumbnailPixelSize: thumbnailSize])
+```
+
+### Encoding (No animtion support)
+
++ Objective-c
+
+```objective-c
+// AVIF image encoding
+UIImage *image;
+NSData *avifData = [[SDImageAVIFCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatAVIF options:nil];
+// Encode Quality
+NSData *lossyAVIFData = [[SDImageAVIFCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatAVIF options:@{SDImageCoderEncodeCompressionQuality : @(0.1)}]; // [0, 1] compression quality
+```
+
++ Swift
+
+```swift
+// AVIF image encoding
+let image: UIImage
+let avifData = SDImageAVIFCoder.shared.encodedData(with: image, format: .avif, options: nil)
+// Encode Quality
+let lossyAVIFData = SDImageAVIFCoder.shared.encodedData(with: image, format: .avif, options: [.encodeCompressionQuality: 0.1]) // [0, 1] compression quality
+```
+
 ## Screenshot
 
 <img src="https://raw.githubusercontent.com/SDWebImage/SDWebImageAVIFCoder/master/Example/Screenshot/AVIFDemo-iOS.png" width="300" />

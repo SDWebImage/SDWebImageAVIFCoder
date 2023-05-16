@@ -33,7 +33,7 @@
     [self.view addSubview:imageView1];
     [self.view addSubview:imageView2];
     
-    [imageView1 sd_setImageWithURL:AVIFURL placeholderImage:nil options:0 completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+    [imageView1 sd_setImageWithURL:AVIFURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
             NSLog(@"Static AVIF load success");
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -44,7 +44,10 @@
             });
         }
     }];
-    [imageView2 sd_setImageWithURL:animatedAVIFSURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+    CGSize animatedThumbnailSize = CGSizeMake(100, 100);
+    [imageView2 sd_setImageWithURL:animatedAVIFSURL placeholderImage:nil options:0 context:@{SDWebImageContextImageThumbnailPixelSize : @(animatedThumbnailSize)} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        NSCAssert(image.size.width == 100, @"Thumbnail width should be 100");
+        NSCAssert(image.size.height == 100, @"Thumbnail height should be 100");
         if (image) {
             NSLog(@"Animated AVIFS load success");
         }

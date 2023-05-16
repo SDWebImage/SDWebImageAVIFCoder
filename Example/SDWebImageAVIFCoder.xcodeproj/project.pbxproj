@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		32B000392A137E8700FB2873 /* fox.profile0.8bpc.yuv420.avif in Resources */ = {isa = PBXBuildFile; fileRef = 32B000372A137DAA00FB2873 /* fox.profile0.8bpc.yuv420.avif */; };
 		32D3263C226344EC001B208C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D3263B226344EC001B208C /* AppDelegate.m */; };
 		32D3263F226344EC001B208C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D3263E226344EC001B208C /* ViewController.m */; };
 		32D32641226344EC001B208C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 32D32640226344EC001B208C /* Assets.xcassets */; };
@@ -1866,6 +1867,7 @@
 		207C633217DCC3D0312C335C /* Pods-SDWebImageAVIFCoder_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageAVIFCoder_Example.release.xcconfig"; path = "Target Support Files/Pods-SDWebImageAVIFCoder_Example/Pods-SDWebImageAVIFCoder_Example.release.xcconfig"; sourceTree = "<group>"; };
 		2783F1D7B48DB3ED9ADFF864 /* libPods-SDWebImageAVIFCoder_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SDWebImageAVIFCoder_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3260C60722634CF90046E4C8 /* SDWebImageAVIFCoder_Example macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "SDWebImageAVIFCoder_Example macOS.entitlements"; sourceTree = "<group>"; };
+		32B000372A137DAA00FB2873 /* fox.profile0.8bpc.yuv420.avif */ = {isa = PBXFileReference; lastKnownFileType = file; path = fox.profile0.8bpc.yuv420.avif; sourceTree = "<group>"; };
 		32D32638226344EC001B208C /* SDWebImageAVIFCoder_Example macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SDWebImageAVIFCoder_Example macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32D3263A226344EC001B208C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		32D3263B226344EC001B208C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -3757,6 +3759,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		32B000362A137DAA00FB2873 /* Samples */ = {
+			isa = PBXGroup;
+			children = (
+				32B000372A137DAA00FB2873 /* fox.profile0.8bpc.yuv420.avif */,
+			);
+			path = Samples;
+			sourceTree = "<group>";
+		};
 		32D32639226344EC001B208C /* SDWebImageAVIFCoder_Example macOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -3844,6 +3854,7 @@
 		6003F5B5195388D20070C39A /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				32B000362A137DAA00FB2873 /* Samples */,
 				6D074D3D240E94FC002197C8 /* Images */,
 				6003F5BB195388D20070C39A /* Tests.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
@@ -7565,6 +7576,7 @@
 				6D07558A240E9507002197C8 /* green.255x255.8bpc.yuv420.color.limited.without-alpha.avif in Resources */,
 				6D075676240E9508002197C8 /* blue.255x255.10bpc.yuv444.color.limited.with-alpha.avif in Resources */,
 				6D0756EC240E9508002197C8 /* e47a8c.256x255.12bpc.yuv422.color.limited.without-alpha.avif in Resources */,
+				32B000392A137E8700FB2873 /* fox.profile0.8bpc.yuv420.avif in Resources */,
 				6D0755EE240E9508002197C8 /* gray.256x255.12bpc.yuv422.color.full.without-alpha.avif in Resources */,
 				6D07563D240E9508002197C8 /* e47a8c.256x256.8bpc.yuv444.color.limited.without-alpha.avif in Resources */,
 				6D0758C6240E9508002197C8 /* blue.255x255.10bpc.yuv420.mono.limited.with-alpha.avif in Resources */,
@@ -8049,10 +8061,10 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private";
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SDWebImageAVIFCoder_Example.app/SDWebImageAVIFCoder_Example";
 				WRAPPER_EXTENSION = xctest;
 			};

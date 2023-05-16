@@ -267,6 +267,21 @@ int const threshold16 = 16 << 8;
     [self assertColor8:@"<in-memory>" img:image.CGImage expectedColor: kRed8];
 }
 
+-(void)testThumbnailDecoding
+{
+    NSString *filename = @"fox.profile0.8bpc.yuv420.avif";
+    NSString* imgBundle = [[NSBundle mainBundle] pathForResource:filename ofType:@""];
+    NSData* imgData = [[NSData alloc] initWithContentsOfFile: imgBundle];
+    UIImage *originImage = [self->coder decodedImageWithData:imgData options:nil];
+    XCTAssertEqual(originImage.size.width, 1204);
+    XCTAssertEqual(originImage.size.height, 800);
+    
+    CGSize thumbnailSize = CGSizeMake(100, 100);
+    UIImage *thumbnailImage = [self->coder decodedImageWithData:imgData options:@{SDImageCoderDecodeThumbnailPixelSize: @(thumbnailSize)}];
+    XCTAssertEqual(thumbnailImage.size.width, 100);
+    XCTAssertEqual(thumbnailImage.size.height, 67);
+}
+
 -(void)assertColor8: (NSString*)filename img:(CGImageRef)img expectedColor:(UInt8*)expectedColor
 {
     CFDataRef rawData = CGDataProviderCopyData(CGImageGetDataProvider(img));
