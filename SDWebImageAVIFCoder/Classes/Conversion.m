@@ -155,10 +155,8 @@ static avifBool avifPrepareReformatState(const avifImage * image, const avifRGBI
     state->rgbMaxChannelF = (float)state->rgbMaxChannel;
     state->biasY = (state->yuvRange == AVIF_RANGE_LIMITED) ? (float)(16 << (state->yuvDepth - 8)) : 0.0f;
     state->biasUV = (float)(1 << (state->yuvDepth - 1));
-    state->biasA = (image->alphaRange == AVIF_RANGE_LIMITED) ? (float)(16 << (state->yuvDepth - 8)) : 0.0f;
     state->rangeY = (float)((state->yuvRange == AVIF_RANGE_LIMITED) ? (219 << (state->yuvDepth - 8)) : state->yuvMaxChannel);
     state->rangeUV = (float)((state->yuvRange == AVIF_RANGE_LIMITED) ? (224 << (state->yuvDepth - 8)) : state->yuvMaxChannel);
-    state->rangeA = (float)((image->alphaRange == AVIF_RANGE_LIMITED) ? (219 << (state->yuvDepth - 8)) : state->yuvMaxChannel);
 
     uint32_t cpCount = 1 << image->depth;
     if (state->mode == AVIF_REFORMAT_MODE_IDENTITY) {
@@ -386,6 +384,7 @@ static CGImageRef CreateCGImage8(avifImage * avif) {
     uint8_t const permuteMap[4] = {0, 1, 2, 3};
     switch(avif->yuvFormat) {
         case AVIF_PIXEL_FORMAT_NONE:
+        case AVIF_PIXEL_FORMAT_COUNT:
             NSLog(@"Invalid pixel format.");
             goto end_all;
         case AVIF_PIXEL_FORMAT_YUV420:
@@ -567,51 +566,11 @@ static CGImageRef CreateCGImage8(avifImage * avif) {
 
     if(hasAlpha) { // alpha
         vImage_Buffer alphaBuffer = {0};
-        if(avif->alphaRange == AVIF_RANGE_LIMITED) {
-            float* floatAlphaBufferData = NULL;
-            floatAlphaBufferData = calloc(avif->width * avif->height, sizeof(float));
-            scaledAlphaBufferData = calloc(avif->width * avif->height, sizeof(uint8_t));
-            if(floatAlphaBufferData == NULL || scaledAlphaBufferData == NULL) {
-                err = kvImageMemoryAllocationError;
-                goto end_prepare_alpha;
-            }
-            vImage_Buffer origAlphaBuffer = {
-                .data = avif->alphaPlane,
-                .width = avif->width,
-                .height = avif->height,
-                .rowBytes = avif->alphaRowBytes,
-            };
-            vImage_Buffer floatAlphaBuffer = {
-                .data = floatAlphaBufferData,
-                .width = avif->width,
-                .height = avif->height,
-                .rowBytes = avif->width * sizeof(float),
-            };
-            alphaBuffer.width = avif->width;
-            alphaBuffer.height = avif->height;
-            alphaBuffer.data = scaledAlphaBufferData;
-            alphaBuffer.rowBytes = avif->width * sizeof(uint8_t);
-            err = vImageConvert_Planar8toPlanarF(&origAlphaBuffer, &floatAlphaBuffer, 255.0f, 0.0f, kvImageNoFlags);
-            if(err != kvImageNoError) {
-               NSLog(@"Failed to convert alpha planes from uint8 to float: %ld", err);
-                goto end_prepare_alpha;
-            }
-            err = vImageConvert_PlanarFtoPlanar8(&floatAlphaBuffer, &alphaBuffer, 235.0f, 16.0f, kvImageNoFlags);
-            if(err != kvImageNoError) {
-                NSLog(@"Failed to convert alpha planes from float to uint8: %ld", err);
-                goto end_prepare_alpha;
-            }
-        end_prepare_alpha:
-            free(floatAlphaBufferData);
-            if(err != kvImageNoError) {
-                goto end_alpha;
-            }
-        } else {
-            alphaBuffer.width = avif->width;
-            alphaBuffer.height = avif->height;
-            alphaBuffer.data = avif->alphaPlane;
-            alphaBuffer.rowBytes = avif->alphaRowBytes;
-        }
+        // libavif 0.11.0: alphaRange field was removed from the avifImage struct. It it presumed that alpha plane is always full range.
+        alphaBuffer.width = avif->width;
+        alphaBuffer.height = avif->height;
+        alphaBuffer.data = avif->alphaPlane;
+        alphaBuffer.rowBytes = avif->alphaRowBytes;
         if(monochrome) { // alpha_mono
             uint8_t* tmpBufferData = NULL;
             uint8_t* monoBufferData = NULL;
@@ -861,22 +820,13 @@ static CGImageRef CreateCGImage16U(avifImage * avif) {
         };
         float offset = 0.0f;
         float rangeMax = 0.0f;
+        // libavif 0.11.0: alphaRange field was removed from the avifImage struct. It it presumed that alpha plane is always full range.
         if(avif->depth == 10) {
-            if(avif->alphaRange == AVIF_RANGE_LIMITED) {
-                offset = 64.0f;
-                rangeMax = 940.0f;
-            } else {
-                offset = 0.0f;
-                rangeMax = 1023.0f;
-            }
+            offset = 0.0f;
+            rangeMax = 1023.0f;
         } else if(avif->depth == 12) {
-            if(avif->alphaRange == AVIF_RANGE_LIMITED) {
-                offset = 256.0f;
-                rangeMax = 3760.0f;
-            } else {
-                offset = 0.0f;
-                rangeMax = 4095.0f;
-            }
+            offset = 0.0f;
+            rangeMax = 4095.0f;
         }
         float const scale = (float)(rangeMax - offset) / 65535.0f;
         err = vImageConvert_16UToF(&origAlpha, &floatAlphaBuffer, 0.0f, 1.0f, kvImageNoFlags);
@@ -919,6 +869,7 @@ static CGImageRef CreateCGImage16U(avifImage * avif) {
     uint8_t const permuteMap[4] = {0, 1, 2, 3};
     switch(avif->yuvFormat) {
         case AVIF_PIXEL_FORMAT_NONE:
+        case AVIF_PIXEL_FORMAT_COUNT:
             NSLog(@"Invalid pixel format.");
             goto end_all;
         case AVIF_PIXEL_FORMAT_YUV420:
