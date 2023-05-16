@@ -1,4 +1,4 @@
-name: Check the decoded images.
+name: Image Decoding Test
 
 on: [push, pull_request]
 

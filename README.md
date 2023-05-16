@@ -1,6 +1,6 @@
 # SDWebImageAVIFCoder
 
-[![CI Status](https://img.shields.io/travis/SDWebImage/SDWebImageAVIFCoder.svg?style=flat)](https://travis-ci.org/SDWebImage/SDWebImageAVIFCoder)
+[![Build Status](https://github.com/SDWebImage/SDWebImageAVIFCoder/actions/workflows/check-image-decoding.yml/badge.svg)](https://github.com/SDWebImage/SDWebImageAVIFCoder/actions/workflows/check-image-decoding.yml)
 [![Version](https://img.shields.io/cocoapods/v/SDWebImageAVIFCoder.svg?style=flat)](https://cocoapods.org/pods/SDWebImageAVIFCoder)
 [![License](https://img.shields.io/cocoapods/l/SDWebImageAVIFCoder.svg?style=flat)](https://cocoapods.org/pods/SDWebImageAVIFCoder)
 [![Platform](https://img.shields.io/cocoapods/p/SDWebImageAVIFCoder.svg?style=flat)](https://cocoapods.org/pods/SDWebImageAVIFCoder)
