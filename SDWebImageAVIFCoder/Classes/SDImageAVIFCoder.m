@@ -302,6 +302,8 @@ else OSSpinLockUnlock(&lock##_deprecated);
     avifEncoder *encoder = avifEncoderCreate();
     encoder->minQuantizer = rescaledQuality;
     encoder->maxQuantizer = rescaledQuality;
+    encoder->minQuantizerAlpha = rescaledQuality;
+    encoder->maxQuantizerAlpha = rescaledQuality;
     encoder->maxThreads = 2;
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
