@@ -164,45 +164,37 @@ static void CalcTransferFunction(uint16_t const transferCharacteristics, vImageT
     }
 }
 CGColorSpaceRef SDAVIFCreateColorSpaceMono(avifColorPrimaries const colorPrimaries, avifTransferCharacteristics const transferCharacteristics) {
-    if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
-        vImage_Error err;
-        vImageWhitePoint white;
-        vImageTransferFunction transfer;
-        CalcWhitePoint(colorPrimaries, &white);
-        CalcTransferFunction(transferCharacteristics, &transfer);
-        CGColorSpaceRef colorSpace = vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(&white, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
-        if(err != kvImageNoError) {
-            NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
-            if(colorSpace != NULL) {
-                CGColorSpaceRelease(colorSpace);
-            }
-            return NULL;
+    vImage_Error err;
+    vImageWhitePoint white;
+    vImageTransferFunction transfer;
+    CalcWhitePoint(colorPrimaries, &white);
+    CalcTransferFunction(transferCharacteristics, &transfer);
+    CGColorSpaceRef colorSpace = vImageCreateMonochromeColorSpaceWithWhitePointAndTransferFunction(&white, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
+    if(err != kvImageNoError) {
+        NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
+        if(colorSpace != NULL) {
+            CGColorSpaceRelease(colorSpace);
         }
-        return colorSpace;
-    }else{
         return NULL;
     }
+    return colorSpace;
 }
 
 CGColorSpaceRef SDAVIFCreateColorSpaceRGB(avifColorPrimaries const colorPrimaries, avifTransferCharacteristics const transferCharacteristics) {
-    if (@available(macOS 10.10, iOS 8.0, tvOS 8.0, *)) {
-        vImage_Error err;
-        vImageRGBPrimaries primaries;
-        vImageTransferFunction transfer;
-        CalcRGBPrimaries(colorPrimaries, &primaries);
-        CalcTransferFunction(transferCharacteristics, &transfer);
-        CGColorSpaceRef colorSpace = vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(&primaries, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
-        if(err != kvImageNoError) {
-            NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
-            if(colorSpace != NULL) {
-                CGColorSpaceRelease(colorSpace);
-            }
-            return NULL;
+    vImage_Error err;
+    vImageRGBPrimaries primaries;
+    vImageTransferFunction transfer;
+    CalcRGBPrimaries(colorPrimaries, &primaries);
+    CalcTransferFunction(transferCharacteristics, &transfer);
+    CGColorSpaceRef colorSpace = vImageCreateRGBColorSpaceWithPrimariesAndTransferFunction(&primaries, &transfer, kCGRenderingIntentDefault, kvImagePrintDiagnosticsToConsole, &err);
+    if(err != kvImageNoError) {
+        NSLog(@"[BUG] Failed to create monochrome color space: %ld", err);
+        if(colorSpace != NULL) {
+            CGColorSpaceRelease(colorSpace);
         }
-        return colorSpace;
-    }else{
         return NULL;
     }
+    return colorSpace;
 }
 
 void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shouldRelease) {
@@ -214,7 +206,7 @@ void SDAVIFCalcColorSpaceMono(avifImage * avif, CGColorSpaceRef* ref, BOOL* shou
         });
     }
     if(avif->icc.data && avif->icc.size) {
-        if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+        if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *)) {
             CFDataRef iccData = CFDataCreate(kCFAllocatorDefault, avif->icc.data, avif->icc.size);
             *ref = CGColorSpaceCreateWithICCData(iccData);
             CFRelease(iccData);
@@ -312,7 +304,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         });
     }
     if(avif->icc.data && avif->icc.size) {
-        if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+        if(@available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *)) {
             CFDataRef iccData = CFDataCreate(kCFAllocatorDefault, avif->icc.data, avif->icc.size);
             *ref = CGColorSpaceCreateWithICCData(iccData);
             CFRelease(iccData);
@@ -339,7 +331,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef bt709 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)) {
                 bt709 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_709);
             } else {
                 bt709 = defaultColorSpace;
@@ -354,7 +346,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef sRGB = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.5, iOS 9.0, tvOS 9.0, *)) {
+            if (@available(macOS 10.5, iOS 9.0, tvOS 9.0, watchOS 2.0, *)) {
                 sRGB = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
             } else {
                 sRGB = defaultColorSpace;
@@ -369,7 +361,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef sRGBlinear = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, *)) {
+            if (@available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *)) {
                 sRGBlinear = CGColorSpaceCreateWithName(kCGColorSpaceLinearSRGB);
             } else {
                 sRGBlinear = defaultColorSpace;
@@ -385,7 +377,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef bt2020 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, *)) {
+            if (@available(macOS 10.11, iOS 9.0, tvOS 9.0, watchOS 2.0, *)) {
                 bt2020 = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2020);
             } else {
                 bt2020 = defaultColorSpace;
@@ -445,7 +437,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef bt2020linear = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, watchOS 5.0, *)) {
                 bt2020linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearITUR_2020);
             } else {
                 bt2020linear = defaultColorSpace;
@@ -460,7 +452,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef p3 = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.11.2, iOS 9.3, tvOS 9.3, *)) {
+            if (@available(macOS 10.11.2, iOS 9.3, tvOS 9.3, watchOS 2.2, *)) {
                 p3 = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
             } else {
                 p3 = defaultColorSpace;
@@ -496,7 +488,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef p3hlg = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, *)) {
+            if (@available(macOS 10.14.6, iOS 13.0, tvOS 13.0, watchOS 5.0, *)) {
                 p3hlg = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3_HLG);
             } else {
                 p3hlg = defaultColorSpace;
@@ -512,7 +504,7 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         static CGColorSpaceRef p3linear = NULL;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, *)) {
+            if (@available(macOS 10.14.3, iOS 12.3, tvOS 12.3, watchOS 5.0, *)) {
                 p3linear = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearDisplayP3);
             } else {
                 p3linear = defaultColorSpace;
