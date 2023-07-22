@@ -396,6 +396,29 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         return;
     }
     if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084) {
+        static CGColorSpaceRef bt2020pq = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            CFStringRef colorSpaceName = NULL;
+            if (@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)) {
+                colorSpaceName = kCGColorSpaceITUR_2100_PQ;
+            } else if (@available(macOS 10.15.4, iOS 13.4, tvOS 13.4, watchOS 6.2, *)) {
+                colorSpaceName = kCGColorSpaceITUR_2020_PQ;
+            } else if (@available(macOS 10.14.6, iOS 12.6, tvOS 12.0, watchOS 5.0, *)) {
+                colorSpaceName = kCGColorSpaceITUR_2020_PQ_EOTF;
+            }
+            if (colorSpaceName) {
+                bt2020pq = CGColorSpaceCreateWithName(colorSpaceName);
+            } else {
+                bt2020pq = defaultColorSpace;
+            }
+        });
+        *ref = bt2020pq;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
        transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef bt2020linear = NULL;
         static dispatch_once_t onceToken;
