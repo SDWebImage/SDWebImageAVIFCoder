@@ -1,3 +1,4 @@
-github "SDWebImage/SDWebImage" "5.10.2"
-github "SDWebImage/libaom-Xcode" "1.0.2"
-github "SDWebImage/libavif-Xcode" "0.8.1"
+github "SDWebImage/SDWebImage" "5.17.0"
+github "SDWebImage/libaom-Xcode" "3.0.0"
+github "SDWebImage/libavif-Xcode" "0.11.2-rc1"
+github "SDWebImage/libvmaf-Xcode" "2.3.1"
