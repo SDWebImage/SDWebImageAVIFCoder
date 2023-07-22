@@ -419,6 +419,28 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
         return;
     }
     if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_HLG) {
+        static CGColorSpaceRef bt2020hlg = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            CFStringRef colorSpaceName = NULL;
+            if (@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)) {
+                colorSpaceName = kCGColorSpaceITUR_2100_HLG;
+            } else if (@available(macOS 10.15.6, iOS 12.6, tvOS 12.0, watchOS 5.0, *)) {
+                colorSpaceName = kCGColorSpaceITUR_2020_HLG;
+            }
+            if (colorSpaceName) {
+                bt2020hlg = CGColorSpaceCreateWithName(colorSpaceName);
+            } else {
+                bt2020hlg = defaultColorSpace;
+            }
+        });
+
+        *ref = bt2020hlg;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_BT2020 &&
        transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_LINEAR) {
         static CGColorSpaceRef bt2020linear = NULL;
         static dispatch_once_t onceToken;
@@ -445,6 +467,27 @@ void SDAVIFCalcColorSpaceRGB(avifImage * avif, CGColorSpaceRef* ref, BOOL* shoul
             }
         });
         *ref = p3;
+        *shouldRelease = FALSE;
+        return;
+    }
+    if(colorPrimaries == AVIF_COLOR_PRIMARIES_SMPTE432 /* Display P3 */ &&
+       transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084) {
+        static CGColorSpaceRef p3pq = NULL;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            CFStringRef colorSpaceName = NULL;
+            if (@available(macOS 10.15.4, iOS 13.4, tvOS 13.4, watchOS 6.2, *)) {
+                colorSpaceName = kCGColorSpaceDisplayP3_PQ;
+            } else if (@available(macOS 10.14.6, iOS 12.6, tvOS 12.0, watchOS 5.0, *)) {
+                colorSpaceName = kCGColorSpaceDisplayP3_PQ_EOTF;
+            }
+            if (colorSpaceName) {
+                p3pq = CGColorSpaceCreateWithName(colorSpaceName);
+            } else {
+                p3pq = defaultColorSpace;
+            }
+        });
+        *ref = p3pq;
         *shouldRelease = FALSE;
         return;
     }
