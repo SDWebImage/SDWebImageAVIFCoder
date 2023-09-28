@@ -3,7 +3,7 @@ install! 'cocoapods', :generate_multiple_pod_projects => true
 target 'SDWebImageAVIFCoder_Example' do
   platform :ios, '9.0'
   pod 'SDWebImageAVIFCoder', :path => '../'
-  pod 'libavif', :subspecs => ['libaom', 'libdav1d']
+  pod 'libavif', :subspecs => ['core', 'librav1e', 'libdav1d']
 
   target 'SDWebImageAVIFCoder_Tests' do
     inherit! :search_paths
@@ -13,11 +13,11 @@ end
 target 'SDWebImageAVIFCoder_Example macOS' do
   platform :osx, '10.11'
   pod 'SDWebImageAVIFCoder', :path => '../'
-  pod 'libavif', :subspecs => ['libaom', 'libdav1d']
+  pod 'libavif', :subspecs => ['core', 'librav1e', 'libdav1d']
 end
 
 target 'SDWebImageAVIFCoder_Example CLI' do
   platform :osx, '10.11'
   pod 'SDWebImageAVIFCoder', :path => '../'
-  pod 'libavif', :subspecs => ['libaom', 'libdav1d']
+  pod 'libavif', :subspecs => ['core', 'librav1e', 'libdav1d']
 end
