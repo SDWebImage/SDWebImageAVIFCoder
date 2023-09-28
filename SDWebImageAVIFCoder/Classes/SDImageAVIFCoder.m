@@ -61,6 +61,9 @@ else OSSpinLockUnlock(&lock##_deprecated);
 #endif
 #endif
 
+SDImageCoderOption _Nonnull const SDImageCoderAVIFDecodeCodecChoice = @"avifDecodeCodecChoice";
+SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEncodeCodecChoice";
+
 @implementation SDImageAVIFCoder {
     avifDecoder *_decoder;
     NSData *_imageData;
@@ -122,9 +125,17 @@ else OSSpinLockUnlock(&lock##_deprecated);
         preserveAspectRatio = preserveAspectRatioValue.boolValue;
     }
     
+    avifCodecChoice codecChoice = AVIF_CODEC_CHOICE_AUTO;
+    NSNumber *codecChoiceValue = options[SDImageCoderAVIFDecodeCodecChoice];
+    if (codecChoiceValue != nil) {
+        codecChoice = [codecChoiceValue intValue];
+    }
+    
     // Decode it
     avifDecoder * decoder = avifDecoderCreate();
     avifDecoderSetIOMemory(decoder, data.bytes, data.length);
+    decoder->maxThreads = 2;
+    decoder->codecChoice = codecChoice;
     // Disable strict mode to keep some AVIF image compatible
     decoder->strictFlags = AVIF_STRICT_DISABLED;
     avifResult decodeResult = avifDecoderParse(decoder);
@@ -270,6 +281,12 @@ else OSSpinLockUnlock(&lock##_deprecated);
         return nil;
     }
     
+    avifCodecChoice codecChoice = AVIF_CODEC_CHOICE_AUTO;
+    NSNumber *codecChoiceValue = options[SDImageCoderAVIFEncodeCodecChoice];
+    if (codecChoiceValue != nil) {
+        codecChoice = [codecChoiceValue intValue];
+    }
+    
     avifPixelFormat avifFormat = AVIF_PIXEL_FORMAT_YUV444;
 
     avifImage *avif = avifImageCreate((int)width, (int)height, 8, avifFormat);
@@ -300,6 +317,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     
     avifRWData raw = AVIF_DATA_EMPTY;
     avifEncoder *encoder = avifEncoderCreate();
+    encoder->codecChoice = codecChoice;
     encoder->minQuantizer = rescaledQuality;
     encoder->maxQuantizer = rescaledQuality;
     encoder->minQuantizerAlpha = rescaledQuality;
@@ -324,8 +342,15 @@ else OSSpinLockUnlock(&lock##_deprecated);
 - (instancetype)initWithAnimatedImageData:(NSData *)data options:(SDImageCoderOptions *)options {
     self = [super init];
     if (self) {
+        avifCodecChoice codecChoice = AVIF_CODEC_CHOICE_AUTO;
+        NSNumber *codecChoiceValue = options[SDImageCoderAVIFDecodeCodecChoice];
+        if (codecChoiceValue != nil) {
+            codecChoice = [codecChoiceValue intValue];
+        }
         avifDecoder *decoder = avifDecoderCreate();
         avifDecoderSetIOMemory(decoder, data.bytes, data.length);
+        decoder->maxThreads = 2;
+        decoder->codecChoice = codecChoice;
         // Disable strict mode to keep some AVIF image compatible
         decoder->strictFlags = AVIF_STRICT_DISABLED;
         avifResult decodeResult = avifDecoderParse(decoder);
