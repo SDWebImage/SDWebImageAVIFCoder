@@ -70,6 +70,31 @@ git lfs install
 
 From v0.8.3, libavif can built with STV-AV1. For For CocoaPods user, you can simply use the subspec for this.
 
+## Choose codec at runtime 
+
+Although libavif has a automatic detection of installed AVIF codec, but for example, `aom` supports both decoding and encoding, but slower than `rav1e` on encoding.
+
+You can force to use the `aom` for decoding and `rav1e` for encoding like this:
+
++ Objective-C
+
+```objective-c
+NSDictionary *decodeOptions = [SDImageCoderAVIFDecodeCodecChoice: @(AVIF_CODEC_CHOICE_AOM)];
+NSDictionary *encodeOptions = [SDImageCoderAVIFEncodeCodecChoice: @(AVIF_CODEC_CHOICE_RAV1E)];
+
+// Pass from UI level options
+[imageView sd_setImageWithURL:url placeholderImage:nil options:0 context:@{SDWebImageContextImageDecodeOptions: decodeOptions, SDWebImageContextImageEncodeOptions: encodeOptions} progress:nil completed:nil];
+```
+
++ Swift
+
+```swift
+let decodeOptions: [SDImageCoderOption: Any] = [.avifDecodeCodecChoice: AVIF_CODEC_CHOICE_AOM.rawValue]
+let encodeOptions = [SDImageCoderOption: Any] = [.avifEncodeCodecChoice: AVIF_CODEC_CHOICE_RAV1E.rawValue]
+
+// Pass from UI level options
+imageView.sd_setImage(with: url, placeholderImage: nil, options: [], context: [.imageDecodeOptions: decodeOptions, .imageEncodeOptions: encodeOptions], progress: nil, completed: nil)
+```
 
 ## Requirements
 
