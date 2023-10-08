@@ -31,7 +31,25 @@ You can choose the codec and use `libavif` CocoaPods subspec to choose the one y
 
 ### aom
 
-By default, libavif is built with [aom](https://aomedia.googlesource.com/aom/) codec support. aom is the first AV1 codec during the standard draft implementation. The aom support both decodinng and encoding
++ For Carthage/SwifftPM
+
+libavif is built with [aom](https://aomedia.googlesource.com/aom/) codec support. aom is the first AV1 codec during the standard draft implementation. The aom support both decodinng and encoding
+
++ For CocoaPods
+
+Because of strange design of **subspec dependencies resolution algorithm**, we can not make aom by default (or all the subspecs will always link aom, which means not optional). So libavif is built with nothing codec (`libavif/core`). You need to choose the actual AV1 codec using one or more of below.
+
+If you want to use aom, use:
+
+```ruby
+pod 'libavif/liaom'
+```
+
+or other AV1 codec, like dav1d:
+
+```ruby
+pod 'libavif/libdav1d'
+```
 
 ### dav1d (Decoding)
 
