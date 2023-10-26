@@ -73,14 +73,7 @@ See more about [performance](https://github.com/xiph/rav1e/issues/1248)
 
 From v0.4.3, libavif can built with rav1e. For CocoaPods user, you can simply use the subspec for this. Carthage for optional rav1c codec is not supported currently.
 
-Note rav1e currently only support iOS && macOS. watchOS and tvOS supports need Rust community upstream support.
-
-Note that for CocoaPods user, rav1e is prebuilt binary (to avoid developer to install rust toolchain) and hosted on GitHub Git LFS. Make sure you have git-lfs installed.
-
-```bash
-brew install git-lfs
-git lfs install
-```
+Note before librav1e v0.6.1, it only support iOS && macOS. watchOS and tvOS is avaiable from v0.6.2 with the latest Rust toolchain. And for visionOS supports need Rust community upstream support. For latest integration, check or fire issues in https://github.com/SDWebImage/librav1e-Xcode.
 
 ### SVT-AV1 (Encoding)
 
