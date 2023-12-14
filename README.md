@@ -71,9 +71,24 @@ From v0.8.3, libavif can built with libgav1. For For CocoaPods user, you can sim
 
 See more about [performance](https://github.com/xiph/rav1e/issues/1248)
 
-From v0.4.3, libavif can built with rav1e. For CocoaPods user, you can simply use the subspec for this. Carthage for optional rav1c codec is not supported currently.
+From v0.4.3, libavif can built with rav1e. For CocoaPods user, you can simply use the subspec for this. Carthage/SPM for optional rav1c codec is not supported currently.
 
-Note before librav1e v0.6.1, it only support iOS && macOS. watchOS and tvOS is avaiable from v0.6.2 with the latest Rust toolchain. And for visionOS supports need Rust community upstream support. For latest integration, check or fire issues in https://github.com/SDWebImage/librav1e-Xcode.
+Note: The librav1e on CocoaPods use pre-built static-linking binary. Which means, it can not be used for CocoaPods's dynamic-linking.
+
+To use for framework package format (CocoaPods defaults use ar archive format), you should write something like this:
+
+```ruby
+use_frameworks! :linkage => :static
+```
+
+but not this:
+
+```ruby
+use_frameworks!
+# use_frameworks! :linkage => :dynamic
+```
+
+Note: before librav1e v0.6.1, it only support iOS && macOS. watchOS and tvOS is avaiable from v0.6.2 with the latest Rust toolchain. And for visionOS supports need Rust community upstream support. For latest integration, check or fire issues in https://github.com/SDWebImage/librav1e-Xcode.
 
 ### SVT-AV1 (Encoding)
 
