@@ -186,7 +186,7 @@ static CGImageRef CreateCGImage8(avifImage * avif) {
 
     vImage_YpCbCrToARGB convInfo = {0};
 
-    resultBufferData = calloc(components * rowBytes * avif->height, sizeof(uint8_t));
+    resultBufferData = calloc(rowBytes * avif->height, sizeof(uint8_t));
     if(resultBufferData == NULL) {
         goto end_all;
     }
