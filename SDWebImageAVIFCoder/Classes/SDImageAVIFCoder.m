@@ -310,9 +310,27 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     avifImageRGBToYUV(avif, &rgb);
     free(dest.data);
 
-    NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
-    
-    avifImageSetProfileICC(avif, (uint8_t *)iccProfile.bytes, iccProfile.length);
+    // We must prefer the input CGImage's color space, which may contains ICC profile
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
+    // We only supports RGB colorspace, filter the un-supported one (like Monochrome, CMYK, etc)
+    if (CGColorSpaceGetModel(colorSpace) != kCGColorSpaceModelRGB) {
+        // Ignore and convert, we don't know how to encode this colorspace directlly to WebP
+        // This may cause little visible difference because of colorpsace conversion
+        colorSpace = NULL;
+    }
+    if (!colorSpace) {
+        colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB];
+    }
+    // Add ICC profile if present
+    CFDataRef iccData = NULL;
+    if (colorSpace) {
+        if (@available(iOS 10, tvOS 10, macOS 10.12, watchOS 3, *)) {
+            iccData = CGColorSpaceCopyICCData(colorSpace);
+        }
+    }
+    if (iccData && CFDataGetLength(iccData) > 0) {
+        avifImageSetProfileICC(avif, CFDataGetBytePtr(iccData), CFDataGetLength(iccData));
+    }
     
     double compressionQuality = 1;
     if (options[SDImageCoderEncodeCompressionQuality]) {
