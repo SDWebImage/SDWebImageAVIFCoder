@@ -269,6 +269,8 @@ let lossyAVIFData = SDImageAVIFCoder.shared.encodedData(with: image, format: .av
 
 ### Thumbnail Encoding (0.12.0+)
 
+Note: only available in aom codec encoder!
+
 + Objective-C
 
 ```objective-c
