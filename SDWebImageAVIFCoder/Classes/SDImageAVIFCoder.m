@@ -182,6 +182,11 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     
     // Animated image
     NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
+    // if repetitionCount is a non-negative integer `n`, then the image sequence should be played back `n + 1` times.
+    int loopCount = decoder->repetitionCount + 1;
+    if (loopCount < 0) {
+        loopCount = 0;
+    }
     while (avifDecoderNextImage(decoder) == AVIF_RESULT_OK) {
         @autoreleasepool {
             CGImageRef originImageRef = SDCreateCGImageFromAVIF(decoder->image);
@@ -209,7 +214,7 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     avifDecoderDestroy(decoder);
     
     UIImage *animatedImage = [SDImageCoderHelper animatedImageWithFrames:frames];
-    animatedImage.sd_imageLoopCount = 0;
+    animatedImage.sd_imageLoopCount = loopCount;
     animatedImage.sd_imageFormat = SDImageFormatAVIF;
     
     return animatedImage;
@@ -305,24 +310,62 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     avifImageRGBToYUV(avif, &rgb);
     free(dest.data);
 
-    NSData *iccProfile = (__bridge_transfer NSData *)CGColorSpaceCopyICCProfile([SDImageCoderHelper colorSpaceGetDeviceRGB]);
-    
-    avifImageSetProfileICC(avif, (uint8_t *)iccProfile.bytes, iccProfile.length);
+    // We must prefer the input CGImage's color space, which may contains ICC profile
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
+    // We only supports RGB colorspace, filter the un-supported one (like Monochrome, CMYK, etc)
+    if (CGColorSpaceGetModel(colorSpace) != kCGColorSpaceModelRGB) {
+        // Ignore and convert, we don't know how to encode this colorspace directlly to WebP
+        // This may cause little visible difference because of colorpsace conversion
+        colorSpace = NULL;
+    }
+    if (!colorSpace) {
+        colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB];
+    }
+    // Add ICC profile if present
+    CFDataRef iccData = NULL;
+    if (colorSpace) {
+        if (@available(iOS 10, tvOS 10, macOS 10.12, watchOS 3, *)) {
+            iccData = CGColorSpaceCopyICCData(colorSpace);
+        }
+    }
+    if (iccData && CFDataGetLength(iccData) > 0) {
+        avifImageSetProfileICC(avif, CFDataGetBytePtr(iccData), CFDataGetLength(iccData));
+    }
     
     double compressionQuality = 1;
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
-    int rescaledQuality = AVIF_QUANTIZER_WORST_QUALITY - (int)((compressionQuality) * AVIF_QUANTIZER_WORST_QUALITY);
+    int quality = compressionQuality * (AVIF_QUALITY_BEST - AVIF_QUALITY_WORST);
+    CGSize maxPixelSize = CGSizeZero;
+    NSValue *maxPixelSizeValue = options[SDImageCoderEncodeMaxPixelSize];
+    if (maxPixelSizeValue != nil) {
+#if SD_MAC
+        maxPixelSize = maxPixelSizeValue.sizeValue;
+#else
+        maxPixelSize = maxPixelSizeValue.CGSizeValue;
+#endif
+    }
     
     avifRWData raw = AVIF_DATA_EMPTY;
     avifEncoder *encoder = avifEncoderCreate();
     encoder->codecChoice = codecChoice;
-    encoder->minQuantizer = rescaledQuality;
-    encoder->maxQuantizer = rescaledQuality;
-    encoder->minQuantizerAlpha = rescaledQuality;
-    encoder->maxQuantizerAlpha = rescaledQuality;
+    encoder->quality = quality;
+    encoder->qualityAlpha = quality;
     encoder->maxThreads = 2;
+    // Check if need to scale pixel size
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:maxPixelSize preserveAspectRatio:YES shouldScaleUp:NO];
+    if (!CGSizeEqualToSize(scaledSize, CGSizeMake(width, height))) {
+        // Thumbnail Encoding
+        assert(scaledSize.width <= width);
+        assert(scaledSize.height <= height);
+        avifScalingMode scale;
+        scale.horizontal.n = (int)scaledSize.width;
+        scale.horizontal.d = (int)width;
+        scale.vertical.n = (int)scaledSize.height;
+        scale.vertical.d = (int)height;
+        encoder->scalingMode = scale;
+    }
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
     avifImageDestroy(avif);
@@ -361,7 +404,11 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
         }
         // TODO: Optimize the performance like WebPCoder (frame meta cache, etc)
         _frameCount = decoder->imageCount;
-        _loopCount = 0;
+        int loopCount = decoder->repetitionCount + 1;
+        if (loopCount < 0) {
+            loopCount = 0;
+        }
+        _loopCount = loopCount;
         _hasAnimation = decoder->imageCount > 1;
         CGFloat scale = 1;
         NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];

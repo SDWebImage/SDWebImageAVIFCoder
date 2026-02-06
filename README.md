@@ -267,6 +267,24 @@ let avifData = SDImageAVIFCoder.shared.encodedData(with: image, format: .avif, o
 let lossyAVIFData = SDImageAVIFCoder.shared.encodedData(with: image, format: .avif, options: [.encodeCompressionQuality: 0.1]) // [0, 1] compression quality
 ```
 
+### Thumbnail Encoding (0.12.0+)
+
++ Objective-C
+
+```objective-c
+// AVIF image thumbnail encoding
+UIImage *image;
+NSData *thumbnailAVIFData = [[SDImageAVIFCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatAVIF options:@{SDImageCoderEncodeMaxPixelSize : @(CGSizeMake(200, 200))}]; // encoding max pixel size
+```
+
++ Swift
+
+```swift
+// AVIF image thumbnail encoding
+let image: UIImage
+let thumbnailAVIFData = SDImageAVIFCoder.shared.encodedData(with: image, format: .AVIF, options: [.encodeMaxPixelSize: CGSize(width: 200, height: 200)]) // encoding max pixel size
+```
+
 ## Screenshot
 
 <img src="https://raw.githubusercontent.com/SDWebImage/SDWebImageAVIFCoder/master/Example/Screenshot/AVIFDemo-iOS.png" width="300" />
