@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/SDWebImage/libaom-Xcode.git",
         "state": {
           "branch": null,
-          "revision": "482cafbebbc5f32378b82339b7580761fab4fd23",
-          "version": "2.0.2"
+          "revision": "b00c20d10f13608c7579aad1f849e0f815d4d3a8",
+          "version": "3.0.0"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/SDWebImage/libavif-Xcode.git",
         "state": {
           "branch": null,
-          "revision": "28be85d8693b8bc2ea3a4d323caf652e740b4683",
-          "version": "0.9.1"
+          "revision": "0dc978b08b9bf8b7d1b505f1cb15218e8f637a6c",
+          "version": "1.0.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/SDWebImage/libvmaf-Xcode.git",
         "state": {
           "branch": null,
-          "revision": "26544e92506764862358ce2198ddab9af7685ed5",
-          "version": "2.2.0"
+          "revision": "41db5dc11d05c02d1aca7de0b572a068f528c37c",
+          "version": "2.3.1"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/SDWebImage/SDWebImage.git",
         "state": {
           "branch": null,
-          "revision": "a6b6e44eadf0d39250c10a7cc0e3b91d0bdb0e94",
-          "version": "5.10.4"
+          "revision": "36e79ba485e9bb4d3cd4e3318908866dac5e7b51",
+          "version": "5.21.5"
         }
       }
     ]

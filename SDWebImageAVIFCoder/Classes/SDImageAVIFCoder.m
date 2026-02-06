@@ -182,6 +182,11 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     
     // Animated image
     NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
+    // if repetitionCount is a non-negative integer `n`, then the image sequence should be played back `n + 1` times.
+    int loopCount = decoder->repetitionCount + 1;
+    if (loopCount < 0) {
+        loopCount = 0;
+    }
     while (avifDecoderNextImage(decoder) == AVIF_RESULT_OK) {
         @autoreleasepool {
             CGImageRef originImageRef = SDCreateCGImageFromAVIF(decoder->image);
@@ -209,7 +214,7 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     avifDecoderDestroy(decoder);
     
     UIImage *animatedImage = [SDImageCoderHelper animatedImageWithFrames:frames];
-    animatedImage.sd_imageLoopCount = 0;
+    animatedImage.sd_imageLoopCount = loopCount;
     animatedImage.sd_imageFormat = SDImageFormatAVIF;
     
     return animatedImage;
@@ -361,7 +366,11 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
         }
         // TODO: Optimize the performance like WebPCoder (frame meta cache, etc)
         _frameCount = decoder->imageCount;
-        _loopCount = 0;
+        int loopCount = decoder->repetitionCount + 1;
+        if (loopCount < 0) {
+            loopCount = 0;
+        }
+        _loopCount = loopCount;
         _hasAnimation = decoder->imageCount > 1;
         CGFloat scale = 1;
         NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
