@@ -318,15 +318,13 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
-    int rescaledQuality = AVIF_QUANTIZER_WORST_QUALITY - (int)((compressionQuality) * AVIF_QUANTIZER_WORST_QUALITY);
+    int quality = compressionQuality * (AVIF_QUALITY_BEST - AVIF_QUALITY_WORST);
     
     avifRWData raw = AVIF_DATA_EMPTY;
     avifEncoder *encoder = avifEncoderCreate();
     encoder->codecChoice = codecChoice;
-    encoder->minQuantizer = rescaledQuality;
-    encoder->maxQuantizer = rescaledQuality;
-    encoder->minQuantizerAlpha = rescaledQuality;
-    encoder->maxQuantizerAlpha = rescaledQuality;
+    encoder->quality = quality;
+    encoder->qualityAlpha = quality;
     encoder->maxThreads = 2;
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
