@@ -319,6 +319,15 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
     int quality = compressionQuality * (AVIF_QUALITY_BEST - AVIF_QUALITY_WORST);
+    CGSize maxPixelSize = CGSizeZero;
+    NSValue *maxPixelSizeValue = options[SDImageCoderEncodeMaxPixelSize];
+    if (maxPixelSizeValue != nil) {
+#if SD_MAC
+        maxPixelSize = maxPixelSizeValue.sizeValue;
+#else
+        maxPixelSize = maxPixelSizeValue.CGSizeValue;
+#endif
+    }
     
     avifRWData raw = AVIF_DATA_EMPTY;
     avifEncoder *encoder = avifEncoderCreate();
@@ -326,6 +335,19 @@ SDImageCoderOption _Nonnull const SDImageCoderAVIFEncodeCodecChoice = @"avifEnco
     encoder->quality = quality;
     encoder->qualityAlpha = quality;
     encoder->maxThreads = 2;
+    // Check if need to scale pixel size
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:maxPixelSize preserveAspectRatio:YES shouldScaleUp:NO];
+    if (!CGSizeEqualToSize(scaledSize, CGSizeMake(width, height))) {
+        // Thumbnail Encoding
+        assert(scaledSize.width <= width);
+        assert(scaledSize.height <= height);
+        avifScalingMode scale;
+        scale.horizontal.n = (int)scaledSize.width;
+        scale.horizontal.d = (int)width;
+        scale.vertical.n = (int)scaledSize.height;
+        scale.vertical.d = (int)height;
+        encoder->scalingMode = scale;
+    }
     avifResult result = avifEncoderWrite(encoder, avif, &raw);
     
     avifImageDestroy(avif);
